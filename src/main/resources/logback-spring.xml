@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+  <property
+    name="LOG_PATTERN"
+    value="%d{HH:mm:ss} %highlight(%-5level) %cyan(%-30logger{0}) | %msg%n"
+  />
+
+  <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+    <withJansi>true</withJansi>
+    <encoder>
+      <pattern>${LOG_PATTERN}</pattern>
+      <charset>UTF-8</charset>
+    </encoder>
+  </appender>
+
+  <logger name="com.hoaug" level="DEBUG" />
+  <logger name="org.springframework.security" level="DEBUG" />
+  <logger name="org.hibernate.SQL" level="DEBUG" />
+  <logger name="org.hibernate.orm.jdbc.bind" level="TRACE" />
+  <logger name="org.apache.catalina" level="WARN" />
+  <logger name="org.apache.coyote" level="WARN" />
+  <logger name="org.springframework.web.servlet.DispatcherServlet" level="WARN" />
+
+  <root level="INFO">
+    <appender-ref ref="CONSOLE" />
+  </root>
+</configuration>
