@@ -32,7 +32,11 @@ public class SecurityConfig {
         .sessionManagement(
             session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
         .authorizeHttpRequests(auth -> auth.requestMatchers("/api/v1/auth/**").permitAll()
-            .requestMatchers("/actuator/health").permitAll()
+            .requestMatchers("/api/v1/movies", "/api/v1/movies/", "/api/v1/movies/**").permitAll()
+            .requestMatchers("/api/v1/users", "/api/v1/users/", "/api/v1/users/**").permitAll()
+            .requestMatchers("/api/v1/admin/movies", "/api/v1/admin/movies/",
+                "/api/v1/admin/movies/**")
+            .permitAll().requestMatchers("/actuator/health").permitAll()
             .requestMatchers("/swagger-ui/**", "/v3/api-docs/**", "/swagger-resources/**")
             .permitAll().anyRequest().authenticated())
         .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);

@@ -36,7 +36,7 @@ public class ForgotPasswordUseCase {
       token.setCreatedAt(LocalDateTime.now());
       passwordResetTokenRepository.save(token);
 
-      // GỬI MAIL
+      // TODO: GỬI MAIL
       // TODO: sendEmail(user.getEmail(), token.getToken())
     }
     return "Nếu email tồn tại, một liên kết đặt lại mật khẩu đã được gửi";
