@@ -12,7 +12,24 @@ public enum ErrorCode {
   MOVIE_NOT_FOUND(404, "Không tìm thấy bộ phim này"),
   MOVIE_SLUG_EXISTED(409, "Đường dẫn phim (slug) này đã tồn tại."),
   EPISODE_NOT_FOUND(404, "Không tìm thấy tập phim này"),
-  INVALID_EPISODE_STATUS(400, "Trạng thái tập phim không hợp lệ");
+  INVALID_EPISODE_STATUS(400, "Trạng thái tập phim không hợp lệ"),
+  COMMENT_NOT_FOUND(404, "Bình luận không tồn tại"),
+  INVALID_COMMENT_PARENT(400, "Bình luận cấp cha không hợp lệ hoặc không cùng phim"),
+  FORBIDDEN(403, "Bạn không có quyền thực hiện thao tác này"),
+  COMMENT_NOT_EDITABLE(400, "Bình luận này hiện không thể chỉnh sửa hoặc phản hồi"),
+  REVIEW_NOT_FOUND(404, "Không tìm thấy đánh giá này"),
+  INVALID_REPORT_TARGET(400, "Đối tượng báo cáo không hợp lệ hoặc không tồn tại"),
+  REPORT_NOT_FOUND(404, "Yêu cầu báo cáo không tồn tại"),
+  INVALID_REPORT_STATUS(400, "Trạng thái báo cáo không hợp lệ"),
+  SUBSCRIPTION_PLAN_CODE_EXISTS(4001, "Mã gói đăng ký đã tồn tại"),
+  SUBSCRIPTION_PLAN_NOT_FOUND(4002, "Gói đăng ký không tồn tại"),
+  SUBSCRIPTION_PLAN_INACTIVE(4003, "Gói đăng ký này hiện đã ngừng hoạt động hoặc tạm ẩn"),
+  USER_SUBSCRIPTION_NOT_FOUND(4004,
+      "Người dùng chưa đăng ký hoặc không có gói dịch vụ nào còn hiệu lực"),
+  PAYMENT_TRANSACTION_NOT_FOUND(5001,
+      "Giao dịch thanh toán không tồn tại hoặc mã hóa đơn không hợp lệ"),
+  PAYMENT_NOT_SUCCESS(5002, "Giao dịch thanh toán chưa hoàn tất hoặc thất bại"),
+  INVOICE_ALREADY_EXISTS(5003, "Hóa đơn cho giao dịch này đã được khởi tạo trước đó");
 
   private final int statusCode;
   private final String message;

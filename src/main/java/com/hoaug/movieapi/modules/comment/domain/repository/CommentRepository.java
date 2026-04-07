@@ -1,0 +1,25 @@
+package com.hoaug.movieapi.modules.comment.domain.repository;
+
+import java.util.List;
+import java.util.Optional;
+
+import com.hoaug.movieapi.modules.comment.domain.model.Comment;
+
+public interface CommentRepository {
+
+  Optional<Comment> findById (Long id);
+
+  List<Comment> findVisibleRootCommentsByMovieIdOrderByCreatedAtDesc (Long movieId);
+
+  List<Comment> findVisibleRepliesByParentCommentIdOrderByCreatedAtAsc (Long parentCommentId);
+
+  Comment save (Comment comment);
+
+  void increaseReplyCount (Long parentCommentId);
+
+  void decreaseReplyCount (Long parentCommentId);
+
+  void increaseLikeCount (Long commentId);
+
+  void decreaseLikeCount (Long commentId);
+}
