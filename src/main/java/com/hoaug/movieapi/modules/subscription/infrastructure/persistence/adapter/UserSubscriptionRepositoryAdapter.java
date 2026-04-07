@@ -1,10 +1,12 @@
 package com.hoaug.movieapi.modules.subscription.infrastructure.persistence.adapter;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
 import org.springframework.stereotype.Component;
 
+import com.hoaug.movieapi.modules.subscription.domain.model.SubscriptionStatus;
 import com.hoaug.movieapi.modules.subscription.domain.model.UserSubscription;
 import com.hoaug.movieapi.modules.subscription.domain.repository.UserSubscriptionRepository;
 import com.hoaug.movieapi.modules.subscription.infrastructure.persistence.entity.UserSubscriptionEntity;
@@ -34,6 +36,20 @@ public class UserSubscriptionRepositoryAdapter implements UserSubscriptionReposi
   public List<UserSubscription> findByUserIdOrderByCreatedAtDesc (Long userId) {
     return jpaUserSubscriptionRepository.findByUserIdOrderByCreatedAtDesc(userId).stream()
         .map(this::toDomain).toList();
+  }
+
+  @Override
+  public List<UserSubscription> findByStatusAndEndAtBefore (SubscriptionStatus status,
+      LocalDateTime dateTime) {
+    return jpaUserSubscriptionRepository.findByStatusAndEndAtBefore(status, dateTime).stream()
+        .map(this::toDomain).toList();
+  }
+
+  @Override
+  public List<UserSubscription> findByStatusAndEndAtBetween (SubscriptionStatus status,
+      LocalDateTime startDate, LocalDateTime endDate) {
+    return jpaUserSubscriptionRepository.findByStatusAndEndAtBetween(status, startDate, endDate)
+        .stream().map(this::toDomain).toList();
   }
 
   private UserSubscription toDomain (UserSubscriptionEntity entity) {

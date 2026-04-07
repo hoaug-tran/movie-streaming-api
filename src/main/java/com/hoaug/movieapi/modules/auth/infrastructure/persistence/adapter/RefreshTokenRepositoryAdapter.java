@@ -1,5 +1,6 @@
 package com.hoaug.movieapi.modules.auth.infrastructure.persistence.adapter;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -33,6 +34,11 @@ public class RefreshTokenRepositoryAdapter implements RefreshTokenRepository {
   @Override
   public List<RefreshToken> findByUserId (Long userId) {
     return jpaRefreshTokenRepository.findByUserId(userId).stream().map(this::toDomain).toList();
+  }
+
+  @Override
+  public void deleteExpiredTokens (LocalDateTime dateTime) {
+    jpaRefreshTokenRepository.deleteByExpiresAtBefore(dateTime);
   }
 
   private RefreshToken toDomain (RefreshTokenEntity entity) {

@@ -1,5 +1,6 @@
 package com.hoaug.movieapi.modules.auth.domain.repository;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -12,4 +13,5 @@ public interface RefreshTokenRepository {
 
   List<RefreshToken> findByUserId (Long userId);
 
+  void deleteExpiredTokens (LocalDateTime dateTime);
 }

@@ -1,5 +1,6 @@
 package com.hoaug.movieapi.modules.devicesession.infrastructure.persistence.adapter;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -45,6 +46,11 @@ public class DeviceSessionRepositoryAdapter implements DeviceSessionRepository {
   @Override
   public Long countByUserIdAndIsRevokedFalse (Long userId) {
     return jpaDeviceSessionRepository.countByUserIdAndIsRevokedFalse(userId);
+  }
+
+  @Override
+  public void deleteExpiredSessions (LocalDateTime dateTime) {
+    jpaDeviceSessionRepository.deleteByLastActiveAtBefore(dateTime);
   }
 
   private DeviceSession toDomain (DeviceSessionEntity entity) {

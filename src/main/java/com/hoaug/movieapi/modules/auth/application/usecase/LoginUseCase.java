@@ -7,6 +7,7 @@ import org.springframework.stereotype.Component;
 
 import com.hoaug.movieapi.common.enums.ErrorCode;
 import com.hoaug.movieapi.common.exception.AppException;
+import com.hoaug.movieapi.common.security.BruteForceProtection;
 import com.hoaug.movieapi.modules.auth.application.dto.request.LoginRequest;
 import com.hoaug.movieapi.modules.auth.application.dto.response.AuthResponse;
 import com.hoaug.movieapi.modules.auth.domain.model.RefreshToken;
@@ -22,28 +23,41 @@ public class LoginUseCase {
   private final RefreshTokenRepository refreshTokenRepository;
   private final PasswordEncoder passwordEncoder;
   private final TokenService tokenService;
+  private final BruteForceProtection bruteForceProtection;
 
   public LoginUseCase(AuthUserRepository authUserRepository,
       RefreshTokenRepository refreshTokenRepository, PasswordEncoder passwordEncoder,
-      TokenService tokenService) {
+      TokenService tokenService, BruteForceProtection bruteForceProtection) {
     this.authUserRepository = authUserRepository;
     this.refreshTokenRepository = refreshTokenRepository;
     this.passwordEncoder = passwordEncoder;
     this.tokenService = tokenService;
+    this.bruteForceProtection = bruteForceProtection;
   }
 
   public AuthResponse execute (LoginRequest request) {
-    User user = authUserRepository.findByUsername(request.getUsernameOrEmail())
-        .or( () -> authUserRepository.findByEmail(request.getUsernameOrEmail()))
-        .orElseThrow( () -> new AppException(ErrorCode.INVALID_CREDENTIALS));
+    String userIdentifier = request.getUsernameOrEmail();
+
+    if (bruteForceProtection.isLocked(userIdentifier)) {
+      throw new AppException(ErrorCode.ACCOUNT_NOT_ACTIVE);
+    }
+
+    User user = authUserRepository.findByUsername(userIdentifier)
+        .or( () -> authUserRepository.findByEmail(userIdentifier)).orElseThrow( () -> {
+          bruteForceProtection.recordFailure(userIdentifier);
+          return new AppException(ErrorCode.INVALID_CREDENTIALS);
+        });
 
     if (user.getAccountStatus() != AccountStatus.ACTIVE) {
       throw new AppException(ErrorCode.ACCOUNT_NOT_ACTIVE);
     }
 
     if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
+      bruteForceProtection.recordFailure(userIdentifier);
       throw new AppException(ErrorCode.INVALID_CREDENTIALS);
     }
+
+    bruteForceProtection.recordSuccess(userIdentifier);
 
     LocalDateTime now = LocalDateTime.now();
 

@@ -18,6 +18,8 @@ public enum ErrorCode {
   FORBIDDEN(403, "Bạn không có quyền thực hiện thao tác này"),
   COMMENT_NOT_EDITABLE(400, "Bình luận này hiện không thể chỉnh sửa hoặc phản hồi"),
   REVIEW_NOT_FOUND(404, "Không tìm thấy đánh giá này"),
+  VALIDATION_ERROR(400, "Lỗi xác thực dữ liệu"),
+  RATE_LIMIT_EXCEEDED(429, "Bạn đang gửi qúa nhiều yêu cầu. Vui lòng chờ một chút"),
   INVALID_REPORT_TARGET(400, "Đối tượng báo cáo không hợp lệ hoặc không tồn tại"),
   REPORT_NOT_FOUND(404, "Yêu cầu báo cáo không tồn tại"),
   INVALID_REPORT_STATUS(400, "Trạng thái báo cáo không hợp lệ"),

@@ -6,6 +6,7 @@ import org.springframework.stereotype.Component;
 
 import com.hoaug.movieapi.common.enums.ErrorCode;
 import com.hoaug.movieapi.common.exception.AppException;
+import com.hoaug.movieapi.common.security.LikeSpamValidator;
 import com.hoaug.movieapi.modules.comment.domain.repository.CommentRepository;
 import com.hoaug.movieapi.modules.commentlike.application.dto.response.CommentLikeResponse;
 import com.hoaug.movieapi.modules.commentlike.application.mapper.CommentLikeMapper;
@@ -20,16 +21,21 @@ public class ToggleCommentLikeUseCase {
   private final CommentLikeRepository commentLikeRepository;
   private final CommentRepository commentRepository;
   private final CommentLikeMapper commentLikeMapper;
+  private final LikeSpamValidator likeSpamValidator;
 
   public ToggleCommentLikeUseCase(CommentLikeRepository commentLikeRepository,
-      CommentRepository commentRepository, CommentLikeMapper commentLikeMapper) {
+      CommentRepository commentRepository, CommentLikeMapper commentLikeMapper,
+      LikeSpamValidator likeSpamValidator) {
     this.commentLikeRepository = commentLikeRepository;
     this.commentRepository = commentRepository;
     this.commentLikeMapper = commentLikeMapper;
+    this.likeSpamValidator = likeSpamValidator;
   }
 
   @Transactional
   public CommentLikeResponse execute (Long userId, Long commentId) {
+    likeSpamValidator.validateCommentLike(userId, commentId);
+
     commentRepository.findById(commentId)
         .orElseThrow( () -> new AppException(ErrorCode.COMMENT_NOT_FOUND));
 

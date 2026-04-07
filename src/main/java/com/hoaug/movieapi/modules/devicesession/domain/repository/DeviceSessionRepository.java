@@ -1,5 +1,6 @@
 package com.hoaug.movieapi.modules.devicesession.domain.repository;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -16,4 +17,6 @@ public interface DeviceSessionRepository {
   List<DeviceSession> findByUserIdAndIsRevokedFalseOrderByLastActiveAtDesc (Long userId);
 
   Long countByUserIdAndIsRevokedFalse (Long userId);
+
+  void deleteExpiredSessions (LocalDateTime dateTime);
 }

@@ -4,9 +4,12 @@ import java.util.List;
 
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.hoaug.movieapi.modules.movie.application.dto.request.SearchMovieRequest;
 import com.hoaug.movieapi.modules.movie.application.dto.response.CategoryResponse;
 import com.hoaug.movieapi.modules.movie.application.dto.response.EpisodeResponse;
 import com.hoaug.movieapi.modules.movie.application.dto.response.MovieDetailResponse;
@@ -14,8 +17,10 @@ import com.hoaug.movieapi.modules.movie.application.dto.response.MoviePersonResp
 import com.hoaug.movieapi.modules.movie.application.dto.response.MovieStudioResponse;
 import com.hoaug.movieapi.modules.movie.application.dto.response.MovieSummaryResponse;
 import com.hoaug.movieapi.modules.movie.application.dto.response.PersonResponse;
+import com.hoaug.movieapi.modules.movie.application.dto.response.SearchMovieResponse;
 import com.hoaug.movieapi.modules.movie.application.dto.response.StudioResponse;
 import com.hoaug.movieapi.modules.movie.application.dto.response.TagResponse;
+import com.hoaug.movieapi.modules.movie.application.usecase.AdvancedSearchMovieUseCase;
 import com.hoaug.movieapi.modules.movie.application.usecase.GetEpisodesByMovieUseCase;
 import com.hoaug.movieapi.modules.movie.application.usecase.GetMovieByIdUseCase;
 import com.hoaug.movieapi.modules.movie.application.usecase.GetMovieBySlugUseCase;
@@ -28,6 +33,7 @@ import com.hoaug.movieapi.modules.movie.application.usecase.GetPersonByIdUseCase
 import com.hoaug.movieapi.modules.movie.application.usecase.GetPersonsUseCase;
 import com.hoaug.movieapi.modules.movie.application.usecase.GetStudioByIdUseCase;
 import com.hoaug.movieapi.modules.movie.application.usecase.GetStudiosUseCase;
+import com.hoaug.movieapi.modules.movie.application.usecase.SearchMovieUseCase;
 
 import jakarta.validation.constraints.Positive;
 
@@ -47,6 +53,8 @@ public class MovieController {
   private final GetPersonByIdUseCase getPersonByIdUseCase;
   private final GetStudiosUseCase getStudiosUseCase;
   private final GetStudioByIdUseCase getStudioByIdUseCase;
+  private final SearchMovieUseCase searchMovieUseCase;
+  private final AdvancedSearchMovieUseCase advancedSearchMovieUseCase;
 
   public MovieController(GetMoviesUseCase getMoviesUseCase, GetMovieByIdUseCase getMovieByIdUseCase,
       GetMovieBySlugUseCase getMovieBySlugUseCase,
@@ -54,7 +62,9 @@ public class MovieController {
       GetMovieCategoriesUseCase getMovieCategoriesUseCase, GetMovieTagsUseCase getMovieTagsUseCase,
       GetMoviePersonsUseCase getMoviePersonsUseCase, GetMovieStudiosUseCase getMovieStudiosUseCase,
       GetPersonsUseCase getPersonsUseCase, GetPersonByIdUseCase getPersonByIdUseCase,
-      GetStudiosUseCase getStudiosUseCase, GetStudioByIdUseCase getStudioByIdUseCase) {
+      GetStudiosUseCase getStudiosUseCase, GetStudioByIdUseCase getStudioByIdUseCase,
+      SearchMovieUseCase searchMovieUseCase,
+      AdvancedSearchMovieUseCase advancedSearchMovieUseCase) {
     this.getMoviesUseCase = getMoviesUseCase;
     this.getMovieByIdUseCase = getMovieByIdUseCase;
     this.getMovieBySlugUseCase = getMovieBySlugUseCase;
@@ -67,11 +77,23 @@ public class MovieController {
     this.getPersonByIdUseCase = getPersonByIdUseCase;
     this.getStudiosUseCase = getStudiosUseCase;
     this.getStudioByIdUseCase = getStudioByIdUseCase;
+    this.searchMovieUseCase = searchMovieUseCase;
+    this.advancedSearchMovieUseCase = advancedSearchMovieUseCase;
   }
 
   @GetMapping
   public List<MovieSummaryResponse> getMovies () {
     return getMoviesUseCase.execute();
+  }
+
+  @PostMapping("/search")
+  public SearchMovieResponse search (@RequestBody SearchMovieRequest request) {
+    return searchMovieUseCase.execute(request);
+  }
+
+  @PostMapping("/search/advanced")
+  public SearchMovieResponse advancedSearch (@RequestBody SearchMovieRequest request) {
+    return advancedSearchMovieUseCase.execute(request);
   }
 
   @GetMapping("/{id:[0-9]+}")

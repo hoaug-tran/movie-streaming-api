@@ -9,6 +9,7 @@ import com.hoaug.movieapi.common.exception.AppException;
 import com.hoaug.movieapi.modules.comment.application.dto.request.CreateCommentRequest;
 import com.hoaug.movieapi.modules.comment.application.dto.response.CommentResponse;
 import com.hoaug.movieapi.modules.comment.application.mapper.CommentMapper;
+import com.hoaug.movieapi.modules.comment.application.validator.CommentSpamValidator;
 import com.hoaug.movieapi.modules.comment.domain.model.Comment;
 import com.hoaug.movieapi.modules.comment.domain.model.CommentStatus;
 import com.hoaug.movieapi.modules.comment.domain.repository.CommentRepository;
@@ -22,16 +23,20 @@ public class CreateCommentUseCase {
   private final CommentRepository commentRepository;
   private final MovieRepository movieRepository;
   private final CommentMapper commentMapper;
+  private final CommentSpamValidator spamValidator;
 
   public CreateCommentUseCase(CommentRepository commentRepository, MovieRepository movieRepository,
-      CommentMapper commentMapper) {
+      CommentMapper commentMapper, CommentSpamValidator spamValidator) {
     this.commentRepository = commentRepository;
     this.movieRepository = movieRepository;
     this.commentMapper = commentMapper;
+    this.spamValidator = spamValidator;
   }
 
   @Transactional
   public CommentResponse execute (Long userId, CreateCommentRequest request) {
+    spamValidator.validate(userId, request.getContent());
+
     movieRepository.findById(request.getMovieId())
         .orElseThrow( () -> new AppException(ErrorCode.MOVIE_NOT_FOUND));
 

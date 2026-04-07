@@ -6,6 +6,7 @@ import org.springframework.stereotype.Component;
 
 import com.hoaug.movieapi.common.enums.ErrorCode;
 import com.hoaug.movieapi.common.exception.AppException;
+import com.hoaug.movieapi.common.security.LikeSpamValidator;
 import com.hoaug.movieapi.modules.review.domain.repository.ReviewRepository;
 import com.hoaug.movieapi.modules.reviewlike.application.dto.response.ReviewLikeResponse;
 import com.hoaug.movieapi.modules.reviewlike.application.mapper.ReviewLikeMapper;
@@ -20,16 +21,21 @@ public class ToggleReviewLikeUseCase {
   private final ReviewLikeRepository reviewLikeRepository;
   private final ReviewRepository reviewRepository;
   private final ReviewLikeMapper reviewLikeMapper;
+  private final LikeSpamValidator likeSpamValidator;
 
   public ToggleReviewLikeUseCase(ReviewLikeRepository reviewLikeRepository,
-      ReviewRepository reviewRepository, ReviewLikeMapper reviewLikeMapper) {
+      ReviewRepository reviewRepository, ReviewLikeMapper reviewLikeMapper,
+      LikeSpamValidator likeSpamValidator) {
     this.reviewLikeRepository = reviewLikeRepository;
     this.reviewRepository = reviewRepository;
     this.reviewLikeMapper = reviewLikeMapper;
+    this.likeSpamValidator = likeSpamValidator;
   }
 
   @Transactional
   public ReviewLikeResponse execute (Long userId, Long reviewId) {
+    likeSpamValidator.validateReviewLike(userId, reviewId);
+
     reviewRepository.findById(reviewId)
         .orElseThrow( () -> new AppException(ErrorCode.REVIEW_NOT_FOUND));
 
