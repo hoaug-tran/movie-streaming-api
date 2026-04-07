@@ -7,7 +7,10 @@ public class Review {
   private Long userId;
   private Long movieId;
   private Integer rating;
+  private String title;
   private String content;
+  private Boolean isEdited;
+  private ReviewStatus status;
   private Integer likeCount;
   private LocalDateTime createdAt;
   private LocalDateTime updatedAt;
@@ -50,6 +53,30 @@ public class Review {
 
   public void setContent (String content) {
     this.content = content;
+  }
+
+  public String getTitle () {
+    return title;
+  }
+
+  public void setTitle (String title) {
+    this.title = title;
+  }
+
+  public Boolean getIsEdited () {
+    return isEdited;
+  }
+
+  public void setIsEdited (Boolean isEdited) {
+    this.isEdited = isEdited;
+  }
+
+  public ReviewStatus getStatus () {
+    return status;
+  }
+
+  public void setStatus (ReviewStatus status) {
+    this.status = status;
   }
 
   public Integer getLikeCount () {

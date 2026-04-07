@@ -28,4 +28,16 @@ public class TagRepositoryAdapter implements TagRepository {
       return tag;
     }).toList();
   }
+
+  @Override
+  public Tag findById (Long id) {
+    return jpaTagRepository.findById(id).map(entity -> {
+      Tag tag = new Tag();
+      tag.setId(entity.getId());
+      tag.setName(entity.getName());
+      tag.setSlug(entity.getSlug());
+      tag.setDescription(entity.getDescription());
+      return tag;
+    }).orElse(null);
+  }
 }

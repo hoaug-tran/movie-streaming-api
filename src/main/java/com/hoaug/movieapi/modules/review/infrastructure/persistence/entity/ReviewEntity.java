@@ -2,7 +2,12 @@ package com.hoaug.movieapi.modules.review.infrastructure.persistence.entity;
 
 import java.time.LocalDateTime;
 
+import com.hoaug.movieapi.modules.review.domain.model.ReviewStatus;
+
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -21,9 +26,18 @@ public class ReviewEntity {
   private Long userId;
   private Long movieId;
   private Integer rating;
+  private String title;
   private String content;
+  @Column(name = "is_edited")
+  private Boolean isEdited;
+  @Enumerated(EnumType.STRING)
+  @Column(length = 20)
+  private ReviewStatus status;
+  @Column(name = "like_count")
   private Integer likeCount;
+  @Column(name = "created_at")
   private LocalDateTime createdAt;
+  @Column(name = "updated_at")
   private LocalDateTime updatedAt;
 
   public Long getId () {
@@ -64,6 +78,30 @@ public class ReviewEntity {
 
   public void setContent (String content) {
     this.content = content;
+  }
+
+  public String getTitle () {
+    return title;
+  }
+
+  public void setTitle (String title) {
+    this.title = title;
+  }
+
+  public Boolean getIsEdited () {
+    return isEdited;
+  }
+
+  public void setIsEdited (Boolean isEdited) {
+    this.isEdited = isEdited;
+  }
+
+  public ReviewStatus getStatus () {
+    return status;
+  }
+
+  public void setStatus (ReviewStatus status) {
+    this.status = status;
   }
 
   public Integer getLikeCount () {

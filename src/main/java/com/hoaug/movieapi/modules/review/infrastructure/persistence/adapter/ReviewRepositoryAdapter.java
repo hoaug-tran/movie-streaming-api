@@ -69,7 +69,10 @@ public class ReviewRepositoryAdapter implements ReviewRepository {
     r.setUserId(e.getUserId());
     r.setMovieId(e.getMovieId());
     r.setRating(e.getRating());
+    r.setTitle(e.getTitle());
     r.setContent(e.getContent());
+    r.setIsEdited(e.getIsEdited());
+    r.setStatus(e.getStatus());
     r.setLikeCount(e.getLikeCount());
     r.setCreatedAt(e.getCreatedAt());
     r.setUpdatedAt(e.getUpdatedAt());
@@ -82,7 +85,10 @@ public class ReviewRepositoryAdapter implements ReviewRepository {
     e.setUserId(r.getUserId());
     e.setMovieId(r.getMovieId());
     e.setRating(r.getRating());
+    e.setTitle(r.getTitle());
     e.setContent(r.getContent());
+    e.setIsEdited(r.getIsEdited());
+    e.setStatus(r.getStatus());
     e.setLikeCount(r.getLikeCount());
     e.setCreatedAt(r.getCreatedAt());
     e.setUpdatedAt(r.getUpdatedAt());

@@ -6,4 +6,6 @@ import com.hoaug.movieapi.modules.movie.domain.model.Category;
 
 public interface CategoryRepository {
   List<Category> findAll ();
+
+  Category findById (Long id);
 }

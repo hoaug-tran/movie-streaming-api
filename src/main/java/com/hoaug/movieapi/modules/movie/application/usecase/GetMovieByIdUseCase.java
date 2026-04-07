@@ -16,18 +16,30 @@ public class GetMovieByIdUseCase {
   private final MovieRepository movieRepository;
   private final EpisodeRepository episodeRepository;
   private final MovieMapper movieMapper;
+  private final GetMovieCategoriesUseCase getMovieCategoriesUseCase;
+  private final GetMovieTagsUseCase getMovieTagsUseCase;
+  private final GetMoviePersonsUseCase getMoviePersonsUseCase;
+  private final GetMovieStudiosUseCase getMovieStudiosUseCase;
 
   public GetMovieByIdUseCase(MovieRepository movieRepository, EpisodeRepository episodeRepository,
-      MovieMapper movieMapper) {
+      MovieMapper movieMapper, GetMovieCategoriesUseCase getMovieCategoriesUseCase,
+      GetMovieTagsUseCase getMovieTagsUseCase, GetMoviePersonsUseCase getMoviePersonsUseCase,
+      GetMovieStudiosUseCase getMovieStudiosUseCase) {
     this.movieRepository = movieRepository;
     this.episodeRepository = episodeRepository;
     this.movieMapper = movieMapper;
+    this.getMovieCategoriesUseCase = getMovieCategoriesUseCase;
+    this.getMovieTagsUseCase = getMovieTagsUseCase;
+    this.getMoviePersonsUseCase = getMoviePersonsUseCase;
+    this.getMovieStudiosUseCase = getMovieStudiosUseCase;
   }
 
   public MovieDetailResponse execute (Long movieId) {
     Movie movie = movieRepository.findPublishedById(movieId)
         .orElseThrow( () -> new AppException(ErrorCode.MOVIE_NOT_FOUND));
 
-    return movieMapper.toDetailResponse(movie, episodeRepository.findPublishedByMovieId(movieId));
+    return movieMapper.toDetailResponse(movie, episodeRepository.findPublishedByMovieId(movieId),
+        getMovieCategoriesUseCase.execute(movieId), getMovieTagsUseCase.execute(movieId),
+        getMoviePersonsUseCase.execute(movieId), getMovieStudiosUseCase.execute(movieId));
   }
 }

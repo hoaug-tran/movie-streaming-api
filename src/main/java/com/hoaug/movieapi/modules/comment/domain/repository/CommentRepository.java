@@ -15,6 +15,8 @@ public interface CommentRepository {
 
   Comment save (Comment comment);
 
+  void delete (Comment comment);
+
   void increaseReplyCount (Long parentCommentId);
 
   void decreaseReplyCount (Long parentCommentId);

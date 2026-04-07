@@ -50,6 +50,11 @@ public class CommentRepositoryAdapter implements CommentRepository {
   }
 
   @Override
+  public void delete (Comment comment) {
+    jpaCommentRepository.delete(toEntity(comment));
+  }
+
+  @Override
   @Transactional
   public void increaseReplyCount (Long parentCommentId) {
     jpaCommentRepository.increaseReplyCount(parentCommentId);

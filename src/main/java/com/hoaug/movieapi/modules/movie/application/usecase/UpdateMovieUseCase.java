@@ -1,6 +1,7 @@
 package com.hoaug.movieapi.modules.movie.application.usecase;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 import org.springframework.stereotype.Component;
 
@@ -53,6 +54,7 @@ public class UpdateMovieUseCase {
     Movie savedMovie = movieRepository.save(movie);
 
     return movieMapper.toDetailResponse(savedMovie,
-        episodeRepository.findPublishedByMovieId(savedMovie.getId()));
+        episodeRepository.findPublishedByMovieId(savedMovie.getId()), List.of(), List.of(),
+        List.of(), List.of());
   }
 }

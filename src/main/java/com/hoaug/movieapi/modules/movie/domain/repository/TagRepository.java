@@ -6,4 +6,6 @@ import com.hoaug.movieapi.modules.movie.domain.model.Tag;
 
 public interface TagRepository {
   List<Tag> findAll ();
+
+  Tag findById (Long id);
 }

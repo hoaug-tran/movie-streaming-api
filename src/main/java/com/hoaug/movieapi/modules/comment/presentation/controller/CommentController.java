@@ -20,6 +20,7 @@ import com.hoaug.movieapi.modules.comment.application.dto.request.UpdateCommentR
 import com.hoaug.movieapi.modules.comment.application.dto.response.CommentResponse;
 import com.hoaug.movieapi.modules.comment.application.usecase.CreateCommentUseCase;
 import com.hoaug.movieapi.modules.comment.application.usecase.DeleteCommentUseCase;
+import com.hoaug.movieapi.modules.comment.application.usecase.GetCommentByIdUseCase;
 import com.hoaug.movieapi.modules.comment.application.usecase.GetMovieCommentsUseCase;
 import com.hoaug.movieapi.modules.comment.application.usecase.GetRepliesUseCase;
 import com.hoaug.movieapi.modules.comment.application.usecase.UpdateCommentUseCase;
@@ -34,17 +35,19 @@ public class CommentController {
   private final CreateCommentUseCase createCommentUseCase;
   private final UpdateCommentUseCase updateCommentUseCase;
   private final DeleteCommentUseCase deleteCommentUseCase;
+  private final GetCommentByIdUseCase getCommentByIdUseCase;
   private final GetMovieCommentsUseCase getMovieCommentsUseCase;
   private final GetRepliesUseCase getRepliesUseCase;
   private final AuthUserRepository authUserRepository;
 
   public CommentController(CreateCommentUseCase createCommentUseCase,
       UpdateCommentUseCase updateCommentUseCase, DeleteCommentUseCase deleteCommentUseCase,
-      GetMovieCommentsUseCase getMovieCommentsUseCase, GetRepliesUseCase getRepliesUseCase,
-      AuthUserRepository authUserRepository) {
+      GetCommentByIdUseCase getCommentByIdUseCase, GetMovieCommentsUseCase getMovieCommentsUseCase,
+      GetRepliesUseCase getRepliesUseCase, AuthUserRepository authUserRepository) {
     this.createCommentUseCase = createCommentUseCase;
     this.updateCommentUseCase = updateCommentUseCase;
     this.deleteCommentUseCase = deleteCommentUseCase;
+    this.getCommentByIdUseCase = getCommentByIdUseCase;
     this.getMovieCommentsUseCase = getMovieCommentsUseCase;
     this.getRepliesUseCase = getRepliesUseCase;
     this.authUserRepository = authUserRepository;
@@ -65,6 +68,11 @@ public class CommentController {
   @DeleteMapping("/{commentId}")
   public void delete (Authentication authentication, @PathVariable Long commentId) {
     deleteCommentUseCase.execute(getCurrentUserId(authentication), commentId);
+  }
+
+  @GetMapping("/{commentId}")
+  public CommentResponse getCommentById (@PathVariable Long commentId) {
+    return getCommentByIdUseCase.execute(commentId);
   }
 
   @GetMapping("/movie/{movieId}")

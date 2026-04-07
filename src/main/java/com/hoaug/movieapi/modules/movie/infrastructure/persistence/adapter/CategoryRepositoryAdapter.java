@@ -28,4 +28,16 @@ public class CategoryRepositoryAdapter implements CategoryRepository {
       return category;
     }).toList();
   }
+
+  @Override
+  public Category findById (Long id) {
+    return jpaCategoryRepository.findById(id).map(entity -> {
+      Category category = new Category();
+      category.setId(entity.getId());
+      category.setName(entity.getName());
+      category.setSlug(entity.getSlug());
+      category.setDescription(entity.getDescription());
+      return category;
+    }).orElse(null);
+  }
 }

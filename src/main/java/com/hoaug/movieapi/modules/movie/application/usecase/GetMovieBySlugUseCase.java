@@ -16,12 +16,22 @@ public class GetMovieBySlugUseCase {
   private final MovieRepository movieRepository;
   private final EpisodeRepository episodeRepository;
   private final MovieMapper movieMapper;
+  private final GetMovieCategoriesUseCase getMovieCategoriesUseCase;
+  private final GetMovieTagsUseCase getMovieTagsUseCase;
+  private final GetMoviePersonsUseCase getMoviePersonsUseCase;
+  private final GetMovieStudiosUseCase getMovieStudiosUseCase;
 
   public GetMovieBySlugUseCase(MovieRepository movieRepository, EpisodeRepository episodeRepository,
-      MovieMapper movieMapper) {
+      MovieMapper movieMapper, GetMovieCategoriesUseCase getMovieCategoriesUseCase,
+      GetMovieTagsUseCase getMovieTagsUseCase, GetMoviePersonsUseCase getMoviePersonsUseCase,
+      GetMovieStudiosUseCase getMovieStudiosUseCase) {
     this.movieRepository = movieRepository;
     this.episodeRepository = episodeRepository;
     this.movieMapper = movieMapper;
+    this.getMovieCategoriesUseCase = getMovieCategoriesUseCase;
+    this.getMovieTagsUseCase = getMovieTagsUseCase;
+    this.getMoviePersonsUseCase = getMoviePersonsUseCase;
+    this.getMovieStudiosUseCase = getMovieStudiosUseCase;
   }
 
   public MovieDetailResponse execute (String slug) {
@@ -29,6 +39,9 @@ public class GetMovieBySlugUseCase {
         .orElseThrow( () -> new AppException(ErrorCode.MOVIE_NOT_FOUND));
 
     return movieMapper.toDetailResponse(movie,
-        episodeRepository.findPublishedByMovieId(movie.getId()));
+        episodeRepository.findPublishedByMovieId(movie.getId()),
+        getMovieCategoriesUseCase.execute(movie.getId()),
+        getMovieTagsUseCase.execute(movie.getId()), getMoviePersonsUseCase.execute(movie.getId()),
+        getMovieStudiosUseCase.execute(movie.getId()));
   }
 }

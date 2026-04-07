@@ -4,9 +4,13 @@ import java.util.List;
 
 import org.springframework.stereotype.Component;
 
+import com.hoaug.movieapi.modules.movie.application.dto.response.CategoryResponse;
 import com.hoaug.movieapi.modules.movie.application.dto.response.EpisodeResponse;
 import com.hoaug.movieapi.modules.movie.application.dto.response.MovieDetailResponse;
+import com.hoaug.movieapi.modules.movie.application.dto.response.MoviePersonResponse;
+import com.hoaug.movieapi.modules.movie.application.dto.response.MovieStudioResponse;
 import com.hoaug.movieapi.modules.movie.application.dto.response.MovieSummaryResponse;
+import com.hoaug.movieapi.modules.movie.application.dto.response.TagResponse;
 import com.hoaug.movieapi.modules.movie.domain.model.Episode;
 import com.hoaug.movieapi.modules.movie.domain.model.Movie;
 
@@ -29,7 +33,9 @@ public class MovieMapper {
     return response;
   }
 
-  public MovieDetailResponse toDetailResponse (Movie movie, List<Episode> episodes) {
+  public MovieDetailResponse toDetailResponse (Movie movie, List<Episode> episodes,
+      List<CategoryResponse> categories, List<TagResponse> tags, List<MoviePersonResponse> persons,
+      List<MovieStudioResponse> studios) {
     MovieDetailResponse response = new MovieDetailResponse();
     response.setId(movie.getId());
     response.setTitle(movie.getTitle());
@@ -53,6 +59,10 @@ public class MovieMapper {
     response.setTotalReviews(movie.getTotalReviews());
     response.setPublishedAt(movie.getPublishedAt());
     response.setEpisodes(episodes.stream().map(this::toEpisodeResponse).toList());
+    response.setCategories(categories);
+    response.setTags(tags);
+    response.setPersons(persons);
+    response.setStudios(studios);
     return response;
   }
 

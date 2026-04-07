@@ -27,6 +27,10 @@ public class MovieDetailResponse {
   private Integer totalReviews;
   private LocalDateTime publishedAt;
   private List<EpisodeResponse> episodes;
+  private List<CategoryResponse> categories;
+  private List<TagResponse> tags;
+  private List<MoviePersonResponse> persons;
+  private List<MovieStudioResponse> studios;
 
   public Long getId () {
     return id;
@@ -202,5 +206,37 @@ public class MovieDetailResponse {
 
   public void setEpisodes (List<EpisodeResponse> episodes) {
     this.episodes = episodes;
+  }
+
+  public List<CategoryResponse> getCategories () {
+    return categories;
+  }
+
+  public void setCategories (List<CategoryResponse> categories) {
+    this.categories = categories;
+  }
+
+  public List<TagResponse> getTags () {
+    return tags;
+  }
+
+  public void setTags (List<TagResponse> tags) {
+    this.tags = tags;
+  }
+
+  public List<MoviePersonResponse> getPersons () {
+    return persons;
+  }
+
+  public void setPersons (List<MoviePersonResponse> persons) {
+    this.persons = persons;
+  }
+
+  public List<MovieStudioResponse> getStudios () {
+    return studios;
+  }
+
+  public void setStudios (List<MovieStudioResponse> studios) {
+    this.studios = studios;
   }
 }

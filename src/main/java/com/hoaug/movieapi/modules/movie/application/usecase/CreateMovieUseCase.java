@@ -59,6 +59,7 @@ public class CreateMovieUseCase {
     }
 
     Movie savedMovie = movieRepository.save(movie);
-    return movieMapper.toDetailResponse(savedMovie, List.of());
+    return movieMapper.toDetailResponse(savedMovie, List.of(), List.of(), List.of(), List.of(),
+        List.of());
   }
 }
