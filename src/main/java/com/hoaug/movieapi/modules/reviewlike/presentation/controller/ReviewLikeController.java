@@ -16,7 +16,7 @@ import com.hoaug.movieapi.modules.reviewlike.application.usecase.ToggleReviewLik
 import com.hoaug.movieapi.modules.user.domain.model.User;
 
 @RestController
-@RequestMapping("/api/review-likes")
+@RequestMapping("${api.prefix:/api/v1}/review-likes")
 public class ReviewLikeController {
 
   private final ToggleReviewLikeUseCase toggleReviewLikeUseCase;

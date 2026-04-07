@@ -38,7 +38,7 @@ import com.hoaug.movieapi.modules.user.domain.model.User;
 import jakarta.validation.Valid;
 
 @RestController
-@RequestMapping("/api/subscriptions")
+@RequestMapping("${api.prefix:/api/v1}/subscriptions")
 public class SubscriptionController {
 
   private final CreateSubscriptionPlanUseCase createSubscriptionPlanUseCase;

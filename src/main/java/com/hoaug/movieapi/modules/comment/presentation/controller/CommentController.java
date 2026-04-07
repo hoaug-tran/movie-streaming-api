@@ -28,7 +28,7 @@ import com.hoaug.movieapi.modules.user.domain.model.User;
 import jakarta.validation.Valid;
 
 @RestController
-@RequestMapping("/api/comments")
+@RequestMapping("${api.prefix:/api/v1}/comments")
 public class CommentController {
 
   private final CreateCommentUseCase createCommentUseCase;

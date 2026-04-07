@@ -16,7 +16,7 @@ import com.hoaug.movieapi.modules.commentlike.application.usecase.ToggleCommentL
 import com.hoaug.movieapi.modules.user.domain.model.User;
 
 @RestController
-@RequestMapping("/api/comment-likes")
+@RequestMapping("${api.prefix:/api/v1}/comment-likes")
 public class CommentLikeController {
 
   private final ToggleCommentLikeUseCase toggleCommentLikeUseCase;

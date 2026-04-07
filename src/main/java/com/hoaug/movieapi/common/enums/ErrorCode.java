@@ -29,7 +29,13 @@ public enum ErrorCode {
   PAYMENT_TRANSACTION_NOT_FOUND(5001,
       "Giao dịch thanh toán không tồn tại hoặc mã hóa đơn không hợp lệ"),
   PAYMENT_NOT_SUCCESS(5002, "Giao dịch thanh toán chưa hoàn tất hoặc thất bại"),
-  INVOICE_ALREADY_EXISTS(5003, "Hóa đơn cho giao dịch này đã được khởi tạo trước đó");
+  INVOICE_ALREADY_EXISTS(5003, "Hóa đơn cho giao dịch này đã được khởi tạo trước đó"),
+  NOTIFICATION_NOT_FOUND(6001, "Thông báo không tồn tại hoặc đã bị xóa"),
+  MOVIE_RECOMMENDATION_NOT_FOUND(404, "Không tìm thấy đề xuất phim nào cho người dùng này"),
+  DEVICE_SESSION_NOT_FOUND(7001, "Phiên đăng nhập trên thiết bị không tồn tại hoặc đã hết hạn"),
+  SEARCH_HISTORY_NOT_FOUND(7002, "Lịch sử tìm kiếm không tồn tại hoặc đã bị xóa"),
+  ADVERTISEMENT_NOT_FOUND(404, "Không tìm thấy quảng cáo nào"),
+  ADVERTISEMENT_VIEW_NOT_FOUND(404, "Không tìm thấy lượt xem quảng cáo nào");
 
   private final int statusCode;
   private final String message;

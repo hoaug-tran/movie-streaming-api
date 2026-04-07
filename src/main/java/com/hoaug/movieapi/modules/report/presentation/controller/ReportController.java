@@ -27,7 +27,7 @@ import com.hoaug.movieapi.modules.user.domain.model.User;
 import jakarta.validation.Valid;
 
 @RestController
-@RequestMapping("/api/reports")
+@RequestMapping("${api.prefix:/api/v1}/reports")
 public class ReportController {
 
   private final CreateReportUseCase createReportUseCase;

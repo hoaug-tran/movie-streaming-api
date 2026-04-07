@@ -1,8 +1,8 @@
 # Movie Streaming API - Complete Documentation
 
 [![Java](https://img.shields.io/badge/Java-21-orange)](https://www.oracle.com/java/)
-[![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.3.0-green)](https://spring.io/projects/spring-boot)
-[![MySQL](https://img.shields.io/badge/MySQL-8.0-blue)](https://www.mysql.com/)
+[![Spring Boot](https://img.shields.io/badge/Spring%20Boot-4.0.3-green)](https://spring.io/projects/spring-boot)
+[![MySQL](https://img.shields.io/badge/MySQL-8.4-blue)](https://www.mysql.com/)
 [![JWT](https://img.shields.io/badge/JWT-Authentication-lightblue)](https://jwt.io/)
 
 Comprehensive REST API for Movie Streaming Platform with User Management, Movie CRUD, Episodes, and Admin Controls.
