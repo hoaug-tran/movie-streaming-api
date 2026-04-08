@@ -33,7 +33,7 @@ public class GetMovieStudiosUseCase {
       movieStudio.setRole(entity.getRole());
       movieStudio.setCreatedAt(entity.getCreatedAt());
 
-      var studio = studioRepository.findById(entity.getStudioId());
+      var studio = studioRepository.findById(entity.getStudioId()).get();
       return movieStudioMapper.toResponse(movieStudio, studio);
     }).toList();
   }

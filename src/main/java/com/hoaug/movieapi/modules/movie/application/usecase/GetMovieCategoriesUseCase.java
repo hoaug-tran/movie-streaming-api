@@ -25,7 +25,7 @@ public class GetMovieCategoriesUseCase {
 
   public List<CategoryResponse> execute (Long movieId) {
     return jpaMovieCategoryRepository.findByMovieId(movieId).stream().map(entity -> {
-      var category = categoryRepository.findById(entity.getCategoryId());
+      var category = categoryRepository.findById(entity.getCategoryId()).get();
       return categoryMapper.toResponse(category);
     }).toList();
   }

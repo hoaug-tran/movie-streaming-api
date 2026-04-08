@@ -1,7 +1,6 @@
 package com.hoaug.movieapi.modules.movie.application.dto.response;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 
 public class PersonResponse {
   private Long id;

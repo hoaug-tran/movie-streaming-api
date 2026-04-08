@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -18,10 +19,11 @@ import com.hoaug.movieapi.modules.auth.domain.repository.AuthUserRepository;
 import com.hoaug.movieapi.modules.notification.application.dto.request.CreateNotificationRequest;
 import com.hoaug.movieapi.modules.notification.application.dto.response.NotificationResponse;
 import com.hoaug.movieapi.modules.notification.application.usecase.CreateNotificationUseCase;
+import com.hoaug.movieapi.modules.notification.application.usecase.DeleteNotificationUseCase;
 import com.hoaug.movieapi.modules.notification.application.usecase.GetMyNotificationsUseCase;
 import com.hoaug.movieapi.modules.notification.application.usecase.GetUnreadNotificationsCountUseCase;
-import com.hoaug.movieapi.modules.notification.application.usecase.MarkAllNotificationsReadUseCase;
-import com.hoaug.movieapi.modules.notification.application.usecase.MarkNotificationReadUseCase;
+import com.hoaug.movieapi.modules.notification.application.usecase.MarkAllNotificationsAsReadUseCase;
+import com.hoaug.movieapi.modules.notification.application.usecase.MarkNotificationAsReadUseCase;
 import com.hoaug.movieapi.modules.user.domain.model.User;
 
 import jakarta.validation.Valid;
@@ -32,21 +34,24 @@ public class NotificationController {
 
   private final CreateNotificationUseCase createNotificationUseCase;
   private final GetMyNotificationsUseCase getMyNotificationsUseCase;
-  private final MarkNotificationReadUseCase markNotificationReadUseCase;
-  private final MarkAllNotificationsReadUseCase markAllNotificationsReadUseCase;
+  private final MarkNotificationAsReadUseCase markNotificationAsReadUseCase;
+  private final MarkAllNotificationsAsReadUseCase markAllNotificationsAsReadUseCase;
+  private final DeleteNotificationUseCase deleteNotificationUseCase;
   private final GetUnreadNotificationsCountUseCase getUnreadNotificationsCountUseCase;
   private final AuthUserRepository authUserRepository;
 
   public NotificationController(CreateNotificationUseCase createNotificationUseCase,
       GetMyNotificationsUseCase getMyNotificationsUseCase,
-      MarkNotificationReadUseCase markNotificationReadUseCase,
-      MarkAllNotificationsReadUseCase markAllNotificationsReadUseCase,
+      MarkNotificationAsReadUseCase markNotificationAsReadUseCase,
+      MarkAllNotificationsAsReadUseCase markAllNotificationsAsReadUseCase,
+      DeleteNotificationUseCase deleteNotificationUseCase,
       GetUnreadNotificationsCountUseCase getUnreadNotificationsCountUseCase,
       AuthUserRepository authUserRepository) {
     this.createNotificationUseCase = createNotificationUseCase;
     this.getMyNotificationsUseCase = getMyNotificationsUseCase;
-    this.markNotificationReadUseCase = markNotificationReadUseCase;
-    this.markAllNotificationsReadUseCase = markAllNotificationsReadUseCase;
+    this.markNotificationAsReadUseCase = markNotificationAsReadUseCase;
+    this.markAllNotificationsAsReadUseCase = markAllNotificationsAsReadUseCase;
+    this.deleteNotificationUseCase = deleteNotificationUseCase;
     this.getUnreadNotificationsCountUseCase = getUnreadNotificationsCountUseCase;
     this.authUserRepository = authUserRepository;
   }
@@ -63,14 +68,18 @@ public class NotificationController {
   }
 
   @PatchMapping("/{notificationId}/read")
-  public NotificationResponse markRead (Authentication authentication,
-      @PathVariable Long notificationId) {
-    return markNotificationReadUseCase.execute(getCurrentUserId(authentication), notificationId);
+  public void markRead (Authentication authentication, @PathVariable Long notificationId) {
+    markNotificationAsReadUseCase.execute(getCurrentUserId(authentication), notificationId);
   }
 
   @PatchMapping("/me/read-all")
   public void markAllRead (Authentication authentication) {
-    markAllNotificationsReadUseCase.execute(getCurrentUserId(authentication));
+    markAllNotificationsAsReadUseCase.execute(getCurrentUserId(authentication));
+  }
+
+  @DeleteMapping("/{notificationId}")
+  public void delete (Authentication authentication, @PathVariable Long notificationId) {
+    deleteNotificationUseCase.execute(getCurrentUserId(authentication), notificationId);
   }
 
   @GetMapping("/me/unread-count")

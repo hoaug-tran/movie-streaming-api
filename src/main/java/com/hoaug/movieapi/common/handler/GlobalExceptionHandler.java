@@ -39,6 +39,6 @@ public class GlobalExceptionHandler {
   @ExceptionHandler(value = Exception.class)
   public ResponseEntity<Object> handlingUnexpectedException (Exception exception) {
     logger.error("Unexpected exception: ", exception);
-    return ResponseEntity.status(500).body("Internal Server Error");
+    return ResponseEntity.status(500).body("Internal Server Error: " + exception);
   }
 }

@@ -2,6 +2,8 @@ package com.hoaug.movieapi.modules.movie.application.usecase;
 
 import org.springframework.stereotype.Component;
 
+import com.hoaug.movieapi.common.enums.ErrorCode;
+import com.hoaug.movieapi.common.exception.AppException;
 import com.hoaug.movieapi.modules.movie.application.dto.request.CreateMovieCategoryRequest;
 import com.hoaug.movieapi.modules.movie.application.dto.response.CategoryResponse;
 import com.hoaug.movieapi.modules.movie.application.mapper.CategoryMapper;
@@ -30,7 +32,8 @@ public class CreateMovieCategoryUseCase {
 
     jpaMovieCategoryRepository.save(entity);
 
-    var category = categoryRepository.findById(request.getCategoryId());
+    var category = categoryRepository.findById(request.getCategoryId())
+        .orElseThrow( () -> new AppException(ErrorCode.CATEGORY_NOT_FOUND));
     return categoryMapper.toResponse(category);
   }
 }

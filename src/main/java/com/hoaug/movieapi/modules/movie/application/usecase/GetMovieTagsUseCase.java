@@ -25,7 +25,7 @@ public class GetMovieTagsUseCase {
 
   public List<TagResponse> execute (Long movieId) {
     return jpaMovieTagRepository.findByMovieId(movieId).stream().map(entity -> {
-      var tag = tagRepository.findById(entity.getTagId());
+      var tag = tagRepository.findById(entity.getTagId()).get();
       return tagMapper.toResponse(tag);
     }).toList();
   }

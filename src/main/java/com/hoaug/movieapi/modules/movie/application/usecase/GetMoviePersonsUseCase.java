@@ -36,7 +36,7 @@ public class GetMoviePersonsUseCase {
           moviePerson.setDisplayOrder(entity.getDisplayOrder());
           moviePerson.setCreatedAt(entity.getCreatedAt());
 
-          var person = personRepository.findById(entity.getPersonId());
+          var person = personRepository.findById(entity.getPersonId()).get();
           return moviePersonMapper.toResponse(moviePerson, person);
         }).toList();
   }

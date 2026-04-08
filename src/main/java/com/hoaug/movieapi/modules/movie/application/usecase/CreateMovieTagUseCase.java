@@ -30,7 +30,7 @@ public class CreateMovieTagUseCase {
 
     jpaMovieTagRepository.save(entity);
 
-    var tag = tagRepository.findById(request.getTagId());
+    var tag = tagRepository.findById(request.getTagId()).get();
     return tagMapper.toResponse(tag);
   }
 }

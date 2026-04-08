@@ -1,11 +1,13 @@
 package com.hoaug.movieapi.modules.movie.infrastructure.persistence.adapter;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.stereotype.Component;
 
 import com.hoaug.movieapi.modules.movie.domain.model.Person;
 import com.hoaug.movieapi.modules.movie.domain.repository.PersonRepository;
+import com.hoaug.movieapi.modules.movie.infrastructure.persistence.entity.PersonEntity;
 import com.hoaug.movieapi.modules.movie.infrastructure.persistence.repository.JpaPersonRepository;
 
 @Component
@@ -35,7 +37,7 @@ public class PersonRepositoryAdapter implements PersonRepository {
   }
 
   @Override
-  public Person findById (Long id) {
+  public Optional<Person> findById (Long id) {
     return jpaPersonRepository.findById(id).map(entity -> {
       Person person = new Person();
       person.setId(entity.getId());
@@ -48,12 +50,12 @@ public class PersonRepositoryAdapter implements PersonRepository {
       person.setCreatedAt(entity.getCreatedAt());
       person.setUpdatedAt(entity.getUpdatedAt());
       return person;
-    }).orElse(null);
+    });
   }
 
   @Override
   public Person save (Person person) {
-    com.hoaug.movieapi.modules.movie.infrastructure.persistence.entity.PersonEntity entity = new com.hoaug.movieapi.modules.movie.infrastructure.persistence.entity.PersonEntity();
+    PersonEntity entity = new PersonEntity();
     entity.setId(person.getId());
     entity.setFullName(person.getFullName());
     entity.setStageName(person.getStageName());
@@ -64,7 +66,7 @@ public class PersonRepositoryAdapter implements PersonRepository {
     entity.setCreatedAt(person.getCreatedAt());
     entity.setUpdatedAt(person.getUpdatedAt());
 
-    var savedEntity = jpaPersonRepository.save(entity);
+    PersonEntity savedEntity = jpaPersonRepository.save(entity);
 
     Person result = new Person();
     result.setId(savedEntity.getId());
@@ -80,7 +82,7 @@ public class PersonRepositoryAdapter implements PersonRepository {
   }
 
   @Override
-  public void delete (Long id) {
+  public void deleteById (Long id) {
     jpaPersonRepository.deleteById(id);
   }
 }

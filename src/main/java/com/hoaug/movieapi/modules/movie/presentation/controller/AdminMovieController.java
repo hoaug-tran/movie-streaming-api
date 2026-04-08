@@ -2,6 +2,7 @@ package com.hoaug.movieapi.modules.movie.presentation.controller;
 
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -18,6 +19,7 @@ import com.hoaug.movieapi.modules.movie.application.dto.request.CreateMovieTagRe
 import com.hoaug.movieapi.modules.movie.application.dto.request.CreatePersonRequest;
 import com.hoaug.movieapi.modules.movie.application.dto.request.CreateStudioRequest;
 import com.hoaug.movieapi.modules.movie.application.dto.request.UpdateMovieRequest;
+import com.hoaug.movieapi.modules.movie.application.dto.request.UpdateMovieStatusRequest;
 import com.hoaug.movieapi.modules.movie.application.dto.response.CategoryResponse;
 import com.hoaug.movieapi.modules.movie.application.dto.response.EpisodeResponse;
 import com.hoaug.movieapi.modules.movie.application.dto.response.MovieDetailResponse;
@@ -40,6 +42,7 @@ import com.hoaug.movieapi.modules.movie.application.usecase.DeleteMoviePersonUse
 import com.hoaug.movieapi.modules.movie.application.usecase.DeleteMovieStudioUseCase;
 import com.hoaug.movieapi.modules.movie.application.usecase.DeleteMovieTagUseCase;
 import com.hoaug.movieapi.modules.movie.application.usecase.DeleteMovieUseCase;
+import com.hoaug.movieapi.modules.movie.application.usecase.UpdateMovieStatusUseCase;
 import com.hoaug.movieapi.modules.movie.application.usecase.UpdateMovieUseCase;
 
 import jakarta.validation.Valid;
@@ -51,6 +54,7 @@ public class AdminMovieController {
 
   private final CreateMovieUseCase createMovieUseCase;
   private final UpdateMovieUseCase updateMovieUseCase;
+  private final UpdateMovieStatusUseCase updateMovieStatusUseCase;
   private final DeleteMovieUseCase deleteMovieUseCase;
   private final CreateEpisodeUseCase createEpisodeUseCase;
   private final DeleteEpisodeUseCase deleteEpisodeUseCase;
@@ -66,9 +70,10 @@ public class AdminMovieController {
   private final DeleteMovieStudioUseCase deleteMovieStudioUseCase;
 
   public AdminMovieController(CreateMovieUseCase createMovieUseCase,
-      UpdateMovieUseCase updateMovieUseCase, DeleteMovieUseCase deleteMovieUseCase,
-      CreateEpisodeUseCase createEpisodeUseCase, DeleteEpisodeUseCase deleteEpisodeUseCase,
-      CreatePersonUseCase createPersonUseCase, CreateStudioUseCase createStudioUseCase,
+      UpdateMovieUseCase updateMovieUseCase, UpdateMovieStatusUseCase updateMovieStatusUseCase,
+      DeleteMovieUseCase deleteMovieUseCase, CreateEpisodeUseCase createEpisodeUseCase,
+      DeleteEpisodeUseCase deleteEpisodeUseCase, CreatePersonUseCase createPersonUseCase,
+      CreateStudioUseCase createStudioUseCase,
       CreateMovieCategoryUseCase createMovieCategoryUseCase,
       DeleteMovieCategoryUseCase deleteMovieCategoryUseCase,
       CreateMovieTagUseCase createMovieTagUseCase, DeleteMovieTagUseCase deleteMovieTagUseCase,
@@ -78,6 +83,7 @@ public class AdminMovieController {
       DeleteMovieStudioUseCase deleteMovieStudioUseCase) {
     this.createMovieUseCase = createMovieUseCase;
     this.updateMovieUseCase = updateMovieUseCase;
+    this.updateMovieStatusUseCase = updateMovieStatusUseCase;
     this.deleteMovieUseCase = deleteMovieUseCase;
     this.createEpisodeUseCase = createEpisodeUseCase;
     this.deleteEpisodeUseCase = deleteEpisodeUseCase;
@@ -102,6 +108,12 @@ public class AdminMovieController {
   public MovieDetailResponse updateMovie (@PathVariable Long id,
       @Valid @RequestBody UpdateMovieRequest request) {
     return updateMovieUseCase.execute(id, request);
+  }
+
+  @PatchMapping("/{id}/status")
+  public MovieDetailResponse updateMovieStatus (@PathVariable Long id,
+      @Valid @RequestBody UpdateMovieStatusRequest request) {
+    return updateMovieStatusUseCase.execute(id, request);
   }
 
   @DeleteMapping("/{id}")

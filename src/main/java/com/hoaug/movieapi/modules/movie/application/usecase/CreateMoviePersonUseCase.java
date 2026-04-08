@@ -47,7 +47,7 @@ public class CreateMoviePersonUseCase {
     moviePerson.setDisplayOrder(savedEntity.getDisplayOrder());
     moviePerson.setCreatedAt(savedEntity.getCreatedAt());
 
-    var person = personRepository.findById(savedEntity.getPersonId());
+    var person = personRepository.findById(savedEntity.getPersonId()).get();
     return moviePersonMapper.toResponse(moviePerson, person);
   }
 }

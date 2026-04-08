@@ -41,6 +41,19 @@ public class NotificationRepositoryAdapter implements NotificationRepository {
     return jpaNotificationRepository.countByUserIdAndIsReadFalse(userId);
   }
 
+  @Override
+  public void markAllAsRead (Long userId) {
+    List<NotificationEntity> notifications = jpaNotificationRepository
+        .findByUserIdOrderByCreatedAtDesc(userId);
+    notifications.forEach(n -> n.setIsRead(true));
+    jpaNotificationRepository.saveAll(notifications);
+  }
+
+  @Override
+  public void deleteById (Long id) {
+    jpaNotificationRepository.deleteById(id);
+  }
+
   private Notification toDomain (NotificationEntity entity) {
     Notification notification = new Notification();
     notification.setId(entity.getId());

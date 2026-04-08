@@ -1,11 +1,16 @@
 package com.hoaug.movieapi.modules.movie.domain.repository;
 
 import java.util.List;
+import java.util.Optional;
 
 import com.hoaug.movieapi.modules.movie.domain.model.Tag;
 
 public interface TagRepository {
   List<Tag> findAll ();
 
-  Tag findById (Long id);
+  Optional<Tag> findById (Long id);
+
+  Tag save (Tag tag);
+
+  void deleteById (Long id);
 }
