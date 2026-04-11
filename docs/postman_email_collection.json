@@ -1,0 +1,153 @@
+{
+  "info": {
+    "name": "Gio Phim - Email API",
+    "description": "Email API endpoints for Gio Phim",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Send Forgot Password Email",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"email\": \"test@example.com\",\n  \"fullName\": \"Nguyen Van A\",\n  \"resetLink\": \"https://yourapp.com/reset-password?token=abc123\"\n}"
+        },
+        "url": {
+          "raw": "http://localhost:8080/api/v1/email/send-forgot-password",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "8080",
+          "path": ["api", "v1", "email", "send-forgot-password"]
+        }
+      }
+    },
+    {
+      "name": "Send Reset Password Success Email",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:8080/api/v1/email/send-reset-password-success?email=test@example.com&fullName=Nguyen Van A",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "8080",
+          "path": ["api", "v1", "email", "send-reset-password-success"],
+          "query": [
+            {
+              "key": "email",
+              "value": "test@example.com"
+            },
+            {
+              "key": "fullName",
+              "value": "Nguyen Van A"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "Send Signup Success Email",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"email\": \"test@example.com\",\n  \"fullName\": \"Nguyen Van A\",\n  \"verificationLink\": \"https://yourapp.com/verify?token=xyz789\"\n}"
+        },
+        "url": {
+          "raw": "http://localhost:8080/api/v1/email/send-signup-success",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "8080",
+          "path": ["api", "v1", "email", "send-signup-success"]
+        }
+      }
+    },
+    {
+      "name": "Send Email Verification",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"email\": \"test@example.com\",\n  \"fullName\": \"Nguyen Van A\",\n  \"verificationLink\": \"https://yourapp.com/verify?token=xyz789\"\n}"
+        },
+        "url": {
+          "raw": "http://localhost:8080/api/v1/email/send-email-verification",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "8080",
+          "path": ["api", "v1", "email", "send-email-verification"]
+        }
+      }
+    },
+    {
+      "name": "Send Account Notification Email",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:8080/api/v1/email/send-account-notification?email=test@example.com&fullName=Nguyen Van A&notificationMessage=Your account has unusual activity",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "8080",
+          "path": ["api", "v1", "email", "send-account-notification"],
+          "query": [
+            {
+              "key": "email",
+              "value": "test@example.com"
+            },
+            {
+              "key": "fullName",
+              "value": "Nguyen Van A"
+            },
+            {
+              "key": "notificationMessage",
+              "value": "Your account has unusual activity"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "Send New Movie Release Email",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"email\": \"test@example.com\",\n  \"fullName\": \"Nguyen Van A\",\n  \"movieTitle\": \"The Shawshank Redemption\",\n  \"moviePosterUrl\": \"https://yourapp.com/images/poster.jpg\",\n  \"movieLink\": \"https://yourapp.com/movies/shawshank-redemption\"\n}"
+        },
+        "url": {
+          "raw": "http://localhost:8080/api/v1/email/send-new-movie-release",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "8080",
+          "path": ["api", "v1", "email", "send-new-movie-release"]
+        }
+      }
+    }
+  ]
+}

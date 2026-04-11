@@ -62,25 +62,41 @@ A full-featured movie streaming backend API that provides:
 
 ### Configuration
 
-Set environment variables:
+The application uses **Spring Boot properties** for configuration. Two files are provided:
 
-```bash
-# Database
-MYSQL_ROOT_PASSWORD=abcxyz
-MYSQL_DATABASE=abcxyz
-MYSQL_USER=abcxyz
-MYSQL_PASSWORD=abcxyz
-MYSQL_PORT=abcxyz
+#### 1. **application.properties** (Public - Commit to Git)
 
-# API
-API_PREFIX=/api/v1
+- Base configuration with non-sensitive defaults
+- Database URL, API prefix, email host/port, etc.
+- File: `src/main/resources/application.properties`
 
-# JWT
-JWT_SECRET_KEY=abcxyz
-JWT_ACCESS_TOKEN_EXPIRATION=86400000
+#### 2. **application-local.properties** (Private - Do NOT Commit)
+
+- Local development credentials (passwords, API keys, JWT secrets)
+- Override sensitive values for local testing
+- File: `src/main/resources/application-local.properties`
+- Add to `.gitignore` (already done)
+
+**Configuration Example:**
+
+```properties
+# application-local.properties (local secrets only)
+spring.datasource.password=YOUR_DB_PASSWORD
+jwt.secret-key=YOUR_JWT_SECRET
+spring.mail.username=YOUR_MAILTRAP_EMAIL
+spring.mail.password=YOUR_MAILTRAP_PASSWORD
 ```
 
+All base configuration is in `application.properties` - only override sensitive values in `application-local.properties`.
+
 ### Run Application
+
+**Option 1: Using VS Code (Recommended)**
+
+- Press `F5` to start with local profile
+- Configured in `.vscode/launch.json`
+
+**Option 2: Using Maven**
 
 ```bash
 # Clone project
@@ -89,12 +105,19 @@ cd movie-streaming-api
 # Build
 mvn clean compile
 
-# Run
-mvn spring-boot:run
+# Run with local profile
+mvn spring-boot:run -Dspring-boot.run.arguments="--spring.profiles.active=local"
 
-# OR with debug
-java -agentlib:jdwp=transport=dt_socket,server=n,suspend=y,address=localhost:5005 -jar target/movie-streaming-api-0.0.1-SNAPSHOT.jar
+# OR debug mode
+java -agentlib:jdwp=transport=dt_socket,server=n,suspend=y,address=localhost:5005 \
+  -Dspring.profiles.active=local \
+  -jar target/movie-streaming-api-0.0.1-SNAPSHOT.jar
 ```
+
+**Prerequisites:**
+
+- MySQL running (via Docker): `docker-compose up mysql`
+- `application-local.properties` configured with credentials
 
 Default URL: `http://localhost:8080`
 
