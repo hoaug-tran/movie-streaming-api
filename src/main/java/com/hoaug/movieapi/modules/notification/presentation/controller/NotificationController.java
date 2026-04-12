@@ -2,6 +2,7 @@ package com.hoaug.movieapi.modules.notification.presentation.controller;
 
 import java.util.List;
 
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.hoaug.movieapi.common.enums.ErrorCode;
 import com.hoaug.movieapi.common.exception.AppException;
+import com.hoaug.movieapi.common.response.ResponseUtil;
 import com.hoaug.movieapi.modules.auth.domain.repository.AuthUserRepository;
 import com.hoaug.movieapi.modules.notification.application.dto.request.CreateNotificationRequest;
 import com.hoaug.movieapi.modules.notification.application.dto.response.NotificationResponse;
@@ -58,33 +60,41 @@ public class NotificationController {
 
   @PreAuthorize("hasRole('ADMIN')")
   @PostMapping
-  public NotificationResponse create (@Valid @RequestBody CreateNotificationRequest request) {
-    return createNotificationUseCase.execute(request);
+  public ResponseEntity<NotificationResponse> create (
+      @Valid @RequestBody CreateNotificationRequest request) {
+    return ResponseUtil.created(createNotificationUseCase.execute(request));
   }
 
   @GetMapping("/me")
-  public List<NotificationResponse> getMyNotifications (Authentication authentication) {
-    return getMyNotificationsUseCase.execute(getCurrentUserId(authentication));
+  public ResponseEntity<List<NotificationResponse>> getMyNotifications (
+      Authentication authentication) {
+    return ResponseUtil.ok(getMyNotificationsUseCase.execute(getCurrentUserId(authentication)));
   }
 
   @PatchMapping("/{notificationId}/read")
-  public void markRead (Authentication authentication, @PathVariable Long notificationId) {
+  public ResponseEntity<Void> markRead (Authentication authentication,
+      @PathVariable Long notificationId) {
     markNotificationAsReadUseCase.execute(getCurrentUserId(authentication), notificationId);
+    return ResponseUtil.noContent();
   }
 
   @PatchMapping("/me/read-all")
-  public void markAllRead (Authentication authentication) {
+  public ResponseEntity<Void> markAllRead (Authentication authentication) {
     markAllNotificationsAsReadUseCase.execute(getCurrentUserId(authentication));
+    return ResponseUtil.noContent();
   }
 
   @DeleteMapping("/{notificationId}")
-  public void delete (Authentication authentication, @PathVariable Long notificationId) {
+  public ResponseEntity<Void> delete (Authentication authentication,
+      @PathVariable Long notificationId) {
     deleteNotificationUseCase.execute(getCurrentUserId(authentication), notificationId);
+    return ResponseUtil.noContent();
   }
 
   @GetMapping("/me/unread-count")
-  public Long getUnreadCount (Authentication authentication) {
-    return getUnreadNotificationsCountUseCase.execute(getCurrentUserId(authentication));
+  public ResponseEntity<Long> getUnreadCount (Authentication authentication) {
+    return ResponseUtil
+        .ok(getUnreadNotificationsCountUseCase.execute(getCurrentUserId(authentication)));
   }
 
   private Long getCurrentUserId (Authentication authentication) {

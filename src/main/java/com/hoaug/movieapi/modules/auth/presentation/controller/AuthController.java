@@ -1,5 +1,6 @@
 package com.hoaug.movieapi.modules.auth.presentation.controller;
 
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -7,6 +8,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.hoaug.movieapi.common.response.ResponseUtil;
 import com.hoaug.movieapi.modules.auth.application.dto.request.ChangePasswordRequest;
 import com.hoaug.movieapi.modules.auth.application.dto.request.ForgotPasswordRequest;
 import com.hoaug.movieapi.modules.auth.application.dto.request.LoginRequest;
@@ -56,47 +58,54 @@ public class AuthController {
   }
 
   @PostMapping("/register")
-  public AuthResponse register (@Valid @RequestBody RegisterRequest request) {
-    return registerUseCase.execute(request);
+  public ResponseEntity<AuthResponse> register (@Valid @RequestBody RegisterRequest request) {
+    AuthResponse response = registerUseCase.execute(request);
+    return ResponseUtil.created(response);
   }
 
   @PostMapping("/login")
-  public AuthResponse login (@Valid @RequestBody LoginRequest request) {
-    return loginUseCase.execute(request);
+  public ResponseEntity<AuthResponse> login (@Valid @RequestBody LoginRequest request) {
+    AuthResponse response = loginUseCase.execute(request);
+    return ResponseUtil.ok(response);
   }
 
   @GetMapping("/me")
-  public CurrentUserResponse me (Authentication authentication) {
-    return getCurrentUserUseCase.execute(authentication.getName());
+  public ResponseEntity<CurrentUserResponse> me (Authentication authentication) {
+    CurrentUserResponse response = getCurrentUserUseCase.execute(authentication.getName());
+    return ResponseUtil.ok(response);
   }
 
   @PostMapping("/refresh")
-  public RefreshTokenResponse refresh (@Valid @RequestBody RefreshTokenRequest request) {
-    return refreshTokenUseCase.execute(request);
+  public ResponseEntity<RefreshTokenResponse> refresh (
+      @Valid @RequestBody RefreshTokenRequest request) {
+    RefreshTokenResponse response = refreshTokenUseCase.execute(request);
+    return ResponseUtil.ok(response);
   }
 
   @PostMapping("/logout")
-  public MessageResponse logout (@Valid @RequestBody RefreshTokenRequest request) {
+  public ResponseEntity<MessageResponse> logout (@Valid @RequestBody RefreshTokenRequest request) {
     logoutUseCase.execute(request.getRefreshToken());
-    return new MessageResponse("Đăng xuất thành công");
+    return ResponseUtil.ok(new MessageResponse("Đăng xuất thành công"));
   }
 
   @PostMapping("/forgot-password")
-  public MessageResponse forgotPassword (@Valid @RequestBody ForgotPasswordRequest request) {
+  public ResponseEntity<MessageResponse> forgotPassword (
+      @Valid @RequestBody ForgotPasswordRequest request) {
     String token = forgotPasswordUseCase.execute(request);
-    return new MessageResponse("Reset token: " + token);
+    return ResponseUtil.ok(new MessageResponse("Reset token: " + token));
   }
 
   @PostMapping("/reset-password")
-  public MessageResponse resetPassword (@Valid @RequestBody ResetPasswordRequest request) {
+  public ResponseEntity<MessageResponse> resetPassword (
+      @Valid @RequestBody ResetPasswordRequest request) {
     resetPasswordUseCase.execute(request);
-    return new MessageResponse("Đặt lại mật khẩu thành công");
+    return ResponseUtil.ok(new MessageResponse("Đặt lại mật khẩu thành công"));
   }
 
   @PostMapping("/change-password")
-  public MessageResponse changePassword (Authentication authentication,
+  public ResponseEntity<MessageResponse> changePassword (Authentication authentication,
       @Valid @RequestBody ChangePasswordRequest request) {
     changePasswordUseCase.execute(authentication.getName(), request);
-    return new MessageResponse("Đổi mật khẩu thành công");
+    return ResponseUtil.ok(new MessageResponse("Đổi mật khẩu thành công"));
   }
 }

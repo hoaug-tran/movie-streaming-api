@@ -2,6 +2,7 @@ package com.hoaug.movieapi.modules.favorite.presentation.controller;
 
 import java.util.List;
 
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -12,6 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.hoaug.movieapi.common.enums.ErrorCode;
 import com.hoaug.movieapi.common.exception.AppException;
+import com.hoaug.movieapi.common.response.ResponseUtil;
 import com.hoaug.movieapi.modules.auth.domain.repository.AuthUserRepository;
 import com.hoaug.movieapi.modules.favorite.application.dto.response.FavoriteResponse;
 import com.hoaug.movieapi.modules.favorite.application.dto.response.MovieInFavoriteResponse;
@@ -43,23 +45,32 @@ public class FavoriteController {
   }
 
   @PostMapping("/{movieId}")
-  public FavoriteResponse add (Authentication authentication, @PathVariable Long movieId) {
-    return addFavoriteUseCase.execute(getCurrentUserId(authentication), movieId);
+  public ResponseEntity<FavoriteResponse> add (Authentication authentication,
+      @PathVariable Long movieId) {
+    FavoriteResponse response = addFavoriteUseCase.execute(getCurrentUserId(authentication),
+        movieId);
+    return ResponseUtil.created(response);
   }
 
   @DeleteMapping("/{movieId}")
-  public void remove (Authentication authentication, @PathVariable Long movieId) {
+  public ResponseEntity<Void> remove (Authentication authentication, @PathVariable Long movieId) {
     removeFavoriteUseCase.execute(getCurrentUserId(authentication), movieId);
+    return ResponseUtil.noContent();
   }
 
   @GetMapping("/me")
-  public List<FavoriteResponse> getMyFavorites (Authentication authentication) {
-    return getMyFavoritesUseCase.execute(getCurrentUserId(authentication));
+  public ResponseEntity<List<FavoriteResponse>> getMyFavorites (Authentication authentication) {
+    List<FavoriteResponse> favorites = getMyFavoritesUseCase
+        .execute(getCurrentUserId(authentication));
+    return ResponseUtil.ok(favorites);
   }
 
   @GetMapping("/me/check/{movieId}")
-  public MovieInFavoriteResponse check (Authentication authentication, @PathVariable Long movieId) {
-    return checkMovieInFavoriteUseCase.execute(getCurrentUserId(authentication), movieId);
+  public ResponseEntity<MovieInFavoriteResponse> check (Authentication authentication,
+      @PathVariable Long movieId) {
+    MovieInFavoriteResponse response = checkMovieInFavoriteUseCase
+        .execute(getCurrentUserId(authentication), movieId);
+    return ResponseUtil.ok(response);
   }
 
   private Long getCurrentUserId (Authentication authentication) {

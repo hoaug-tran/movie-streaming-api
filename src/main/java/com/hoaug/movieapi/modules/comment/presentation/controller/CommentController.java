@@ -2,6 +2,7 @@ package com.hoaug.movieapi.modules.comment.presentation.controller;
 
 import java.util.List;
 
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.hoaug.movieapi.common.enums.ErrorCode;
 import com.hoaug.movieapi.common.exception.AppException;
+import com.hoaug.movieapi.common.response.ResponseUtil;
 import com.hoaug.movieapi.modules.auth.domain.repository.AuthUserRepository;
 import com.hoaug.movieapi.modules.comment.application.dto.request.CreateCommentRequest;
 import com.hoaug.movieapi.modules.comment.application.dto.request.UpdateCommentRequest;
@@ -54,35 +56,43 @@ public class CommentController {
   }
 
   @PostMapping
-  public CommentResponse create (Authentication authentication,
+  public ResponseEntity<CommentResponse> create (Authentication authentication,
       @Valid @RequestBody CreateCommentRequest request) {
-    return createCommentUseCase.execute(getCurrentUserId(authentication), request);
+    CommentResponse response = createCommentUseCase.execute(getCurrentUserId(authentication),
+        request);
+    return ResponseUtil.created(response);
   }
 
   @PutMapping("/{commentId}")
-  public CommentResponse update (Authentication authentication, @PathVariable Long commentId,
-      @Valid @RequestBody UpdateCommentRequest request) {
-    return updateCommentUseCase.execute(getCurrentUserId(authentication), commentId, request);
+  public ResponseEntity<CommentResponse> update (Authentication authentication,
+      @PathVariable Long commentId, @Valid @RequestBody UpdateCommentRequest request) {
+    CommentResponse response = updateCommentUseCase.execute(getCurrentUserId(authentication),
+        commentId, request);
+    return ResponseUtil.ok(response);
   }
 
   @DeleteMapping("/{commentId}")
-  public void delete (Authentication authentication, @PathVariable Long commentId) {
+  public ResponseEntity<Void> delete (Authentication authentication, @PathVariable Long commentId) {
     deleteCommentUseCase.execute(getCurrentUserId(authentication), commentId);
+    return ResponseUtil.noContent();
   }
 
   @GetMapping("/{commentId}")
-  public CommentResponse getCommentById (@PathVariable Long commentId) {
-    return getCommentByIdUseCase.execute(commentId);
+  public ResponseEntity<CommentResponse> getCommentById (@PathVariable Long commentId) {
+    CommentResponse response = getCommentByIdUseCase.execute(commentId);
+    return ResponseUtil.ok(response);
   }
 
   @GetMapping("/movie/{movieId}")
-  public List<CommentResponse> getMovieComments (@PathVariable Long movieId) {
-    return getMovieCommentsUseCase.execute(movieId);
+  public ResponseEntity<List<CommentResponse>> getMovieComments (@PathVariable Long movieId) {
+    List<CommentResponse> comments = getMovieCommentsUseCase.execute(movieId);
+    return ResponseUtil.ok(comments);
   }
 
   @GetMapping("/{commentId}/replies")
-  public List<CommentResponse> getReplies (@PathVariable Long commentId) {
-    return getRepliesUseCase.execute(commentId);
+  public ResponseEntity<List<CommentResponse>> getReplies (@PathVariable Long commentId) {
+    List<CommentResponse> replies = getRepliesUseCase.execute(commentId);
+    return ResponseUtil.ok(replies);
   }
 
   private Long getCurrentUserId (Authentication authentication) {

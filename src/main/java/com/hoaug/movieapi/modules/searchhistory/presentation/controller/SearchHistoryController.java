@@ -2,6 +2,7 @@ package com.hoaug.movieapi.modules.searchhistory.presentation.controller;
 
 import java.util.List;
 
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -13,6 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.hoaug.movieapi.common.enums.ErrorCode;
 import com.hoaug.movieapi.common.exception.AppException;
+import com.hoaug.movieapi.common.response.ResponseUtil;
 import com.hoaug.movieapi.modules.auth.domain.repository.AuthUserRepository;
 import com.hoaug.movieapi.modules.searchhistory.application.dto.request.CreateSearchHistoryRequest;
 import com.hoaug.movieapi.modules.searchhistory.application.dto.response.SearchHistoryResponse;
@@ -47,24 +49,29 @@ public class SearchHistoryController {
   }
 
   @PostMapping
-  public SearchHistoryResponse create (Authentication authentication,
+  public ResponseEntity<SearchHistoryResponse> create (Authentication authentication,
       @Valid @RequestBody CreateSearchHistoryRequest request) {
-    return createSearchHistoryUseCase.execute(getCurrentUserId(authentication), request);
+    return ResponseUtil
+        .created(createSearchHistoryUseCase.execute(getCurrentUserId(authentication), request));
   }
 
   @GetMapping("/me")
-  public List<SearchHistoryResponse> getMySearchHistories (Authentication authentication) {
-    return getMySearchHistoriesUseCase.execute(getCurrentUserId(authentication));
+  public ResponseEntity<List<SearchHistoryResponse>> getMySearchHistories (
+      Authentication authentication) {
+    return ResponseUtil.ok(getMySearchHistoriesUseCase.execute(getCurrentUserId(authentication)));
   }
 
   @DeleteMapping("/{searchHistoryId}")
-  public void delete (Authentication authentication, @PathVariable Long searchHistoryId) {
+  public ResponseEntity<Void> delete (Authentication authentication,
+      @PathVariable Long searchHistoryId) {
     deleteSearchHistoryUseCase.execute(getCurrentUserId(authentication), searchHistoryId);
+    return ResponseUtil.noContent();
   }
 
   @DeleteMapping("/me")
-  public void clear (Authentication authentication) {
+  public ResponseEntity<Void> clear (Authentication authentication) {
     clearMySearchHistoriesUseCase.execute(getCurrentUserId(authentication));
+    return ResponseUtil.noContent();
   }
 
   private Long getCurrentUserId (Authentication authentication) {

@@ -2,6 +2,7 @@ package com.hoaug.movieapi.modules.subscription.presentation.controller;
 
 import java.util.List;
 
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.hoaug.movieapi.common.enums.ErrorCode;
 import com.hoaug.movieapi.common.exception.AppException;
+import com.hoaug.movieapi.common.response.ResponseUtil;
 import com.hoaug.movieapi.modules.auth.domain.repository.AuthUserRepository;
 import com.hoaug.movieapi.modules.subscription.application.dto.request.CreateInvoiceRequest;
 import com.hoaug.movieapi.modules.subscription.application.dto.request.CreatePaymentTransactionRequest;
@@ -75,55 +77,61 @@ public class SubscriptionController {
 
   @PreAuthorize("hasRole('ADMIN')")
   @PostMapping("/plans")
-  public SubscriptionPlanResponse createPlan (
+  public ResponseEntity<SubscriptionPlanResponse> createPlan (
       @Valid @RequestBody CreateSubscriptionPlanRequest request) {
-    return createSubscriptionPlanUseCase.execute(request);
+    return ResponseUtil.created(createSubscriptionPlanUseCase.execute(request));
   }
 
   @GetMapping("/plans")
-  public List<SubscriptionPlanResponse> getActivePlans () {
-    return getActiveSubscriptionPlansUseCase.execute();
+  public ResponseEntity<List<SubscriptionPlanResponse>> getActivePlans () {
+    return ResponseUtil.ok(getActiveSubscriptionPlansUseCase.execute());
   }
 
   @PostMapping("/subscribe")
-  public UserSubscriptionResponse subscribe (Authentication authentication,
+  public ResponseEntity<UserSubscriptionResponse> subscribe (Authentication authentication,
       @Valid @RequestBody SubscribePlanRequest request) {
-    return subscribePlanUseCase.execute(getCurrentUserId(authentication), request);
+    return ResponseUtil
+        .created(subscribePlanUseCase.execute(getCurrentUserId(authentication), request));
   }
 
   @GetMapping("/me")
-  public List<UserSubscriptionResponse> getMySubscriptions (Authentication authentication) {
-    return getMySubscriptionsUseCase.execute(getCurrentUserId(authentication));
+  public ResponseEntity<List<UserSubscriptionResponse>> getMySubscriptions (
+      Authentication authentication) {
+    return ResponseUtil.ok(getMySubscriptionsUseCase.execute(getCurrentUserId(authentication)));
   }
 
   @PostMapping("/payments")
-  public PaymentTransactionResponse createPayment (Authentication authentication,
+  public ResponseEntity<PaymentTransactionResponse> createPayment (Authentication authentication,
       @Valid @RequestBody CreatePaymentTransactionRequest request) {
-    return createPaymentTransactionUseCase.execute(getCurrentUserId(authentication), request);
+    return ResponseUtil.created(
+        createPaymentTransactionUseCase.execute(getCurrentUserId(authentication), request));
   }
 
   @PreAuthorize("hasRole('ADMIN')")
   @PatchMapping("/payments/{transactionId}/success")
-  public PaymentTransactionResponse markPaymentSuccess (@PathVariable Long transactionId,
-      @RequestParam String providerTransactionId,
+  public ResponseEntity<PaymentTransactionResponse> markPaymentSuccess (
+      @PathVariable Long transactionId, @RequestParam String providerTransactionId,
       @RequestParam(required = false) String providerResponse) {
-    return markPaymentSuccessUseCase.execute(transactionId, providerTransactionId,
-        providerResponse);
+    return ResponseUtil.ok(
+        markPaymentSuccessUseCase.execute(transactionId, providerTransactionId, providerResponse));
   }
 
   @GetMapping("/payments/me")
-  public List<PaymentTransactionResponse> getMyPayments (Authentication authentication) {
-    return getMyPaymentTransactionsUseCase.execute(getCurrentUserId(authentication));
+  public ResponseEntity<List<PaymentTransactionResponse>> getMyPayments (
+      Authentication authentication) {
+    return ResponseUtil
+        .ok(getMyPaymentTransactionsUseCase.execute(getCurrentUserId(authentication)));
   }
 
   @PostMapping("/invoices")
-  public InvoiceResponse createInvoice (@Valid @RequestBody CreateInvoiceRequest request) {
-    return createInvoiceUseCase.execute(request);
+  public ResponseEntity<InvoiceResponse> createInvoice (
+      @Valid @RequestBody CreateInvoiceRequest request) {
+    return ResponseUtil.created(createInvoiceUseCase.execute(request));
   }
 
   @GetMapping("/invoices/me")
-  public List<InvoiceResponse> getMyInvoices (Authentication authentication) {
-    return getMyInvoicesUseCase.execute(getCurrentUserId(authentication));
+  public ResponseEntity<List<InvoiceResponse>> getMyInvoices (Authentication authentication) {
+    return ResponseUtil.ok(getMyInvoicesUseCase.execute(getCurrentUserId(authentication)));
   }
 
   private Long getCurrentUserId (Authentication authentication) {

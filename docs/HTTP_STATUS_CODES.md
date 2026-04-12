@@ -179,21 +179,3 @@ public class WatchHistoryController {
     }
 }
 ```
-
----
-
-## Ongoing Migration (Phase 2)
-
-All 25 controllers will be systematically updated to use:
-
-1. `ResponseUtil.created()` for POST → 201
-2. `ResponseUtil.ok()` for GET/PUT → 200
-3. `ResponseUtil.noContent()` for DELETE → 204
-4. AppException with proper ErrorCodes for errors (caught by GlobalExceptionHandler)
-
-This ensures:
-
-- ✅ Consistent REST conventions
-- ✅ Proper client expectations
-- ✅ Correct caching headers (304 in future)
-- ✅ API contract compliance

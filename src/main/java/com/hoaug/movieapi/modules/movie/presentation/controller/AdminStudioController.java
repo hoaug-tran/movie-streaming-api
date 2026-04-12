@@ -2,6 +2,7 @@ package com.hoaug.movieapi.modules.movie.presentation.controller;
 
 import java.util.List;
 
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -12,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.hoaug.movieapi.common.response.ResponseUtil;
 import com.hoaug.movieapi.modules.movie.application.dto.request.CreateStudioRequest;
 import com.hoaug.movieapi.modules.movie.application.dto.request.UpdateStudioRequest;
 import com.hoaug.movieapi.modules.movie.application.dto.response.StudioResponse;
@@ -45,28 +47,29 @@ public class AdminStudioController {
   }
 
   @GetMapping
-  public List<StudioResponse> getAll () {
-    return getAllStudiosUseCase.execute();
+  public ResponseEntity<List<StudioResponse>> getAll () {
+    return ResponseUtil.ok(getAllStudiosUseCase.execute());
   }
 
   @GetMapping("/{id}")
-  public StudioResponse getById (@PathVariable Long id) {
-    return getStudioByIdUseCase.execute(id);
+  public ResponseEntity<StudioResponse> getById (@PathVariable Long id) {
+    return ResponseUtil.ok(getStudioByIdUseCase.execute(id));
   }
 
   @PostMapping
-  public StudioResponse create (@Valid @RequestBody CreateStudioRequest request) {
-    return createStudioUseCase.execute(request);
+  public ResponseEntity<StudioResponse> create (@Valid @RequestBody CreateStudioRequest request) {
+    return ResponseUtil.created(createStudioUseCase.execute(request));
   }
 
   @PutMapping("/{id}")
-  public StudioResponse update (@PathVariable Long id,
+  public ResponseEntity<StudioResponse> update (@PathVariable Long id,
       @Valid @RequestBody UpdateStudioRequest request) {
-    return updateStudioUseCase.execute(id, request);
+    return ResponseUtil.ok(updateStudioUseCase.execute(id, request));
   }
 
   @DeleteMapping("/{id}")
-  public void delete (@PathVariable Long id) {
+  public ResponseEntity<Void> delete (@PathVariable Long id) {
     deleteStudioUseCase.execute(id);
+    return ResponseUtil.noContent();
   }
 }

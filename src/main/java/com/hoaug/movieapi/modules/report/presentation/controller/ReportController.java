@@ -2,6 +2,7 @@ package com.hoaug.movieapi.modules.report.presentation.controller;
 
 import java.util.List;
 
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.hoaug.movieapi.common.enums.ErrorCode;
 import com.hoaug.movieapi.common.exception.AppException;
+import com.hoaug.movieapi.common.response.ResponseUtil;
 import com.hoaug.movieapi.modules.auth.domain.repository.AuthUserRepository;
 import com.hoaug.movieapi.modules.report.application.dto.request.CreateReportRequest;
 import com.hoaug.movieapi.modules.report.application.dto.request.ResolveReportRequest;
@@ -47,27 +49,28 @@ public class ReportController {
   }
 
   @PostMapping
-  public ReportResponse create (Authentication authentication,
+  public ResponseEntity<ReportResponse> create (Authentication authentication,
       @Valid @RequestBody CreateReportRequest request) {
-    return createReportUseCase.execute(getCurrentUserId(authentication), request);
+    return ResponseUtil
+        .created(createReportUseCase.execute(getCurrentUserId(authentication), request));
   }
 
   @GetMapping("/me")
-  public List<ReportResponse> getMyReports (Authentication authentication) {
-    return getMyReportsUseCase.execute(getCurrentUserId(authentication));
+  public ResponseEntity<List<ReportResponse>> getMyReports (Authentication authentication) {
+    return ResponseUtil.ok(getMyReportsUseCase.execute(getCurrentUserId(authentication)));
   }
 
   @PreAuthorize("hasRole('ADMIN')")
   @GetMapping
-  public List<ReportResponse> getAllReports () {
-    return getAllReportsUseCase.execute();
+  public ResponseEntity<List<ReportResponse>> getAllReports () {
+    return ResponseUtil.ok(getAllReportsUseCase.execute());
   }
 
   @PreAuthorize("hasRole('ADMIN')")
   @PatchMapping("/{reportId}/resolve")
-  public ReportResponse resolve (@PathVariable Long reportId,
+  public ResponseEntity<ReportResponse> resolve (@PathVariable Long reportId,
       @Valid @RequestBody ResolveReportRequest request) {
-    return resolveReportUseCase.execute(reportId, request);
+    return ResponseUtil.ok(resolveReportUseCase.execute(reportId, request));
   }
 
   private Long getCurrentUserId (Authentication authentication) {

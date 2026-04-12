@@ -2,6 +2,7 @@ package com.hoaug.movieapi.modules.recommendation.presentation.controller;
 
 import java.util.List;
 
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.hoaug.movieapi.common.enums.ErrorCode;
 import com.hoaug.movieapi.common.exception.AppException;
+import com.hoaug.movieapi.common.response.ResponseUtil;
 import com.hoaug.movieapi.modules.auth.domain.repository.AuthUserRepository;
 import com.hoaug.movieapi.modules.recommendation.application.dto.request.GenerateRecommendationsRequest;
 import com.hoaug.movieapi.modules.recommendation.application.dto.request.UpsertMovieRecommendationRequest;
@@ -54,32 +56,36 @@ public class MovieRecommendationController {
   }
 
   @GetMapping("/me")
-  public List<MovieRecommendationResponse> getMyRecommendations (Authentication authentication) {
-    return getMyRecommendationsUseCase.execute(getCurrentUserId(authentication));
+  public ResponseEntity<List<MovieRecommendationResponse>> getMyRecommendations (
+      Authentication authentication) {
+    return ResponseUtil.ok(getMyRecommendationsUseCase.execute(getCurrentUserId(authentication)));
   }
 
   @DeleteMapping("/me/{movieId}")
-  public void deleteMyRecommendation (Authentication authentication, @PathVariable Long movieId) {
+  public ResponseEntity<Void> deleteMyRecommendation (Authentication authentication,
+      @PathVariable Long movieId) {
     deleteMovieRecommendationUseCase.execute(getCurrentUserId(authentication), movieId);
+    return ResponseUtil.noContent();
   }
 
   @DeleteMapping("/me")
-  public void clearMyRecommendations (Authentication authentication) {
+  public ResponseEntity<Void> clearMyRecommendations (Authentication authentication) {
     clearUserRecommendationsUseCase.execute(getCurrentUserId(authentication));
+    return ResponseUtil.noContent();
   }
 
   @PreAuthorize("hasRole('ADMIN')")
   @PostMapping
-  public MovieRecommendationResponse upsert (
+  public ResponseEntity<MovieRecommendationResponse> upsert (
       @Valid @RequestBody UpsertMovieRecommendationRequest request) {
-    return upsertMovieRecommendationUseCase.execute(request);
+    return ResponseUtil.created(upsertMovieRecommendationUseCase.execute(request));
   }
 
   @PreAuthorize("hasRole('ADMIN')")
   @PostMapping("/generate")
-  public List<MovieRecommendationResponse> generate (
+  public ResponseEntity<List<MovieRecommendationResponse>> generate (
       @Valid @RequestBody GenerateRecommendationsRequest request) {
-    return generateRecommendationsUseCase.execute(request);
+    return ResponseUtil.ok(generateRecommendationsUseCase.execute(request));
   }
 
   private Long getCurrentUserId (Authentication authentication) {

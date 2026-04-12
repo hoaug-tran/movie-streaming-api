@@ -2,6 +2,7 @@ package com.hoaug.movieapi.modules.review.presentation.controller;
 
 import java.util.List;
 
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -13,6 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.hoaug.movieapi.common.enums.ErrorCode;
 import com.hoaug.movieapi.common.exception.AppException;
+import com.hoaug.movieapi.common.response.ResponseUtil;
 import com.hoaug.movieapi.modules.auth.domain.repository.AuthUserRepository;
 import com.hoaug.movieapi.modules.review.application.dto.request.UpsertReviewRequest;
 import com.hoaug.movieapi.modules.review.application.dto.response.ReviewResponse;
@@ -49,28 +51,34 @@ public class ReviewController {
   }
 
   @PostMapping
-  public ReviewResponse upsert (Authentication auth, @Valid @RequestBody UpsertReviewRequest req) {
-    return upsertReviewUseCase.execute(getCurrentUserId(auth), req);
+  public ResponseEntity<ReviewResponse> upsert (Authentication auth,
+      @Valid @RequestBody UpsertReviewRequest req) {
+    ReviewResponse response = upsertReviewUseCase.execute(getCurrentUserId(auth), req);
+    return ResponseUtil.created(response);
   }
 
   @GetMapping("/{id}")
-  public ReviewResponse getById (@PathVariable Long id) {
-    return getReviewByIdUseCase.execute(id);
+  public ResponseEntity<ReviewResponse> getById (@PathVariable Long id) {
+    ReviewResponse response = getReviewByIdUseCase.execute(id);
+    return ResponseUtil.ok(response);
   }
 
   @GetMapping("/movie/{movieId}")
-  public List<ReviewResponse> getMovieReviews (@PathVariable Long movieId) {
-    return getMovieReviewsUseCase.execute(movieId);
+  public ResponseEntity<List<ReviewResponse>> getMovieReviews (@PathVariable Long movieId) {
+    List<ReviewResponse> reviews = getMovieReviewsUseCase.execute(movieId);
+    return ResponseUtil.ok(reviews);
   }
 
   @GetMapping("/my-reviews")
-  public List<ReviewResponse> getMyReviews (Authentication auth) {
-    return getMyReviewsUseCase.execute(getCurrentUserId(auth));
+  public ResponseEntity<List<ReviewResponse>> getMyReviews (Authentication auth) {
+    List<ReviewResponse> reviews = getMyReviewsUseCase.execute(getCurrentUserId(auth));
+    return ResponseUtil.ok(reviews);
   }
 
   @DeleteMapping("/{id}")
-  public void delete (Authentication auth, @PathVariable Long id) {
+  public ResponseEntity<Void> delete (Authentication auth, @PathVariable Long id) {
     deleteReviewUseCase.execute(getCurrentUserId(auth), id);
+    return ResponseUtil.noContent();
   }
 
   private Long getCurrentUserId (Authentication auth) {

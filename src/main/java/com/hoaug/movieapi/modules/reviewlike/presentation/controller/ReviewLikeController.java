@@ -1,5 +1,6 @@
 package com.hoaug.movieapi.modules.reviewlike.presentation.controller;
 
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -10,6 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.hoaug.movieapi.common.enums.ErrorCode;
 import com.hoaug.movieapi.common.exception.AppException;
+import com.hoaug.movieapi.common.response.ResponseUtil;
 import com.hoaug.movieapi.modules.auth.domain.repository.AuthUserRepository;
 import com.hoaug.movieapi.modules.reviewlike.application.dto.response.ReviewLikeResponse;
 import com.hoaug.movieapi.modules.reviewlike.application.usecase.CheckReviewLikedUseCase;
@@ -36,18 +38,25 @@ public class ReviewLikeController {
   }
 
   @PostMapping("/{reviewId}")
-  public ReviewLikeResponse toggle (Authentication authentication, @PathVariable Long reviewId) {
-    return toggleReviewLikeUseCase.execute(getCurrentUserId(authentication), reviewId);
+  public ResponseEntity<ReviewLikeResponse> toggle (Authentication authentication,
+      @PathVariable Long reviewId) {
+    ReviewLikeResponse response = toggleReviewLikeUseCase.execute(getCurrentUserId(authentication),
+        reviewId);
+    return ResponseUtil.created(response);
   }
 
   @DeleteMapping("/{reviewId}")
-  public void unlike (Authentication authentication, @PathVariable Long reviewId) {
+  public ResponseEntity<Void> unlike (Authentication authentication, @PathVariable Long reviewId) {
     unlikeReviewUseCase.execute(getCurrentUserId(authentication), reviewId);
+    return ResponseUtil.noContent();
   }
 
   @GetMapping("/{reviewId}/check")
-  public ReviewLikeResponse check (Authentication authentication, @PathVariable Long reviewId) {
-    return checkReviewLikedUseCase.execute(getCurrentUserId(authentication), reviewId);
+  public ResponseEntity<ReviewLikeResponse> check (Authentication authentication,
+      @PathVariable Long reviewId) {
+    ReviewLikeResponse response = checkReviewLikedUseCase.execute(getCurrentUserId(authentication),
+        reviewId);
+    return ResponseUtil.ok(response);
   }
 
   private Long getCurrentUserId (Authentication authentication) {

@@ -2,6 +2,7 @@ package com.hoaug.movieapi.modules.comment.presentation.controller;
 
 import java.util.List;
 
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -11,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.hoaug.movieapi.common.response.ResponseUtil;
 import com.hoaug.movieapi.modules.comment.application.dto.response.CommentResponse;
 import com.hoaug.movieapi.modules.comment.application.mapper.CommentMapper;
 import com.hoaug.movieapi.modules.comment.application.usecase.GetMovieCommentsUseCase;
@@ -34,24 +36,25 @@ public class AdminCommentController {
   }
 
   @GetMapping("/movie/{movieId}")
-  public List<CommentResponse> getMovieComments (@PathVariable Long movieId) {
-    return getMovieCommentsUseCase.execute(movieId);
+  public ResponseEntity<List<CommentResponse>> getMovieComments (@PathVariable Long movieId) {
+    return ResponseUtil.ok(getMovieCommentsUseCase.execute(movieId));
   }
 
   @PutMapping("/{id}/status")
-  public CommentResponse updateCommentStatus (@PathVariable Long id,
+  public ResponseEntity<CommentResponse> updateCommentStatus (@PathVariable Long id,
       @RequestParam CommentStatus status) {
     var comment = commentRepository.findById(id)
         .orElseThrow( () -> new RuntimeException("Comment not found"));
     comment.setStatus(status);
     var updated = commentRepository.save(comment);
-    return commentMapper.toResponse(updated);
+    return ResponseUtil.ok(commentMapper.toResponse(updated));
   }
 
   @DeleteMapping("/{id}")
-  public void deleteComment (@PathVariable Long id) {
+  public ResponseEntity<Void> deleteComment (@PathVariable Long id) {
     var comment = commentRepository.findById(id)
         .orElseThrow( () -> new RuntimeException("Comment not found"));
     commentRepository.delete(comment);
+    return ResponseUtil.noContent();
   }
 }

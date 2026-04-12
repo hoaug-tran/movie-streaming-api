@@ -1,5 +1,6 @@
 package com.hoaug.movieapi.modules.commentlike.presentation.controller;
 
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -10,6 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.hoaug.movieapi.common.enums.ErrorCode;
 import com.hoaug.movieapi.common.exception.AppException;
+import com.hoaug.movieapi.common.response.ResponseUtil;
 import com.hoaug.movieapi.modules.auth.domain.repository.AuthUserRepository;
 import com.hoaug.movieapi.modules.commentlike.application.dto.response.CommentLikeResponse;
 import com.hoaug.movieapi.modules.commentlike.application.usecase.CheckCommentLikedUseCase;
@@ -36,18 +38,25 @@ public class CommentLikeController {
   }
 
   @PostMapping("/{commentId}")
-  public CommentLikeResponse toggle (Authentication authentication, @PathVariable Long commentId) {
-    return toggleCommentLikeUseCase.execute(getCurrentUserId(authentication), commentId);
+  public ResponseEntity<CommentLikeResponse> toggle (Authentication authentication,
+      @PathVariable Long commentId) {
+    CommentLikeResponse response = toggleCommentLikeUseCase
+        .execute(getCurrentUserId(authentication), commentId);
+    return ResponseUtil.created(response);
   }
 
   @DeleteMapping("/{commentId}")
-  public void unlike (Authentication authentication, @PathVariable Long commentId) {
+  public ResponseEntity<Void> unlike (Authentication authentication, @PathVariable Long commentId) {
     unlikeCommentUseCase.execute(getCurrentUserId(authentication), commentId);
+    return ResponseUtil.noContent();
   }
 
   @GetMapping("/{commentId}/check")
-  public CommentLikeResponse check (Authentication authentication, @PathVariable Long commentId) {
-    return checkCommentLikedUseCase.execute(getCurrentUserId(authentication), commentId);
+  public ResponseEntity<CommentLikeResponse> check (Authentication authentication,
+      @PathVariable Long commentId) {
+    CommentLikeResponse response = checkCommentLikedUseCase
+        .execute(getCurrentUserId(authentication), commentId);
+    return ResponseUtil.ok(response);
   }
 
   private Long getCurrentUserId (Authentication authentication) {

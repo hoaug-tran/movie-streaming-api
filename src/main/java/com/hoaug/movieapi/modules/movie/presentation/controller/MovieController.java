@@ -2,6 +2,7 @@ package com.hoaug.movieapi.modules.movie.presentation.controller;
 
 import java.util.List;
 
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -9,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.hoaug.movieapi.common.response.ResponseUtil;
 import com.hoaug.movieapi.modules.movie.application.dto.request.SearchMovieRequest;
 import com.hoaug.movieapi.modules.movie.application.dto.response.CategoryResponse;
 import com.hoaug.movieapi.modules.movie.application.dto.response.EpisodeResponse;
@@ -82,80 +84,81 @@ public class MovieController {
   }
 
   @GetMapping
-  public List<MovieSummaryResponse> getMovies () {
-    return getMoviesUseCase.execute();
+  public ResponseEntity<List<MovieSummaryResponse>> getMovies () {
+    return ResponseUtil.ok(getMoviesUseCase.execute());
   }
 
   @PostMapping("/search")
-  public SearchMovieResponse search (@RequestBody SearchMovieRequest request) {
-    return searchMovieUseCase.execute(request);
+  public ResponseEntity<SearchMovieResponse> search (@RequestBody SearchMovieRequest request) {
+    return ResponseUtil.ok(searchMovieUseCase.execute(request));
   }
 
   @PostMapping("/search/advanced")
-  public SearchMovieResponse advancedSearch (@RequestBody SearchMovieRequest request) {
-    return advancedSearchMovieUseCase.execute(request);
+  public ResponseEntity<SearchMovieResponse> advancedSearch (
+      @RequestBody SearchMovieRequest request) {
+    return ResponseUtil.ok(advancedSearchMovieUseCase.execute(request));
   }
 
   @GetMapping("/{id:[0-9]+}")
-  public MovieDetailResponse getMovieById (
+  public ResponseEntity<MovieDetailResponse> getMovieById (
       @PathVariable @Positive(message = "Movie ID must be positive") Long id) {
-    return getMovieByIdUseCase.execute(id);
+    return ResponseUtil.ok(getMovieByIdUseCase.execute(id));
   }
 
   @GetMapping("/slug/{slug}")
-  public MovieDetailResponse getMovieBySlug (@PathVariable String slug) {
-    return getMovieBySlugUseCase.execute(slug);
+  public ResponseEntity<MovieDetailResponse> getMovieBySlug (@PathVariable String slug) {
+    return ResponseUtil.ok(getMovieBySlugUseCase.execute(slug));
   }
 
   @GetMapping("/{id:[0-9]+}/episodes")
-  public List<EpisodeResponse> getEpisodes (
+  public ResponseEntity<List<EpisodeResponse>> getEpisodes (
       @PathVariable @Positive(message = "Movie ID must be positive") Long id) {
-    return getEpisodesByMovieUseCase.execute(id);
+    return ResponseUtil.ok(getEpisodesByMovieUseCase.execute(id));
   }
 
   @GetMapping("/{id:[0-9]+}/categories")
-  public List<CategoryResponse> getMovieCategories (
+  public ResponseEntity<List<CategoryResponse>> getMovieCategories (
       @PathVariable @Positive(message = "Movie ID must be positive") Long id) {
-    return getMovieCategoriesUseCase.execute(id);
+    return ResponseUtil.ok(getMovieCategoriesUseCase.execute(id));
   }
 
   @GetMapping("/{id:[0-9]+}/tags")
-  public List<TagResponse> getMovieTags (
+  public ResponseEntity<List<TagResponse>> getMovieTags (
       @PathVariable @Positive(message = "Movie ID must be positive") Long id) {
-    return getMovieTagsUseCase.execute(id);
+    return ResponseUtil.ok(getMovieTagsUseCase.execute(id));
   }
 
   @GetMapping("/{id:[0-9]+}/persons")
-  public List<MoviePersonResponse> getMoviePersons (
+  public ResponseEntity<List<MoviePersonResponse>> getMoviePersons (
       @PathVariable @Positive(message = "Movie ID must be positive") Long id) {
-    return getMoviePersonsUseCase.execute(id);
+    return ResponseUtil.ok(getMoviePersonsUseCase.execute(id));
   }
 
   @GetMapping("/{id:[0-9]+}/studios")
-  public List<MovieStudioResponse> getMovieStudios (
+  public ResponseEntity<List<MovieStudioResponse>> getMovieStudios (
       @PathVariable @Positive(message = "Movie ID must be positive") Long id) {
-    return getMovieStudiosUseCase.execute(id);
+    return ResponseUtil.ok(getMovieStudiosUseCase.execute(id));
   }
 
   @GetMapping("/persons")
-  public List<PersonResponse> getPersons () {
-    return getPersonsUseCase.execute();
+  public ResponseEntity<List<PersonResponse>> getPersons () {
+    return ResponseUtil.ok(getPersonsUseCase.execute());
   }
 
   @GetMapping("/persons/{id:[0-9]+}")
-  public PersonResponse getPersonById (
+  public ResponseEntity<PersonResponse> getPersonById (
       @PathVariable @Positive(message = "Person ID must be positive") Long id) {
-    return getPersonByIdUseCase.execute(id);
+    return ResponseUtil.ok(getPersonByIdUseCase.execute(id));
   }
 
   @GetMapping("/studios")
-  public List<StudioResponse> getStudios () {
-    return getStudiosUseCase.execute();
+  public ResponseEntity<List<StudioResponse>> getStudios () {
+    return ResponseUtil.ok(getStudiosUseCase.execute());
   }
 
   @GetMapping("/studios/{id:[0-9]+}")
-  public StudioResponse getStudioById (
+  public ResponseEntity<StudioResponse> getStudioById (
       @PathVariable @Positive(message = "Studio ID must be positive") Long id) {
-    return getStudioByIdUseCase.execute(id);
+    return ResponseUtil.ok(getStudioByIdUseCase.execute(id));
   }
 }

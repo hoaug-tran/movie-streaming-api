@@ -2,6 +2,7 @@ package com.hoaug.movieapi.modules.movie.presentation.controller;
 
 import java.util.List;
 
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -12,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.hoaug.movieapi.common.response.ResponseUtil;
 import com.hoaug.movieapi.modules.movie.application.dto.request.CreateTagRequest;
 import com.hoaug.movieapi.modules.movie.application.dto.request.UpdateTagRequest;
 import com.hoaug.movieapi.modules.movie.application.dto.response.TagResponse;
@@ -45,27 +47,29 @@ public class AdminTagController {
   }
 
   @GetMapping
-  public List<TagResponse> getAll () {
-    return getAllTagsUseCase.execute();
+  public ResponseEntity<List<TagResponse>> getAll () {
+    return ResponseUtil.ok(getAllTagsUseCase.execute());
   }
 
   @GetMapping("/{id}")
-  public TagResponse getById (@PathVariable Long id) {
-    return getTagByIdUseCase.execute(id);
+  public ResponseEntity<TagResponse> getById (@PathVariable Long id) {
+    return ResponseUtil.ok(getTagByIdUseCase.execute(id));
   }
 
   @PostMapping
-  public TagResponse create (@Valid @RequestBody CreateTagRequest request) {
-    return createTagUseCase.execute(request);
+  public ResponseEntity<TagResponse> create (@Valid @RequestBody CreateTagRequest request) {
+    return ResponseUtil.created(createTagUseCase.execute(request));
   }
 
   @PutMapping("/{id}")
-  public TagResponse update (@PathVariable Long id, @Valid @RequestBody UpdateTagRequest request) {
-    return updateTagUseCase.execute(id, request);
+  public ResponseEntity<TagResponse> update (@PathVariable Long id,
+      @Valid @RequestBody UpdateTagRequest request) {
+    return ResponseUtil.ok(updateTagUseCase.execute(id, request));
   }
 
   @DeleteMapping("/{id}")
-  public void delete (@PathVariable Long id) {
+  public ResponseEntity<Void> delete (@PathVariable Long id) {
     deleteTagUseCase.execute(id);
+    return ResponseUtil.noContent();
   }
 }

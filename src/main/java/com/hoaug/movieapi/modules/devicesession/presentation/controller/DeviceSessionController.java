@@ -2,6 +2,7 @@ package com.hoaug.movieapi.modules.devicesession.presentation.controller;
 
 import java.util.List;
 
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -13,6 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.hoaug.movieapi.common.enums.ErrorCode;
 import com.hoaug.movieapi.common.exception.AppException;
+import com.hoaug.movieapi.common.response.ResponseUtil;
 import com.hoaug.movieapi.modules.auth.domain.repository.AuthUserRepository;
 import com.hoaug.movieapi.modules.devicesession.application.dto.request.CreateDeviceSessionRequest;
 import com.hoaug.movieapi.modules.devicesession.application.dto.response.DeviceSessionResponse;
@@ -55,35 +57,40 @@ public class DeviceSessionController {
   }
 
   @PostMapping
-  public DeviceSessionResponse create (Authentication authentication,
+  public ResponseEntity<DeviceSessionResponse> create (Authentication authentication,
       @Valid @RequestBody CreateDeviceSessionRequest request) {
-    return createDeviceSessionUseCase.execute(getCurrentUserId(authentication), request);
+    return ResponseUtil
+        .created(createDeviceSessionUseCase.execute(getCurrentUserId(authentication), request));
   }
 
   @GetMapping("/me")
-  public List<DeviceSessionResponse> getMySessions (Authentication authentication) {
-    return getMyDeviceSessionsUseCase.execute(getCurrentUserId(authentication));
+  public ResponseEntity<List<DeviceSessionResponse>> getMySessions (Authentication authentication) {
+    return ResponseUtil.ok(getMyDeviceSessionsUseCase.execute(getCurrentUserId(authentication)));
   }
 
   @PatchMapping("/{sessionId}/active")
-  public DeviceSessionResponse updateActivity (Authentication authentication,
+  public ResponseEntity<DeviceSessionResponse> updateActivity (Authentication authentication,
       @PathVariable Long sessionId) {
-    return updateDeviceSessionActivityUseCase.execute(getCurrentUserId(authentication), sessionId);
+    return ResponseUtil.ok(
+        updateDeviceSessionActivityUseCase.execute(getCurrentUserId(authentication), sessionId));
   }
 
   @PatchMapping("/{sessionId}/revoke")
-  public void revoke (Authentication authentication, @PathVariable Long sessionId) {
+  public ResponseEntity<Void> revoke (Authentication authentication, @PathVariable Long sessionId) {
     revokeDeviceSessionUseCase.execute(getCurrentUserId(authentication), sessionId);
+    return ResponseUtil.noContent();
   }
 
   @PatchMapping("/me/revoke-all")
-  public void revokeAll (Authentication authentication) {
+  public ResponseEntity<Void> revokeAll (Authentication authentication) {
     revokeAllMyDeviceSessionsUseCase.execute(getCurrentUserId(authentication));
+    return ResponseUtil.noContent();
   }
 
   @GetMapping("/me/active-count")
-  public Long countActive (Authentication authentication) {
-    return countActiveDeviceSessionsUseCase.execute(getCurrentUserId(authentication));
+  public ResponseEntity<Long> countActive (Authentication authentication) {
+    return ResponseUtil
+        .ok(countActiveDeviceSessionsUseCase.execute(getCurrentUserId(authentication)));
   }
 
   private Long getCurrentUserId (Authentication authentication) {

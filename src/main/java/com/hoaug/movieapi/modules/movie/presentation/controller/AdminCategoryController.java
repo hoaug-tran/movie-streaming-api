@@ -2,6 +2,7 @@ package com.hoaug.movieapi.modules.movie.presentation.controller;
 
 import java.util.List;
 
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -12,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.hoaug.movieapi.common.response.ResponseUtil;
 import com.hoaug.movieapi.modules.movie.application.dto.request.CreateCategoryRequest;
 import com.hoaug.movieapi.modules.movie.application.dto.request.UpdateCategoryRequest;
 import com.hoaug.movieapi.modules.movie.application.dto.response.CategoryResponse;
@@ -45,28 +47,30 @@ public class AdminCategoryController {
   }
 
   @GetMapping
-  public List<CategoryResponse> getAll () {
-    return getAllCategoriesUseCase.execute();
+  public ResponseEntity<List<CategoryResponse>> getAll () {
+    return ResponseUtil.ok(getAllCategoriesUseCase.execute());
   }
 
   @GetMapping("/{id}")
-  public CategoryResponse getById (@PathVariable Long id) {
-    return getCategoryByIdUseCase.execute(id);
+  public ResponseEntity<CategoryResponse> getById (@PathVariable Long id) {
+    return ResponseUtil.ok(getCategoryByIdUseCase.execute(id));
   }
 
   @PostMapping
-  public CategoryResponse create (@Valid @RequestBody CreateCategoryRequest request) {
-    return createCategoryUseCase.execute(request);
+  public ResponseEntity<CategoryResponse> create (
+      @Valid @RequestBody CreateCategoryRequest request) {
+    return ResponseUtil.created(createCategoryUseCase.execute(request));
   }
 
   @PutMapping("/{id}")
-  public CategoryResponse update (@PathVariable Long id,
+  public ResponseEntity<CategoryResponse> update (@PathVariable Long id,
       @Valid @RequestBody UpdateCategoryRequest request) {
-    return updateCategoryUseCase.execute(id, request);
+    return ResponseUtil.ok(updateCategoryUseCase.execute(id, request));
   }
 
   @DeleteMapping("/{id}")
-  public void delete (@PathVariable Long id) {
+  public ResponseEntity<Void> delete (@PathVariable Long id) {
     deleteCategoryUseCase.execute(id);
+    return ResponseUtil.noContent();
   }
 }

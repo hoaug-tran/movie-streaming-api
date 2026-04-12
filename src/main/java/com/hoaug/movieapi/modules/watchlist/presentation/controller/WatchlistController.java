@@ -2,6 +2,7 @@ package com.hoaug.movieapi.modules.watchlist.presentation.controller;
 
 import java.util.List;
 
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -12,6 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.hoaug.movieapi.common.enums.ErrorCode;
 import com.hoaug.movieapi.common.exception.AppException;
+import com.hoaug.movieapi.common.response.ResponseUtil;
 import com.hoaug.movieapi.modules.auth.domain.repository.AuthUserRepository;
 import com.hoaug.movieapi.modules.user.domain.model.User;
 import com.hoaug.movieapi.modules.watchlist.application.dto.response.MovieInWatchlistResponse;
@@ -43,24 +45,32 @@ public class WatchlistController {
   }
 
   @PostMapping("/{movieId}")
-  public WatchlistResponse add (Authentication authentication, @PathVariable Long movieId) {
-    return addWatchlistUseCase.execute(getCurrentUserId(authentication), movieId);
+  public ResponseEntity<WatchlistResponse> add (Authentication authentication,
+      @PathVariable Long movieId) {
+    WatchlistResponse response = addWatchlistUseCase.execute(getCurrentUserId(authentication),
+        movieId);
+    return ResponseUtil.created(response);
   }
 
   @DeleteMapping("/{movieId}")
-  public void remove (Authentication authentication, @PathVariable Long movieId) {
+  public ResponseEntity<Void> remove (Authentication authentication, @PathVariable Long movieId) {
     removeWatchlistUseCase.execute(getCurrentUserId(authentication), movieId);
+    return ResponseUtil.noContent();
   }
 
   @GetMapping("/me")
-  public List<WatchlistResponse> getMyWatchlist (Authentication authentication) {
-    return getMyWatchlistUseCase.execute(getCurrentUserId(authentication));
+  public ResponseEntity<List<WatchlistResponse>> getMyWatchlist (Authentication authentication) {
+    List<WatchlistResponse> watchlist = getMyWatchlistUseCase
+        .execute(getCurrentUserId(authentication));
+    return ResponseUtil.ok(watchlist);
   }
 
   @GetMapping("/me/check/{movieId}")
-  public MovieInWatchlistResponse check (Authentication authentication,
+  public ResponseEntity<MovieInWatchlistResponse> check (Authentication authentication,
       @PathVariable Long movieId) {
-    return checkMovieInWatchlistUseCase.execute(getCurrentUserId(authentication), movieId);
+    MovieInWatchlistResponse response = checkMovieInWatchlistUseCase
+        .execute(getCurrentUserId(authentication), movieId);
+    return ResponseUtil.ok(response);
   }
 
   private Long getCurrentUserId (Authentication authentication) {

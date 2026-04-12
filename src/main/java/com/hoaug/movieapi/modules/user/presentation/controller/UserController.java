@@ -2,6 +2,7 @@ package com.hoaug.movieapi.modules.user.presentation.controller;
 
 import java.util.List;
 
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -13,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.hoaug.movieapi.common.response.ResponseUtil;
 import com.hoaug.movieapi.modules.user.application.dto.request.ChangePasswordRequest;
 import com.hoaug.movieapi.modules.user.application.dto.request.UpdateUserProfileRequest;
 import com.hoaug.movieapi.modules.user.application.dto.request.UpdateUserRoleRequest;
@@ -59,52 +61,54 @@ public class UserController {
   }
 
   @GetMapping("/me")
-  public UserProfileResponse getMyProfile (Authentication authentication) {
-    return getMyProfileUseCase.execute(authentication.getName());
+  public ResponseEntity<UserProfileResponse> getMyProfile (Authentication authentication) {
+    return ResponseUtil.ok(getMyProfileUseCase.execute(authentication.getName()));
   }
 
   @PutMapping("/me")
-  public UserProfileResponse updateMyProfile (Authentication authentication,
+  public ResponseEntity<UserProfileResponse> updateMyProfile (Authentication authentication,
       @Valid @RequestBody UpdateUserProfileRequest request) {
-    return updateMyProfileUseCase.execute(authentication.getName(), request);
+    return ResponseUtil.ok(updateMyProfileUseCase.execute(authentication.getName(), request));
   }
 
   @PatchMapping("/me/password")
-  public void changeMyPassword (Authentication authentication,
+  public ResponseEntity<Void> changeMyPassword (Authentication authentication,
       @Valid @RequestBody ChangePasswordRequest request) {
     changeMyPasswordUseCase.execute(authentication.getName(), request);
+    return ResponseUtil.noContent();
   }
 
   @PreAuthorize("hasRole('ADMIN')")
   @GetMapping("/")
-  public List<UserSummaryResponse> getUsers () {
-    return getUsersUseCase.execute();
+  public ResponseEntity<List<UserSummaryResponse>> getUsers () {
+    return ResponseUtil.ok(getUsersUseCase.execute());
   }
 
   @PreAuthorize("hasRole('ADMIN')")
   @GetMapping("/{id}")
-  public UserDetailResponse getUserById (@PathVariable Long id) {
-    return getUserByIdUseCase.execute(id);
+  public ResponseEntity<UserDetailResponse> getUserById (@PathVariable Long id) {
+    return ResponseUtil.ok(getUserByIdUseCase.execute(id));
   }
 
   @PreAuthorize("hasRole('ADMIN')")
   @PatchMapping("/{id}/status")
-  public UserDetailResponse updateUserStatus (@PathVariable Long id,
+  public ResponseEntity<UserDetailResponse> updateUserStatus (@PathVariable Long id,
       @Valid @RequestBody UpdateUserStatusRequest request) {
-    return updateUserStatusUseCase.execute(id, request);
+    return ResponseUtil.ok(updateUserStatusUseCase.execute(id, request));
   }
 
   @PreAuthorize("hasRole('ADMIN')")
   @PatchMapping("/{id}/role")
-  public UserDetailResponse updateUserRole (@PathVariable Long id,
+  public ResponseEntity<UserDetailResponse> updateUserRole (@PathVariable Long id,
       @Valid @RequestBody UpdateUserRoleRequest request) {
-    return updateUserRoleUseCase.execute(id, request);
+    return ResponseUtil.ok(updateUserRoleUseCase.execute(id, request));
   }
 
   @PreAuthorize("hasRole('ADMIN')")
   @DeleteMapping("/{id}")
-  public void deleteUser (@PathVariable Long id) {
+  public ResponseEntity<Void> deleteUser (@PathVariable Long id) {
     deleteUserUseCase.execute(id);
+    return ResponseUtil.noContent();
   }
 
 }

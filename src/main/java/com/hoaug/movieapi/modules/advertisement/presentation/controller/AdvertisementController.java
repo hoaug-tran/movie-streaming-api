@@ -2,6 +2,7 @@ package com.hoaug.movieapi.modules.advertisement.presentation.controller;
 
 import java.util.List;
 
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.hoaug.movieapi.common.enums.ErrorCode;
 import com.hoaug.movieapi.common.exception.AppException;
+import com.hoaug.movieapi.common.response.ResponseUtil;
 import com.hoaug.movieapi.modules.advertisement.application.dto.request.CreateAdvertisementRequest;
 import com.hoaug.movieapi.modules.advertisement.application.dto.request.CreateAdvertisementViewRequest;
 import com.hoaug.movieapi.modules.advertisement.application.dto.request.MarkAdvertisementClickedRequest;
@@ -60,35 +62,39 @@ public class AdvertisementController {
 
   @PreAuthorize("hasRole('ADMIN')")
   @PostMapping
-  public AdvertisementResponse create (@Valid @RequestBody CreateAdvertisementRequest request) {
-    return createAdvertisementUseCase.execute(request);
+  public ResponseEntity<AdvertisementResponse> create (
+      @Valid @RequestBody CreateAdvertisementRequest request) {
+    return ResponseUtil.created(createAdvertisementUseCase.execute(request));
   }
 
   @GetMapping("/active")
-  public List<AdvertisementResponse> getActiveAdvertisements () {
-    return getActiveAdvertisementsUseCase.execute();
+  public ResponseEntity<List<AdvertisementResponse>> getActiveAdvertisements () {
+    return ResponseUtil.ok(getActiveAdvertisementsUseCase.execute());
   }
 
   @GetMapping("/type/{adType}")
-  public List<AdvertisementResponse> getByType (@PathVariable String adType) {
-    return getAvailableAdvertisementsByTypeUseCase.execute(adType);
+  public ResponseEntity<List<AdvertisementResponse>> getByType (@PathVariable String adType) {
+    return ResponseUtil.ok(getAvailableAdvertisementsByTypeUseCase.execute(adType));
   }
 
   @PostMapping("/views")
-  public AdvertisementViewResponse createView (Authentication authentication,
+  public ResponseEntity<AdvertisementViewResponse> createView (Authentication authentication,
       @Valid @RequestBody CreateAdvertisementViewRequest request) {
-    return createAdvertisementViewUseCase.execute(getCurrentUserId(authentication), request);
+    return ResponseUtil
+        .created(createAdvertisementViewUseCase.execute(getCurrentUserId(authentication), request));
   }
 
   @PatchMapping("/views/click")
-  public AdvertisementViewResponse markClicked (
+  public ResponseEntity<AdvertisementViewResponse> markClicked (
       @Valid @RequestBody MarkAdvertisementClickedRequest request) {
-    return markAdvertisementClickedUseCase.execute(request);
+    return ResponseUtil.ok(markAdvertisementClickedUseCase.execute(request));
   }
 
   @GetMapping("/views/me")
-  public List<AdvertisementViewResponse> getMyViews (Authentication authentication) {
-    return getMyAdvertisementViewsUseCase.execute(getCurrentUserId(authentication));
+  public ResponseEntity<List<AdvertisementViewResponse>> getMyViews (
+      Authentication authentication) {
+    return ResponseUtil
+        .ok(getMyAdvertisementViewsUseCase.execute(getCurrentUserId(authentication)));
   }
 
   private Long getCurrentUserId (Authentication authentication) {
