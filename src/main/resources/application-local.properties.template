@@ -1,0 +1,20 @@
+
+# Database Configuration (Local MySQL)
+spring.datasource.password=YOUR_LOCAL_DB_PASSWORD
+# Example: spring.datasource.password=xxx
+
+# JWT Configuration (Use strong secret for production)
+jwt.secret-key=YOUR_JWT_SECRET_KEY
+# Example: jwt.secret-key=xxx
+# Generate new: openssl rand -base64 32
+
+# Email Configuration (Mailtrap or local SMTP)
+spring.mail.username=YOUR_MAILTRAP_USERNAME
+# Example: spring.mail.username=xxx
+
+spring.mail.password=YOUR_MAILTRAP_PASSWORD
+# Example: spring.mail.password=xxx
+
+# Optional: Override other properties for local development
+# spring.jpa.show-sql=true
+# logging.level.com.hoaug.movieapi=DEBUG

@@ -31,14 +31,25 @@ public class SecurityConfig {
     http.csrf(csrf -> csrf.disable())
         .sessionManagement(
             session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-        .authorizeHttpRequests(auth -> auth.requestMatchers("/api/v1/auth/**").permitAll()
+        .authorizeHttpRequests(auth -> auth
+            // Public endpoints
+            .requestMatchers("/api/v1/auth/**").permitAll()
             .requestMatchers("/api/v1/movies", "/api/v1/movies/", "/api/v1/movies/**").permitAll()
-            .requestMatchers("/api/v1/users", "/api/v1/users/", "/api/v1/users/**").permitAll()
-            .requestMatchers("/api/v1/admin/movies", "/api/v1/admin/movies/",
-                "/api/v1/admin/movies/**")
-            .permitAll().requestMatchers("/actuator/health").permitAll()
+            .requestMatchers("/actuator/health").permitAll()
             .requestMatchers("/swagger-ui/**", "/v3/api-docs/**", "/swagger-resources/**")
-            .permitAll().anyRequest().authenticated())
+            .permitAll()
+            // Admin endpoints - REQUIRE ADMIN ROLE (enforced by @PreAuthorize on controllers)
+            .requestMatchers("/api/v1/admin/**").hasRole("ADMIN")
+            // User endpoints - REQUIRE AUTHENTICATION
+            .requestMatchers("/api/v1/users/**").authenticated()
+            .requestMatchers("/api/v1/watch-histories/**").authenticated()
+            .requestMatchers("/api/v1/watchlists/**").authenticated()
+            .requestMatchers("/api/v1/favorites/**").authenticated()
+            .requestMatchers("/api/v1/comments/**").authenticated()
+            .requestMatchers("/api/v1/reviews/**").authenticated()
+            .requestMatchers("/api/v1/subscriptions/**").authenticated()
+            // Default: require authentication for all other endpoints
+            .anyRequest().authenticated())
         .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
     return http.build();
