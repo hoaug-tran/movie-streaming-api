@@ -36,6 +36,12 @@ public class PaymentTransactionRepositoryAdapter implements PaymentTransactionRe
         .map(this::toDomain).toList();
   }
 
+  @Override
+  public Optional<PaymentTransaction> findByProviderTransactionId (String providerTransactionId) {
+    return jpaPaymentTransactionRepository.findByProviderTransactionId(providerTransactionId)
+        .map(this::toDomain);
+  }
+
   private PaymentTransaction toDomain (PaymentTransactionEntity entity) {
     PaymentTransaction transaction = new PaymentTransaction();
     transaction.setId(entity.getId());

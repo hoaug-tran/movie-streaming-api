@@ -12,4 +12,6 @@ public interface PaymentTransactionRepository {
   PaymentTransaction save (PaymentTransaction paymentTransaction);
 
   List<PaymentTransaction> findByUserIdOrderByCreatedAtDesc (Long userId);
+
+  Optional<PaymentTransaction> findByProviderTransactionId (String providerTransactionId);
 }

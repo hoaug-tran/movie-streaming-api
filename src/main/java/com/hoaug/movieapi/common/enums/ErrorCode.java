@@ -38,6 +38,7 @@ public enum ErrorCode {
   PAYMENT_TRANSACTION_NOT_FOUND(5001,
       "Giao dịch thanh toán không tồn tại hoặc mã hóa đơn không hợp lệ"),
   PAYMENT_NOT_SUCCESS(5002, "Giao dịch thanh toán chưa hoàn tất hoặc thất bại"),
+  PAYMENT_CREATION_FAILED(5003, "Tạo link thanh toán thất bại"),
   INVOICE_ALREADY_EXISTS(5003, "Hóa đơn cho giao dịch này đã được khởi tạo trước đó"),
   NOTIFICATION_NOT_FOUND(6001, "Thông báo không tồn tại hoặc đã bị xóa"),
   MOVIE_RECOMMENDATION_NOT_FOUND(404, "Không tìm thấy đề xuất phim nào cho người dùng này"),
