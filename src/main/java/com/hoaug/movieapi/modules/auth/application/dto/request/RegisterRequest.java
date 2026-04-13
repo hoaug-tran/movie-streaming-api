@@ -71,4 +71,6 @@ public class RegisterRequest {
     this.avatarUrl = avatarUrl;
   }
 
+  
+
 }
