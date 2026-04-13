@@ -24,4 +24,4 @@ public class GetMyMovieWatchHistoryUseCase {
     return watchHistoryRepository.findByUserIdAndMovieIdOrderByLastWatchedAtDesc(userId, movieId)
         .stream().map(watchHistoryMapper::toResponse).toList();
   }
-}
+} 

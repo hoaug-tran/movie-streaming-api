@@ -2,20 +2,15 @@ package com.hoaug.movieapi.modules.watchhistory.infrastructure.persistence.entit
 
 import java.time.LocalDateTime;
 
+import com.hoaug.movieapi.common.model.BaseEntity;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "watch_histories")
-public class WatchHistoryEntity {
-
-  @Id
-  @GeneratedValue(strategy = GenerationType.IDENTITY)
-  private Long id;
+public class WatchHistoryEntity extends BaseEntity {
 
   @Column(name = "user_id", nullable = false)
   private Long userId;
@@ -37,20 +32,6 @@ public class WatchHistoryEntity {
 
   @Column(name = "last_watched_at", nullable = false)
   private LocalDateTime lastWatchedAt;
-
-  @Column(name = "created_at", nullable = false)
-  private LocalDateTime createdAt;
-
-  @Column(name = "updated_at", nullable = false)
-  private LocalDateTime updatedAt;
-
-  public Long getId () {
-    return id;
-  }
-
-  public void setId (Long id) {
-    this.id = id;
-  }
 
   public Long getUserId () {
     return userId;

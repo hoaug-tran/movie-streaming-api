@@ -1,24 +1,18 @@
 package com.hoaug.movieapi.modules.recommendation.infrastructure.persistence.entity;
 
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
+
+import com.hoaug.movieapi.common.model.BaseEntity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import jakarta.persistence.UniqueConstraint;
 
 @Entity
 @Table(name = "movie_recommendations", uniqueConstraints = @UniqueConstraint(columnNames = {
     "user_id", "movie_id" }))
-public class MovieRecommendationEntity {
-
-  @Id
-  @GeneratedValue(strategy = GenerationType.IDENTITY)
-  private Long id;
+public class MovieRecommendationEntity extends BaseEntity {
 
   @Column(name = "user_id", nullable = false)
   private Long userId;
@@ -31,17 +25,6 @@ public class MovieRecommendationEntity {
 
   @Column(length = 255)
   private String reason;
-
-  @Column(name = "created_at", nullable = false)
-  private LocalDateTime createdAt;
-
-  public Long getId () {
-    return id;
-  }
-
-  public void setId (Long id) {
-    this.id = id;
-  }
 
   public Long getUserId () {
     return userId;
@@ -73,13 +56,5 @@ public class MovieRecommendationEntity {
 
   public void setReason (String reason) {
     this.reason = reason;
-  }
-
-  public LocalDateTime getCreatedAt () {
-    return createdAt;
-  }
-
-  public void setCreatedAt (LocalDateTime createdAt) {
-    this.createdAt = createdAt;
   }
 }

@@ -1,15 +1,24 @@
 package com.hoaug.movieapi.modules.movie.application.dto.request;
 
+import com.hoaug.movieapi.common.validator.ValidSafeString;
+
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 
 public class CreateTagRequest {
 
-  @NotBlank
+  @NotBlank(message = "Tag name is required")
+  @Size(min = 1, max = 100, message = "Name must be between 1 and 100 characters")
+  @ValidSafeString(minLength = 1, maxLength = 100)
   private String name;
 
-  @NotBlank
+  @NotBlank(message = "Tag slug is required")
+  @Size(min = 1, max = 120, message = "Slug must be between 1 and 120 characters")
+  @ValidSafeString(minLength = 1, maxLength = 120)
   private String slug;
 
+  @Size(max = 500, message = "Description must be at most 500 characters")
+  @ValidSafeString(minLength = 0, maxLength = 500)
   private String description;
 
   public String getName () {

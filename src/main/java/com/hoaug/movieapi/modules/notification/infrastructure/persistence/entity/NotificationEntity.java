@@ -1,25 +1,17 @@
 package com.hoaug.movieapi.modules.notification.infrastructure.persistence.entity;
 
-import java.time.LocalDateTime;
-
+import com.hoaug.movieapi.common.model.BaseEntity;
 import com.hoaug.movieapi.modules.notification.domain.model.NotificationType;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "notifications")
-public class NotificationEntity {
-
-  @Id
-  @GeneratedValue(strategy = GenerationType.IDENTITY)
-  private Long id;
+public class NotificationEntity extends BaseEntity {
 
   @Column(name = "user_id", nullable = false)
   private Long userId;
@@ -36,17 +28,6 @@ public class NotificationEntity {
 
   @Column(name = "is_read", nullable = false)
   private Boolean isRead;
-
-  @Column(name = "created_at", nullable = false)
-  private LocalDateTime createdAt;
-
-  public Long getId () {
-    return id;
-  }
-
-  public void setId (Long id) {
-    this.id = id;
-  }
 
   public Long getUserId () {
     return userId;
@@ -86,13 +67,5 @@ public class NotificationEntity {
 
   public void setIsRead (Boolean read) {
     isRead = read;
-  }
-
-  public LocalDateTime getCreatedAt () {
-    return createdAt;
-  }
-
-  public void setCreatedAt (LocalDateTime createdAt) {
-    this.createdAt = createdAt;
   }
 }

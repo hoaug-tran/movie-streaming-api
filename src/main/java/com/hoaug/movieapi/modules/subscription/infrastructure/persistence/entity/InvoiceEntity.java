@@ -3,20 +3,15 @@ package com.hoaug.movieapi.modules.subscription.infrastructure.persistence.entit
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
+import com.hoaug.movieapi.common.model.BaseEntity;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "invoices")
-public class InvoiceEntity {
-
-  @Id
-  @GeneratedValue(strategy = GenerationType.IDENTITY)
-  private Long id;
+public class InvoiceEntity extends BaseEntity {
 
   @Column(name = "payment_transaction_id")
   private Long paymentTransactionId;
@@ -34,14 +29,6 @@ public class InvoiceEntity {
 
   @Column(name = "issued_at")
   private LocalDateTime issuedAt;
-
-  public Long getId () {
-    return id;
-  }
-
-  public void setId (Long id) {
-    this.id = id;
-  }
 
   public Long getPaymentTransactionId () {
     return paymentTransactionId;

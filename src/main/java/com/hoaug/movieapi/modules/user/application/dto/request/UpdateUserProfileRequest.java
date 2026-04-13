@@ -1,41 +1,48 @@
 package com.hoaug.movieapi.modules.user.application.dto.request;
 
+import com.hoaug.movieapi.common.validator.ValidSafeString;
+
+import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 
 public class UpdateUserProfileRequest {
-    @NotBlank
-    @Size(max = 100)
-    private String fullName;
+  @NotBlank(message = "Full name is required")
+  @Size(min = 1, max = 100, message = "Full name must be between 1 and 100 characters")
+  @ValidSafeString(minLength = 1, maxLength = 100)
+  private String fullName;
 
-    @Size(max = 500)
-    private String avatarUrl;
+  @Size(max = 500, message = "Avatar URL must be at most 500 characters")
+  @ValidSafeString(minLength = 0, maxLength = 500)
+  private String avatarUrl;
 
-    @Size(max = 100)
-    private String email;
+  @Email(message = "Invalid email format")
+  @Size(max = 100, message = "Email must be at most 100 characters")
+  @ValidSafeString(minLength = 0, maxLength = 100)
+  private String email;
 
-    public String getFullName() {
-        return fullName;
-    }
+  public String getFullName () {
+    return fullName;
+  }
 
-    public void setFullName(String fullName) {
-        this.fullName = fullName;
-    }
+  public void setFullName (String fullName) {
+    this.fullName = fullName;
+  }
 
-    public String getAvatarUrl() {
-        return avatarUrl;
-    }
+  public String getAvatarUrl () {
+    return avatarUrl;
+  }
 
-    public void setAvatarUrl(String avatarUrl) {
-        this.avatarUrl = avatarUrl;
-    }
+  public void setAvatarUrl (String avatarUrl) {
+    this.avatarUrl = avatarUrl;
+  }
 
-    public String getEmail() {
-        return email;
-    }
+  public String getEmail () {
+    return email;
+  }
 
-    public void setEmail(String email) {
-        this.email = email;
-    }
+  public void setEmail (String email) {
+    this.email = email;
+  }
 
 }

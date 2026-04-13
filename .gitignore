@@ -36,3 +36,4 @@ build/
 # Local Configuration (contains sensitive credentials)
 application-local.properties
 hs_err_pid*.log
+application-local.yml

@@ -1,25 +1,17 @@
 package com.hoaug.movieapi.modules.movie.infrastructure.persistence.entity;
 
-import java.time.LocalDateTime;
-
+import com.hoaug.movieapi.common.model.BaseEntity;
 import com.hoaug.movieapi.modules.movie.domain.model.EpisodeStatus;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "episodes")
-public class EpisodeEntity {
-
-  @Id
-  @GeneratedValue(strategy = GenerationType.IDENTITY)
-  private Long id;
+public class EpisodeEntity extends BaseEntity {
 
   @Column(name = "movie_id", nullable = false)
   private Long movieId;
@@ -45,20 +37,6 @@ public class EpisodeEntity {
   @Enumerated(EnumType.STRING)
   @Column(nullable = false, length = 20)
   private EpisodeStatus status;
-
-  @Column(name = "created_at", nullable = false)
-  private LocalDateTime createdAt;
-
-  @Column(name = "updated_at", nullable = false)
-  private LocalDateTime updatedAt;
-
-  public Long getId () {
-    return id;
-  }
-
-  public void setId (Long id) {
-    this.id = id;
-  }
 
   public Long getMovieId () {
     return movieId;
@@ -122,21 +100,5 @@ public class EpisodeEntity {
 
   public void setStatus (EpisodeStatus status) {
     this.status = status;
-  }
-
-  public LocalDateTime getCreatedAt () {
-    return createdAt;
-  }
-
-  public void setCreatedAt (LocalDateTime createdAt) {
-    this.createdAt = createdAt;
-  }
-
-  public LocalDateTime getUpdatedAt () {
-    return updatedAt;
-  }
-
-  public void setUpdatedAt (LocalDateTime updatedAt) {
-    this.updatedAt = updatedAt;
   }
 }

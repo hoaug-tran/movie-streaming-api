@@ -1,13 +1,18 @@
 package com.hoaug.movieapi.modules.advertisement.application.dto.request;
 
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
 
 public class CreateAdvertisementViewRequest {
 
-  @NotNull
+  @NotNull(message = "Advertisement ID is required")
+  @Positive(message = "Advertisement ID must be positive")
   private Long advertisementId;
 
+  @Positive(message = "Movie ID must be positive if provided")
   private Long movieId;
+
+  @Positive(message = "Episode ID must be positive if provided")
   private Long episodeId;
 
   public Long getAdvertisementId () {

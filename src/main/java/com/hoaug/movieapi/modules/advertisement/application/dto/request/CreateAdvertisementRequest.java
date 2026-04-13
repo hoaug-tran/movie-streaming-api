@@ -2,34 +2,48 @@ package com.hoaug.movieapi.modules.advertisement.application.dto.request;
 
 import java.time.LocalDateTime;
 
+import com.hoaug.movieapi.common.validator.ValidSafeString;
+
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
+import jakarta.validation.constraints.Size;
 
 public class CreateAdvertisementRequest {
 
-  @NotBlank
+  @NotBlank(message = "Advertisement title is required")
+  @Size(min = 1, max = 255, message = "Title must be between 1 and 255 characters")
+  @ValidSafeString(minLength = 1, maxLength = 255)
   private String title;
 
-  @NotBlank
+  @NotBlank(message = "Video URL is required")
+  @Size(min = 1, max = 2048, message = "Video URL must be between 1 and 2048 characters")
+  @ValidSafeString(minLength = 1, maxLength = 2048)
   private String videoUrl;
 
+  @Size(max = 2048, message = "Target URL must be at most 2048 characters")
+  @ValidSafeString(minLength = 0, maxLength = 2048)
   private String targetUrl;
 
-  @NotNull
+  @NotNull(message = "Duration seconds is required")
+  @Positive(message = "Duration seconds must be positive")
   private Integer durationSeconds;
 
-  @NotBlank
+  @NotBlank(message = "Ad type is required")
+  @Size(min = 1, max = 50, message = "Ad type must be between 1 and 50 characters")
+  @ValidSafeString(minLength = 1, maxLength = 50)
   private String adType;
 
-  @NotNull
+  @NotNull(message = "Priority is required")
+  @Positive(message = "Priority must be positive")
   private Integer priority;
 
-  @NotNull
+  @NotNull(message = "Is skippable flag is required")
   private Boolean isSkippable;
 
   private Integer skipAfterSeconds;
 
-  @NotNull
+  @NotNull(message = "Is active flag is required")
   private Boolean isActive;
 
   private LocalDateTime startAt;

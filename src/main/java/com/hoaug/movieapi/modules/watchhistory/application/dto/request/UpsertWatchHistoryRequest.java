@@ -2,24 +2,27 @@ package com.hoaug.movieapi.modules.watchhistory.application.dto.request;
 
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
 
 public class UpsertWatchHistoryRequest {
 
-  @NotNull
+  @NotNull(message = "Movie ID is required")
+  @Positive(message = "Movie ID must be positive")
   private Long movieId;
 
-  @NotNull
+  @NotNull(message = "Episode ID is required")
+  @Positive(message = "Episode ID must be positive")
   private Long episodeId;
 
-  @NotNull
-  @Min(0)
+  @NotNull(message = "Watched duration seconds is required")
+  @Min(value = 0, message = "Watched duration seconds must be at least 0")
   private Integer watchedDurationSeconds;
 
-  @NotNull
-  @Min(0)
+  @NotNull(message = "Stopped at second is required")
+  @Min(value = 0, message = "Stopped at second must be at least 0")
   private Integer stoppedAtSecond;
 
-  @NotNull
+  @NotNull(message = "Is completed flag is required")
   private Boolean isCompleted;
 
   public Long getMovieId () {

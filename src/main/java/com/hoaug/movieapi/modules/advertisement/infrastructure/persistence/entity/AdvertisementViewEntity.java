@@ -2,20 +2,15 @@ package com.hoaug.movieapi.modules.advertisement.infrastructure.persistence.enti
 
 import java.time.LocalDateTime;
 
+import com.hoaug.movieapi.common.model.BaseEntity;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "advertisement_views")
-public class AdvertisementViewEntity {
-
-  @Id
-  @GeneratedValue(strategy = GenerationType.IDENTITY)
-  private Long id;
+public class AdvertisementViewEntity extends BaseEntity {
 
   @Column(name = "advertisement_id", nullable = false)
   private Long advertisementId;
@@ -37,14 +32,6 @@ public class AdvertisementViewEntity {
 
   @Column(name = "clicked_at")
   private LocalDateTime clickedAt;
-
-  public Long getId () {
-    return id;
-  }
-
-  public void setId (Long id) {
-    this.id = id;
-  }
 
   public Long getAdvertisementId () {
     return advertisementId;

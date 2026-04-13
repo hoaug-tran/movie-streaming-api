@@ -2,20 +2,15 @@ package com.hoaug.movieapi.modules.searchhistory.infrastructure.persistence.enti
 
 import java.time.LocalDateTime;
 
+import com.hoaug.movieapi.common.model.BaseEntity;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "search_histories")
-public class SearchHistoryEntity {
-
-  @Id
-  @GeneratedValue(strategy = GenerationType.IDENTITY)
-  private Long id;
+public class SearchHistoryEntity extends BaseEntity {
 
   @Column(name = "user_id", nullable = false)
   private Long userId;
@@ -25,14 +20,6 @@ public class SearchHistoryEntity {
 
   @Column(name = "searched_at", nullable = false)
   private LocalDateTime searchedAt;
-
-  public Long getId () {
-    return id;
-  }
-
-  public void setId (Long id) {
-    this.id = id;
-  }
 
   public Long getUserId () {
     return userId;

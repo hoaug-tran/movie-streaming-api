@@ -2,20 +2,15 @@ package com.hoaug.movieapi.modules.devicesession.infrastructure.persistence.enti
 
 import java.time.LocalDateTime;
 
+import com.hoaug.movieapi.common.model.BaseEntity;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "device_sessions")
-public class DeviceSessionEntity {
-
-  @Id
-  @GeneratedValue(strategy = GenerationType.IDENTITY)
-  private Long id;
+public class DeviceSessionEntity extends BaseEntity {
 
   @Column(name = "user_id", nullable = false)
   private Long userId;
@@ -40,14 +35,6 @@ public class DeviceSessionEntity {
 
   @Column(name = "is_revoked", nullable = false)
   private Boolean isRevoked;
-
-  public Long getId () {
-    return id;
-  }
-
-  public void setId (Long id) {
-    this.id = id;
-  }
 
   public Long getUserId () {
     return userId;
@@ -99,10 +86,6 @@ public class DeviceSessionEntity {
 
   public LocalDateTime getCreatedAt () {
     return createdAt;
-  }
-
-  public void setCreatedAt (LocalDateTime createdAt) {
-    this.createdAt = createdAt;
   }
 
   public Boolean getIsRevoked () {

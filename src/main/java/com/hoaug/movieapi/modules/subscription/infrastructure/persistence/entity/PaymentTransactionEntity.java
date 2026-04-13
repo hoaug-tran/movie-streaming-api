@@ -3,6 +3,7 @@ package com.hoaug.movieapi.modules.subscription.infrastructure.persistence.entit
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
+import com.hoaug.movieapi.common.model.BaseEntity;
 import com.hoaug.movieapi.modules.subscription.domain.model.PaymentMethod;
 import com.hoaug.movieapi.modules.subscription.domain.model.PaymentStatus;
 
@@ -10,18 +11,11 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "payment_transactions")
-public class PaymentTransactionEntity {
-
-  @Id
-  @GeneratedValue(strategy = GenerationType.IDENTITY)
-  private Long id;
+public class PaymentTransactionEntity extends BaseEntity {
 
   @Column(name = "user_id")
   private Long userId;
@@ -47,20 +41,6 @@ public class PaymentTransactionEntity {
 
   @Column(name = "paid_at")
   private LocalDateTime paidAt;
-
-  @Column(name = "created_at")
-  private LocalDateTime createdAt;
-
-  @Column(name = "updated_at")
-  private LocalDateTime updatedAt;
-
-  public Long getId () {
-    return id;
-  }
-
-  public void setId (Long id) {
-    this.id = id;
-  }
 
   public Long getUserId () {
     return userId;
@@ -132,21 +112,5 @@ public class PaymentTransactionEntity {
 
   public void setPaidAt (LocalDateTime paidAt) {
     this.paidAt = paidAt;
-  }
-
-  public LocalDateTime getCreatedAt () {
-    return createdAt;
-  }
-
-  public void setCreatedAt (LocalDateTime createdAt) {
-    this.createdAt = createdAt;
-  }
-
-  public LocalDateTime getUpdatedAt () {
-    return updatedAt;
-  }
-
-  public void setUpdatedAt (LocalDateTime updatedAt) {
-    this.updatedAt = updatedAt;
   }
 }

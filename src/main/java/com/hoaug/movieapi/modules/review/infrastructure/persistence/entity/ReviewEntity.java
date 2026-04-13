@@ -2,26 +2,20 @@ package com.hoaug.movieapi.modules.review.infrastructure.persistence.entity;
 
 import java.time.LocalDateTime;
 
+import com.hoaug.movieapi.common.model.BaseEntity;
 import com.hoaug.movieapi.modules.review.domain.model.ReviewStatus;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import jakarta.persistence.UniqueConstraint;
 
 @Entity
 @Table(name = "reviews", uniqueConstraints = @UniqueConstraint(columnNames = { "user_id",
     "movie_id" }))
-public class ReviewEntity {
-
-  @Id
-  @GeneratedValue(strategy = GenerationType.IDENTITY)
-  private Long id;
+public class ReviewEntity extends BaseEntity {
 
   private Long userId;
   private Long movieId;
@@ -35,18 +29,6 @@ public class ReviewEntity {
   private ReviewStatus status;
   @Column(name = "like_count")
   private Integer likeCount;
-  @Column(name = "created_at")
-  private LocalDateTime createdAt;
-  @Column(name = "updated_at")
-  private LocalDateTime updatedAt;
-
-  public Long getId () {
-    return id;
-  }
-
-  public void setId (Long id) {
-    this.id = id;
-  }
 
   public Long getUserId () {
     return userId;
