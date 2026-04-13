@@ -1,673 +1,1144 @@
-CREATE DATABASE IF NOT EXISTS movie_streaming_platform
-CHARACTER SET utf8mb4
-COLLATE utf8mb4_unicode_ci;
+-- MySQL dump 10.13  Distrib 8.0.19, for Win64 (x86_64)
+--
+-- Host: localhost    Database: movie_streaming_platform
+-- ------------------------------------------------------
+-- Server version	8.4.8
 
-USE movie_streaming_platform;
+/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
+/*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
+/*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
+/*!50503 SET NAMES utf8mb4 */;
+/*!40103 SET @OLD_TIME_ZONE=@@TIME_ZONE */;
+/*!40103 SET TIME_ZONE='+00:00' */;
+/*!40014 SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0 */;
+/*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
+/*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
+/*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
 
-CREATE TABLE users (
-    id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
-    username VARCHAR(50) NOT NULL,
-    email VARCHAR(100) NOT NULL,
-    password VARCHAR(255) NOT NULL,
-    full_name VARCHAR(100) NOT NULL,
-    avatar_url VARCHAR(500) NULL,
-    role ENUM('ROLE_ADMIN', 'ROLE_USER') NOT NULL DEFAULT 'ROLE_USER',
-    account_status ENUM('ACTIVE', 'BLOCKED', 'DELETED') NOT NULL DEFAULT 'ACTIVE',
-    premium_expiry_date DATETIME NULL,
-    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    last_login_at DATETIME NULL,
-    PRIMARY KEY (id),
-    UNIQUE KEY uk_users_username (username),
-    UNIQUE KEY uk_users_email (email),
-    KEY idx_users_role (role),
-    KEY idx_users_account_status (account_status),
-    KEY idx_users_premium_expiry_date (premium_expiry_date)
+--
+-- Table structure for table `advertisement_views`
+--
+
+DROP TABLE IF EXISTS `advertisement_views`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `advertisement_views` (
+  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
+  `advertisement_id` bigint unsigned NOT NULL,
+  `user_id` bigint unsigned DEFAULT NULL,
+  `movie_id` bigint unsigned DEFAULT NULL,
+  `episode_id` bigint unsigned DEFAULT NULL,
+  `viewed_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `clicked` tinyint(1) NOT NULL DEFAULT '0',
+  `clicked_at` datetime DEFAULT NULL,
+  `created_at` datetime(6) NOT NULL,
+  `updated_at` datetime(6) NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `idx_advertisement_views_advertisement_id` (`advertisement_id`),
+  KEY `idx_advertisement_views_user_id` (`user_id`),
+  KEY `idx_advertisement_views_movie_id` (`movie_id`),
+  KEY `idx_advertisement_views_episode_id` (`episode_id`),
+  KEY `idx_advertisement_views_viewed_at` (`viewed_at`),
+  CONSTRAINT `fk_advertisement_views_advertisement` FOREIGN KEY (`advertisement_id`) REFERENCES `advertisements` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT `fk_advertisement_views_episode` FOREIGN KEY (`episode_id`) REFERENCES `episodes` (`id`) ON DELETE SET NULL ON UPDATE CASCADE,
+  CONSTRAINT `fk_advertisement_views_movie` FOREIGN KEY (`movie_id`) REFERENCES `movies` (`id`) ON DELETE SET NULL ON UPDATE CASCADE,
+  CONSTRAINT `fk_advertisement_views_user` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE SET NULL ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
-CREATE TABLE categories (
-    id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
-    name VARCHAR(100) NOT NULL,
-    slug VARCHAR(120) NOT NULL,
-    description TEXT NULL,
-    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    PRIMARY KEY (id),
-    UNIQUE KEY uk_categories_name (name),
-    UNIQUE KEY uk_categories_slug (slug)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+--
+-- Dumping data for table `advertisement_views`
+--
 
-CREATE TABLE tags (
-    id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
-    name VARCHAR(100) NOT NULL,
-    slug VARCHAR(120) NOT NULL,
-    description TEXT NULL,
-    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    PRIMARY KEY (id),
-    UNIQUE KEY uk_tags_name (name),
-    UNIQUE KEY uk_tags_slug (slug)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+LOCK TABLES `advertisement_views` WRITE;
+/*!40000 ALTER TABLE `advertisement_views` DISABLE KEYS */;
+/*!40000 ALTER TABLE `advertisement_views` ENABLE KEYS */;
+UNLOCK TABLES;
 
-CREATE TABLE persons (
-    id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
-    full_name VARCHAR(150) NOT NULL,
-    stage_name VARCHAR(150) NULL,
-    biography TEXT NULL,
-    birth_date DATE NULL,
-    nationality VARCHAR(100) NULL,
-    avatar_url VARCHAR(500) NULL,
-    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    PRIMARY KEY (id),
-    KEY idx_persons_full_name (full_name),
-    KEY idx_persons_stage_name (stage_name),
-    KEY idx_persons_nationality (nationality)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+--
+-- Table structure for table `advertisements`
+--
 
-CREATE TABLE studios (
-    id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
-    name VARCHAR(150) NOT NULL,
-    slug VARCHAR(180) NOT NULL,
-    description TEXT NULL,
-    logo_url VARCHAR(500) NULL,
-    country VARCHAR(100) NULL,
-    website_url VARCHAR(500) NULL,
-    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    PRIMARY KEY (id),
-    UNIQUE KEY uk_studios_name (name),
-    UNIQUE KEY uk_studios_slug (slug),
-    KEY idx_studios_country (country)
+DROP TABLE IF EXISTS `advertisements`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `advertisements` (
+  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
+  `title` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `video_url` varchar(500) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `target_url` varchar(500) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `duration_seconds` int unsigned NOT NULL,
+  `ad_type` enum('BANNER_POPUP','MID_ROLL','POST_ROLL','PRE_ROLL') COLLATE utf8mb4_unicode_ci NOT NULL,
+  `priority` int NOT NULL DEFAULT '0',
+  `is_skippable` tinyint(1) NOT NULL DEFAULT '0',
+  `skip_after_seconds` int unsigned DEFAULT NULL,
+  `is_active` tinyint(1) NOT NULL DEFAULT '1',
+  `start_at` datetime DEFAULT NULL,
+  `end_at` datetime DEFAULT NULL,
+  `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  KEY `idx_advertisements_ad_type` (`ad_type`),
+  KEY `idx_advertisements_priority` (`priority`),
+  KEY `idx_advertisements_is_active` (`is_active`),
+  KEY `idx_advertisements_start_at` (`start_at`),
+  KEY `idx_advertisements_end_at` (`end_at`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
-CREATE TABLE movies (
-    id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
-    title VARCHAR(255) NOT NULL,
-    original_title VARCHAR(255) NULL,
-    slug VARCHAR(255) NOT NULL,
-    description TEXT NULL,
-    poster_url VARCHAR(500) NULL,
-    banner_url VARCHAR(500) NULL,
-    trailer_url VARCHAR(500) NULL,
-    release_year SMALLINT UNSIGNED NOT NULL,
-    country VARCHAR(100) NULL,
-    language VARCHAR(100) NULL,
-    age_rating VARCHAR(20) NULL,
-    movie_status ENUM('DRAFT', 'PUBLISHED', 'ARCHIVED') NOT NULL DEFAULT 'DRAFT',
-    movie_type ENUM('SINGLE', 'SERIES') NOT NULL,
-    is_premium_only TINYINT(1) NOT NULL DEFAULT 0,
-    view_count BIGINT UNSIGNED NOT NULL DEFAULT 0,
-    favorite_count BIGINT UNSIGNED NOT NULL DEFAULT 0,
-    average_rating DECIMAL(3,2) NOT NULL DEFAULT 0.00,
-    total_ratings INT UNSIGNED NOT NULL DEFAULT 0,
-    total_reviews INT UNSIGNED NOT NULL DEFAULT 0,
-    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    published_at DATETIME NULL,
-    PRIMARY KEY (id),
-    UNIQUE KEY uk_movies_slug (slug),
-    KEY idx_movies_title (title),
-    KEY idx_movies_release_year (release_year),
-    KEY idx_movies_country (country),
-    KEY idx_movies_language (language),
-    KEY idx_movies_movie_status (movie_status),
-    KEY idx_movies_movie_type (movie_type),
-    KEY idx_movies_is_premium_only (is_premium_only),
-    KEY idx_movies_published_at (published_at)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+--
+-- Dumping data for table `advertisements`
+--
 
-CREATE TABLE episodes (
-    id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
-    movie_id BIGINT UNSIGNED NOT NULL,
-    title VARCHAR(255) NOT NULL,
-    episode_number INT UNSIGNED NOT NULL,
-    video_url VARCHAR(500) NOT NULL,
-    thumbnail_url VARCHAR(500) NULL,
-    duration_seconds INT UNSIGNED NOT NULL,
-    is_free_preview TINYINT(1) NOT NULL DEFAULT 0,
-    status ENUM('DRAFT', 'PUBLISHED', 'HIDDEN') NOT NULL DEFAULT 'DRAFT',
-    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    PRIMARY KEY (id),
-    UNIQUE KEY uk_episodes_movie_episode_number (movie_id, episode_number),
-    KEY idx_episodes_movie_id (movie_id),
-    KEY idx_episodes_status (status),
-    CONSTRAINT fk_episodes_movie
-        FOREIGN KEY (movie_id) REFERENCES movies (id)
-        ON DELETE CASCADE
-        ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+LOCK TABLES `advertisements` WRITE;
+/*!40000 ALTER TABLE `advertisements` DISABLE KEYS */;
+/*!40000 ALTER TABLE `advertisements` ENABLE KEYS */;
+UNLOCK TABLES;
 
-CREATE TABLE movie_categories (
-    movie_id BIGINT UNSIGNED NOT NULL,
-    category_id BIGINT UNSIGNED NOT NULL,
-    PRIMARY KEY (movie_id, category_id),
-    KEY idx_movie_categories_category_id (category_id),
-    CONSTRAINT fk_movie_categories_movie
-        FOREIGN KEY (movie_id) REFERENCES movies (id)
-        ON DELETE CASCADE
-        ON UPDATE CASCADE,
-    CONSTRAINT fk_movie_categories_category
-        FOREIGN KEY (category_id) REFERENCES categories (id)
-        ON DELETE CASCADE
-        ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+--
+-- Table structure for table `categories`
+--
 
-CREATE TABLE movie_tags (
-    movie_id BIGINT UNSIGNED NOT NULL,
-    tag_id BIGINT UNSIGNED NOT NULL,
-    PRIMARY KEY (movie_id, tag_id),
-    KEY idx_movie_tags_tag_id (tag_id),
-    CONSTRAINT fk_movie_tags_movie
-        FOREIGN KEY (movie_id) REFERENCES movies (id)
-        ON DELETE CASCADE
-        ON UPDATE CASCADE,
-    CONSTRAINT fk_movie_tags_tag
-        FOREIGN KEY (tag_id) REFERENCES tags (id)
-        ON DELETE CASCADE
-        ON UPDATE CASCADE
+DROP TABLE IF EXISTS `categories`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `categories` (
+  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
+  `name` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `slug` varchar(120) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `description` text COLLATE utf8mb4_unicode_ci,
+  `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `uk_categories_name` (`name`),
+  UNIQUE KEY `uk_categories_slug` (`slug`),
+  UNIQUE KEY `uc_category_name` (`name`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
-CREATE TABLE movie_persons (
-    id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
-    movie_id BIGINT UNSIGNED NOT NULL,
-    person_id BIGINT UNSIGNED NOT NULL,
-    role ENUM('ACTOR', 'DIRECTOR', 'WRITER', 'PRODUCER', 'VOICE_ACTOR', 'CAMEO') NOT NULL,
-    character_name VARCHAR(150) NULL,
-    display_order INT UNSIGNED NOT NULL DEFAULT 0,
-    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    PRIMARY KEY (id),
-    UNIQUE KEY uk_movie_persons_unique_role (movie_id, person_id, role, character_name),
-    KEY idx_movie_persons_movie_id (movie_id),
-    KEY idx_movie_persons_person_id (person_id),
-    KEY idx_movie_persons_role (role),
-    KEY idx_movie_persons_display_order (display_order),
-    CONSTRAINT fk_movie_persons_movie
-        FOREIGN KEY (movie_id) REFERENCES movies (id)
-        ON DELETE CASCADE
-        ON UPDATE CASCADE,
-    CONSTRAINT fk_movie_persons_person
-        FOREIGN KEY (person_id) REFERENCES persons (id)
-        ON DELETE CASCADE
-        ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+--
+-- Dumping data for table `categories`
+--
 
-CREATE TABLE movie_studios (
-    id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
-    movie_id BIGINT UNSIGNED NOT NULL,
-    studio_id BIGINT UNSIGNED NOT NULL,
-    role ENUM('PRODUCTION', 'DISTRIBUTION', 'NETWORK', 'ANIMATION_STUDIO') NOT NULL,
-    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    PRIMARY KEY (id),
-    UNIQUE KEY uk_movie_studios_unique_role (movie_id, studio_id, role),
-    KEY idx_movie_studios_movie_id (movie_id),
-    KEY idx_movie_studios_studio_id (studio_id),
-    KEY idx_movie_studios_role (role),
-    CONSTRAINT fk_movie_studios_movie
-        FOREIGN KEY (movie_id) REFERENCES movies (id)
-        ON DELETE CASCADE
-        ON UPDATE CASCADE,
-    CONSTRAINT fk_movie_studios_studio
-        FOREIGN KEY (studio_id) REFERENCES studios (id)
-        ON DELETE CASCADE
-        ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+LOCK TABLES `categories` WRITE;
+/*!40000 ALTER TABLE `categories` DISABLE KEYS */;
+/*!40000 ALTER TABLE `categories` ENABLE KEYS */;
+UNLOCK TABLES;
 
-CREATE TABLE reviews (
-    id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
-    user_id BIGINT UNSIGNED NOT NULL,
-    movie_id BIGINT UNSIGNED NOT NULL,
-    rating TINYINT UNSIGNED NOT NULL,
-    title VARCHAR(255) NULL,
-    content TEXT NULL,
-    is_edited TINYINT(1) NOT NULL DEFAULT 0,
-    status ENUM('VISIBLE', 'HIDDEN', 'REPORTED') NOT NULL DEFAULT 'VISIBLE',
-    like_count INT UNSIGNED NOT NULL DEFAULT 0;
-    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    PRIMARY KEY (id),
-    UNIQUE KEY uk_reviews_user_movie (user_id, movie_id),
-    KEY idx_reviews_movie_id (movie_id),
-    KEY idx_reviews_status (status),
-    KEY idx_reviews_rating (rating),
-    CONSTRAINT fk_reviews_user
-        FOREIGN KEY (user_id) REFERENCES users (id)
-        ON DELETE CASCADE
-        ON UPDATE CASCADE,
-    CONSTRAINT fk_reviews_movie
-        FOREIGN KEY (movie_id) REFERENCES movies (id)
-        ON DELETE CASCADE
-        ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+--
+-- Table structure for table `comment_likes`
+--
 
-CREATE TABLE comments (
-    id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
-    user_id BIGINT UNSIGNED NOT NULL,
-    movie_id BIGINT UNSIGNED NOT NULL,
-    parent_comment_id BIGINT UNSIGNED NULL,
-    content TEXT NOT NULL,
-    like_count INT UNSIGNED NOT NULL DEFAULT 0,
-    reply_count INT UNSIGNED NOT NULL DEFAULT 0,
-    status ENUM('VISIBLE', 'HIDDEN', 'DELETED') NOT NULL DEFAULT 'VISIBLE',
-    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    PRIMARY KEY (id),
-    KEY idx_comments_user_id (user_id),
-    KEY idx_comments_movie_id (movie_id),
-    KEY idx_comments_parent_comment_id (parent_comment_id),
-    KEY idx_comments_status (status),
-    CONSTRAINT fk_comments_user
-        FOREIGN KEY (user_id) REFERENCES users (id)
-        ON DELETE CASCADE
-        ON UPDATE CASCADE,
-    CONSTRAINT fk_comments_movie
-        FOREIGN KEY (movie_id) REFERENCES movies (id)
-        ON DELETE CASCADE
-        ON UPDATE CASCADE,
-    CONSTRAINT fk_comments_parent_comment
-        FOREIGN KEY (parent_comment_id) REFERENCES comments (id)
-        ON DELETE CASCADE
-        ON UPDATE CASCADE
+DROP TABLE IF EXISTS `comment_likes`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `comment_likes` (
+  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
+  `user_id` bigint unsigned NOT NULL,
+  `comment_id` bigint unsigned NOT NULL,
+  `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` datetime(6) NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `uk_comment_likes_user_comment` (`user_id`,`comment_id`),
+  UNIQUE KEY `UKgu1pee3567af29uutdfy0fcjd` (`user_id`,`comment_id`),
+  KEY `idx_comment_likes_comment_id` (`comment_id`),
+  CONSTRAINT `fk_comment_likes_comment` FOREIGN KEY (`comment_id`) REFERENCES `comments` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT `fk_comment_likes_user` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
-CREATE TABLE comment_likes (
-    id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
-    user_id BIGINT UNSIGNED NOT NULL,
-    comment_id BIGINT UNSIGNED NOT NULL,
-    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    PRIMARY KEY (id),
-    UNIQUE KEY uk_comment_likes_user_comment (user_id, comment_id),
-    KEY idx_comment_likes_comment_id (comment_id),
-    CONSTRAINT fk_comment_likes_user
-        FOREIGN KEY (user_id) REFERENCES users (id)
-        ON DELETE CASCADE
-        ON UPDATE CASCADE,
-    CONSTRAINT fk_comment_likes_comment
-        FOREIGN KEY (comment_id) REFERENCES comments (id)
-        ON DELETE CASCADE
-        ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+--
+-- Dumping data for table `comment_likes`
+--
 
-CREATE TABLE review_likes (
-    id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
-    user_id BIGINT UNSIGNED NOT NULL,
-    review_id BIGINT UNSIGNED NOT NULL,
-    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    PRIMARY KEY (id),
-    UNIQUE KEY uk_review_likes_user_review (user_id, review_id),
-    KEY idx_review_likes_review_id (review_id),
-    CONSTRAINT fk_review_likes_user
-        FOREIGN KEY (user_id) REFERENCES users (id)
-        ON DELETE CASCADE
-        ON UPDATE CASCADE,
-    CONSTRAINT fk_review_likes_review
-        FOREIGN KEY (review_id) REFERENCES reviews (id)
-        ON DELETE CASCADE
-        ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+LOCK TABLES `comment_likes` WRITE;
+/*!40000 ALTER TABLE `comment_likes` DISABLE KEYS */;
+/*!40000 ALTER TABLE `comment_likes` ENABLE KEYS */;
+UNLOCK TABLES;
 
-CREATE TABLE favorites (
-    id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
-    user_id BIGINT UNSIGNED NOT NULL,
-    movie_id BIGINT UNSIGNED NOT NULL,
-    added_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    PRIMARY KEY (id),
-    UNIQUE KEY uk_favorites_user_movie (user_id, movie_id),
-    KEY idx_favorites_movie_id (movie_id),
-    CONSTRAINT fk_favorites_user
-        FOREIGN KEY (user_id) REFERENCES users (id)
-        ON DELETE CASCADE
-        ON UPDATE CASCADE,
-    CONSTRAINT fk_favorites_movie
-        FOREIGN KEY (movie_id) REFERENCES movies (id)
-        ON DELETE CASCADE
-        ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+--
+-- Table structure for table `comments`
+--
 
-CREATE TABLE watchlists (
-    id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
-    user_id BIGINT UNSIGNED NOT NULL,
-    movie_id BIGINT UNSIGNED NOT NULL,
-    added_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    PRIMARY KEY (id),
-    UNIQUE KEY uk_watchlists_user_movie (user_id, movie_id),
-    KEY idx_watchlists_movie_id (movie_id),
-    CONSTRAINT fk_watchlists_user
-        FOREIGN KEY (user_id) REFERENCES users (id)
-        ON DELETE CASCADE
-        ON UPDATE CASCADE,
-    CONSTRAINT fk_watchlists_movie
-        FOREIGN KEY (movie_id) REFERENCES movies (id)
-        ON DELETE CASCADE
-        ON UPDATE CASCADE
+DROP TABLE IF EXISTS `comments`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `comments` (
+  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
+  `user_id` bigint unsigned NOT NULL,
+  `movie_id` bigint unsigned NOT NULL,
+  `parent_comment_id` bigint unsigned DEFAULT NULL,
+  `content` text COLLATE utf8mb4_unicode_ci NOT NULL,
+  `like_count` int unsigned NOT NULL DEFAULT '0',
+  `reply_count` int unsigned NOT NULL DEFAULT '0',
+  `status` enum('DELETED','HIDDEN','VISIBLE') COLLATE utf8mb4_unicode_ci NOT NULL,
+  `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  KEY `idx_comments_user_id` (`user_id`),
+  KEY `idx_comments_movie_id` (`movie_id`),
+  KEY `idx_comments_parent_comment_id` (`parent_comment_id`),
+  KEY `idx_comments_status` (`status`),
+  KEY `idx_comment_movie_id` (`movie_id`),
+  KEY `idx_comment_user_id` (`user_id`),
+  KEY `idx_comment_parent_id` (`parent_comment_id`),
+  KEY `idx_comment_created_at` (`created_at`),
+  CONSTRAINT `fk_comments_movie` FOREIGN KEY (`movie_id`) REFERENCES `movies` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT `fk_comments_parent_comment` FOREIGN KEY (`parent_comment_id`) REFERENCES `comments` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT `fk_comments_user` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
-CREATE TABLE watch_histories (
-    id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
-    user_id BIGINT UNSIGNED NOT NULL,
-    movie_id BIGINT UNSIGNED NOT NULL,
-    episode_id BIGINT UNSIGNED NOT NULL,
-    watched_duration_seconds INT UNSIGNED NOT NULL DEFAULT 0,
-    stopped_at_second INT UNSIGNED NOT NULL DEFAULT 0,
-    is_completed TINYINT(1) NOT NULL DEFAULT 0,
-    last_watched_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    PRIMARY KEY (id),
-    UNIQUE KEY uk_watch_histories_user_episode (user_id, episode_id),
-    KEY idx_watch_histories_movie_id (movie_id),
-    KEY idx_watch_histories_last_watched_at (last_watched_at),
-    CONSTRAINT fk_watch_histories_user
-        FOREIGN KEY (user_id) REFERENCES users (id)
-        ON DELETE CASCADE
-        ON UPDATE CASCADE,
-    CONSTRAINT fk_watch_histories_movie
-        FOREIGN KEY (movie_id) REFERENCES movies (id)
-        ON DELETE CASCADE
-        ON UPDATE CASCADE,
-    CONSTRAINT fk_watch_histories_episode
-        FOREIGN KEY (episode_id) REFERENCES episodes (id)
-        ON DELETE CASCADE
-        ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+--
+-- Dumping data for table `comments`
+--
 
-CREATE TABLE subscription_plans (
-    id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
-    name VARCHAR(100) NOT NULL,
-    code VARCHAR(50) NOT NULL,
-    description TEXT NULL,
-    price DECIMAL(12,2) NOT NULL,
-    duration_days INT UNSIGNED NOT NULL,
-    max_devices INT UNSIGNED NOT NULL DEFAULT 1,
-    video_quality VARCHAR(30) NULL,
-    has_ads_free TINYINT(1) NOT NULL DEFAULT 1,
-    is_active TINYINT(1) NOT NULL DEFAULT 1,
-    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    PRIMARY KEY (id),
-    UNIQUE KEY uk_subscription_plans_name (name),
-    UNIQUE KEY uk_subscription_plans_code (code),
-    KEY idx_subscription_plans_is_active (is_active)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+LOCK TABLES `comments` WRITE;
+/*!40000 ALTER TABLE `comments` DISABLE KEYS */;
+/*!40000 ALTER TABLE `comments` ENABLE KEYS */;
+UNLOCK TABLES;
 
-CREATE TABLE user_subscriptions (
-    id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
-    user_id BIGINT UNSIGNED NOT NULL,
-    plan_id BIGINT UNSIGNED NOT NULL,
-    start_at DATETIME NOT NULL,
-    end_at DATETIME NOT NULL,
-    status ENUM('PENDING', 'ACTIVE', 'EXPIRED', 'CANCELLED') NOT NULL DEFAULT 'PENDING',
-    auto_renew TINYINT(1) NOT NULL DEFAULT 0,
-    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    PRIMARY KEY (id),
-    KEY idx_user_subscriptions_user_id (user_id),
-    KEY idx_user_subscriptions_plan_id (plan_id),
-    KEY idx_user_subscriptions_status (status),
-    KEY idx_user_subscriptions_end_at (end_at),
-    CONSTRAINT fk_user_subscriptions_user
-        FOREIGN KEY (user_id) REFERENCES users (id)
-        ON DELETE CASCADE
-        ON UPDATE CASCADE,
-    CONSTRAINT fk_user_subscriptions_plan
-        FOREIGN KEY (plan_id) REFERENCES subscription_plans (id)
-        ON DELETE RESTRICT
-        ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+--
+-- Table structure for table `device_sessions`
+--
 
-CREATE TABLE payment_transactions (
-    id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
-    user_id BIGINT UNSIGNED NOT NULL,
-    subscription_id BIGINT UNSIGNED NOT NULL,
-    amount DECIMAL(12,2) NOT NULL,
-    currency VARCHAR(10) NOT NULL DEFAULT 'VND',
-    payment_method ENUM('VNPAY', 'MOMO', 'PAYPAL', 'STRIPE', 'BANK_TRANSFER') NOT NULL,
-    status ENUM('PENDING', 'SUCCESS', 'FAILED', 'REFUNDED') NOT NULL DEFAULT 'PENDING',
-    provider_transaction_id VARCHAR(100) NULL,
-    provider_response TEXT NULL,
-    paid_at DATETIME NULL,
-    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    PRIMARY KEY (id),
-    UNIQUE KEY uk_payment_transactions_provider_transaction_id (provider_transaction_id),
-    KEY idx_payment_transactions_user_id (user_id),
-    KEY idx_payment_transactions_subscription_id (subscription_id),
-    KEY idx_payment_transactions_status (status),
-    KEY idx_payment_transactions_payment_method (payment_method),
-    KEY idx_payment_transactions_paid_at (paid_at),
-    CONSTRAINT fk_payment_transactions_user
-        FOREIGN KEY (user_id) REFERENCES users (id)
-        ON DELETE CASCADE
-        ON UPDATE CASCADE,
-    CONSTRAINT fk_payment_transactions_subscription
-        FOREIGN KEY (subscription_id) REFERENCES user_subscriptions (id)
-        ON DELETE CASCADE
-        ON UPDATE CASCADE
+DROP TABLE IF EXISTS `device_sessions`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `device_sessions` (
+  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
+  `user_id` bigint unsigned NOT NULL,
+  `device_name` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `device_type` varchar(50) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `ip_address` varchar(45) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `user_agent` varchar(500) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `last_active_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `is_revoked` tinyint(1) NOT NULL DEFAULT '0',
+  `updated_at` datetime(6) NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `idx_device_sessions_user_id` (`user_id`),
+  KEY `idx_device_sessions_last_active_at` (`last_active_at`),
+  KEY `idx_device_sessions_is_revoked` (`is_revoked`),
+  KEY `idx_device_session_user_id` (`user_id`),
+  CONSTRAINT `fk_device_sessions_user` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
-CREATE TABLE invoices (
-    id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
-    payment_transaction_id BIGINT UNSIGNED NOT NULL,
-    invoice_number VARCHAR(50) NOT NULL,
-    buyer_name VARCHAR(100) NOT NULL,
-    buyer_email VARCHAR(100) NOT NULL,
-    amount DECIMAL(12,2) NOT NULL,
-    issued_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    PRIMARY KEY (id),
-    UNIQUE KEY uk_invoices_payment_transaction_id (payment_transaction_id),
-    UNIQUE KEY uk_invoices_invoice_number (invoice_number),
-    CONSTRAINT fk_invoices_payment_transaction
-        FOREIGN KEY (payment_transaction_id) REFERENCES payment_transactions (id)
-        ON DELETE CASCADE
-        ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+--
+-- Dumping data for table `device_sessions`
+--
 
-CREATE TABLE advertisements (
-    id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
-    title VARCHAR(255) NOT NULL,
-    video_url VARCHAR(500) NOT NULL,
-    target_url VARCHAR(500) NULL,
-    duration_seconds INT UNSIGNED NOT NULL,
-    ad_type ENUM('PRE_ROLL', 'MID_ROLL', 'POST_ROLL', 'BANNER_POPUP') NOT NULL,
-    priority INT NOT NULL DEFAULT 0,
-    is_skippable TINYINT(1) NOT NULL DEFAULT 0,
-    skip_after_seconds INT UNSIGNED NULL,
-    is_active TINYINT(1) NOT NULL DEFAULT 1,
-    start_at DATETIME NULL,
-    end_at DATETIME NULL,
-    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    PRIMARY KEY (id),
-    KEY idx_advertisements_ad_type (ad_type),
-    KEY idx_advertisements_priority (priority),
-    KEY idx_advertisements_is_active (is_active),
-    KEY idx_advertisements_start_at (start_at),
-    KEY idx_advertisements_end_at (end_at)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+LOCK TABLES `device_sessions` WRITE;
+/*!40000 ALTER TABLE `device_sessions` DISABLE KEYS */;
+/*!40000 ALTER TABLE `device_sessions` ENABLE KEYS */;
+UNLOCK TABLES;
 
-CREATE TABLE advertisement_views (
-    id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
-    advertisement_id BIGINT UNSIGNED NOT NULL,
-    user_id BIGINT UNSIGNED NULL,
-    movie_id BIGINT UNSIGNED NULL,
-    episode_id BIGINT UNSIGNED NULL,
-    viewed_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    clicked TINYINT(1) NOT NULL DEFAULT 0,
-    clicked_at DATETIME NULL,
-    PRIMARY KEY (id),
-    KEY idx_advertisement_views_advertisement_id (advertisement_id),
-    KEY idx_advertisement_views_user_id (user_id),
-    KEY idx_advertisement_views_movie_id (movie_id),
-    KEY idx_advertisement_views_episode_id (episode_id),
-    KEY idx_advertisement_views_viewed_at (viewed_at),
-    CONSTRAINT fk_advertisement_views_advertisement
-        FOREIGN KEY (advertisement_id) REFERENCES advertisements (id)
-        ON DELETE CASCADE
-        ON UPDATE CASCADE,
-    CONSTRAINT fk_advertisement_views_user
-        FOREIGN KEY (user_id) REFERENCES users (id)
-        ON DELETE SET NULL
-        ON UPDATE CASCADE,
-    CONSTRAINT fk_advertisement_views_movie
-        FOREIGN KEY (movie_id) REFERENCES movies (id)
-        ON DELETE SET NULL
-        ON UPDATE CASCADE,
-    CONSTRAINT fk_advertisement_views_episode
-        FOREIGN KEY (episode_id) REFERENCES episodes (id)
-        ON DELETE SET NULL
-        ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+--
+-- Table structure for table `episodes`
+--
 
-CREATE TABLE notifications (
-    id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
-    user_id BIGINT UNSIGNED NOT NULL,
-    title VARCHAR(255) NOT NULL,
-    content TEXT NOT NULL,
-    type ENUM('PAYMENT_SUCCESS', 'PAYMENT_FAILED', 'PREMIUM_EXPIRING', 'NEW_EPISODE', 'SYSTEM') NOT NULL,
-    is_read TINYINT(1) NOT NULL DEFAULT 0,
-    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    PRIMARY KEY (id),
-    KEY idx_notifications_user_id (user_id),
-    KEY idx_notifications_type (type),
-    KEY idx_notifications_is_read (is_read),
-    KEY idx_notifications_created_at (created_at),
-    CONSTRAINT fk_notifications_user
-        FOREIGN KEY (user_id) REFERENCES users (id)
-        ON DELETE CASCADE
-        ON UPDATE CASCADE
+DROP TABLE IF EXISTS `episodes`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `episodes` (
+  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
+  `movie_id` bigint unsigned NOT NULL,
+  `title` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `episode_number` int unsigned NOT NULL,
+  `video_url` varchar(500) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `thumbnail_url` varchar(500) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `duration_seconds` int unsigned NOT NULL,
+  `is_free_preview` tinyint(1) NOT NULL DEFAULT '0',
+  `status` enum('DRAFT','HIDDEN','PUBLISHED') COLLATE utf8mb4_unicode_ci NOT NULL,
+  `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `uk_episodes_movie_episode_number` (`movie_id`,`episode_number`),
+  KEY `idx_episodes_movie_id` (`movie_id`),
+  KEY `idx_episodes_status` (`status`),
+  KEY `idx_episode_movie_id` (`movie_id`),
+  KEY `idx_episode_episode_number` (`movie_id`,`episode_number`),
+  CONSTRAINT `fk_episodes_movie` FOREIGN KEY (`movie_id`) REFERENCES `movies` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
-CREATE TABLE reports (
-    id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
-    reporter_user_id BIGINT UNSIGNED NOT NULL,
-    comment_id BIGINT UNSIGNED NULL,
-    review_id BIGINT UNSIGNED NULL,
-    reason VARCHAR(255) NOT NULL,
-    description TEXT NULL,
-    status ENUM('PENDING', 'RESOLVED', 'REJECTED') NOT NULL DEFAULT 'PENDING',
-    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    resolved_at DATETIME NULL,
-    PRIMARY KEY (id),
-    KEY idx_reports_reporter_user_id (reporter_user_id),
-    KEY idx_reports_comment_id (comment_id),
-    KEY idx_reports_review_id (review_id),
-    KEY idx_reports_status (status),
-    CONSTRAINT fk_reports_reporter_user
-        FOREIGN KEY (reporter_user_id) REFERENCES users (id)
-        ON DELETE CASCADE
-        ON UPDATE CASCADE,
-    CONSTRAINT fk_reports_comment
-        FOREIGN KEY (comment_id) REFERENCES comments (id)
-        ON DELETE CASCADE
-        ON UPDATE CASCADE,
-    CONSTRAINT fk_reports_review
-        FOREIGN KEY (review_id) REFERENCES reviews (id)
-        ON DELETE CASCADE
-        ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+--
+-- Dumping data for table `episodes`
+--
 
-CREATE TABLE search_histories (
-    id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
-    user_id BIGINT UNSIGNED NOT NULL,
-    keyword VARCHAR(255) NOT NULL,
-    searched_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    PRIMARY KEY (id),
-    KEY idx_search_histories_user_id (user_id),
-    KEY idx_search_histories_keyword (keyword),
-    KEY idx_search_histories_searched_at (searched_at),
-    CONSTRAINT fk_search_histories_user
-        FOREIGN KEY (user_id) REFERENCES users (id)
-        ON DELETE CASCADE
-        ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+LOCK TABLES `episodes` WRITE;
+/*!40000 ALTER TABLE `episodes` DISABLE KEYS */;
+/*!40000 ALTER TABLE `episodes` ENABLE KEYS */;
+UNLOCK TABLES;
 
-CREATE TABLE device_sessions (
-    id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
-    user_id BIGINT UNSIGNED NOT NULL,
-    device_name VARCHAR(100) NULL,
-    device_type VARCHAR(50) NULL,
-    ip_address VARCHAR(45) NULL,
-    user_agent VARCHAR(500) NULL,
-    last_active_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    is_revoked TINYINT(1) NOT NULL DEFAULT 0,
-    PRIMARY KEY (id),
-    KEY idx_device_sessions_user_id (user_id),
-    KEY idx_device_sessions_last_active_at (last_active_at),
-    KEY idx_device_sessions_is_revoked (is_revoked),
-    CONSTRAINT fk_device_sessions_user
-        FOREIGN KEY (user_id) REFERENCES users (id)
-        ON DELETE CASCADE
-        ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+--
+-- Table structure for table `favorites`
+--
 
-CREATE TABLE movie_recommendations (
-    id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
-    user_id BIGINT UNSIGNED NOT NULL,
-    movie_id BIGINT UNSIGNED NOT NULL,
-    score DECIMAL(5,2) NOT NULL DEFAULT 0.00,
-    reason VARCHAR(255) NULL,
-    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    PRIMARY KEY (id),
-    UNIQUE KEY uk_movie_recommendations_user_movie (user_id, movie_id),
-    KEY idx_movie_recommendations_movie_id (movie_id),
-    KEY idx_movie_recommendations_score (score),
-    CONSTRAINT fk_movie_recommendations_user
-        FOREIGN KEY (user_id) REFERENCES users (id)
-        ON DELETE CASCADE
-        ON UPDATE CASCADE,
-    CONSTRAINT fk_movie_recommendations_movie
-        FOREIGN KEY (movie_id) REFERENCES movies (id)
-        ON DELETE CASCADE
-        ON UPDATE CASCADE
+DROP TABLE IF EXISTS `favorites`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `favorites` (
+  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
+  `user_id` bigint unsigned NOT NULL,
+  `movie_id` bigint unsigned NOT NULL,
+  `added_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `created_at` datetime(6) NOT NULL,
+  `updated_at` datetime(6) NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `uk_favorites_user_movie` (`user_id`,`movie_id`),
+  KEY `idx_favorites_movie_id` (`movie_id`),
+  KEY `idx_favorite_user_id` (`user_id`),
+  KEY `idx_favorite_movie_id` (`movie_id`),
+  CONSTRAINT `fk_favorites_movie` FOREIGN KEY (`movie_id`) REFERENCES `movies` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT `fk_favorites_user` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
-CREATE TABLE user_oauth_accounts (
-    id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
-    user_id BIGINT UNSIGNED NOT NULL,
-    provider ENUM('GOOGLE', 'FACEBOOK') NOT NULL,
-    provider_user_id VARCHAR(255) NOT NULL,
-    provider_email VARCHAR(255) NULL,
-    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    PRIMARY KEY (id),
-    UNIQUE KEY uk_user_oauth_provider_user (provider, provider_user_id),
-    KEY idx_user_oauth_user_id (user_id),
-    CONSTRAINT fk_user_oauth_user
-        FOREIGN KEY (user_id) REFERENCES users (id)
-        ON DELETE CASCADE
-        ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+--
+-- Dumping data for table `favorites`
+--
 
-CREATE TABLE refresh_tokens (
-    id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
-    user_id BIGINT UNSIGNED NOT NULL,
-    token VARCHAR(255) NOT NULL,
-    expires_at DATETIME NOT NULL,
-    revoked_at DATETIME NULL,
-    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    PRIMARY KEY (id),
-    UNIQUE KEY uk_refresh_tokens_token (token),
-    KEY idx_refresh_tokens_user_id (user_id),
-    KEY idx_refresh_tokens_expires_at (expires_at),
-    CONSTRAINT fk_refresh_tokens_user
-        FOREIGN KEY (user_id) REFERENCES users (id)
-        ON DELETE CASCADE
-        ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+LOCK TABLES `favorites` WRITE;
+/*!40000 ALTER TABLE `favorites` DISABLE KEYS */;
+/*!40000 ALTER TABLE `favorites` ENABLE KEYS */;
+UNLOCK TABLES;
 
-CREATE TABLE password_reset_tokens (
-    id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
-    user_id BIGINT UNSIGNED NOT NULL,
-    token VARCHAR(255) NOT NULL,
-    expires_at DATETIME NOT NULL,
-    used_at DATETIME NULL,
-    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    PRIMARY KEY (id),
-    UNIQUE KEY uk_password_reset_tokens_token (token),
-    KEY idx_password_reset_tokens_user_id (user_id),
-    KEY idx_password_reset_tokens_expires_at (expires_at),
-    CONSTRAINT fk_password_reset_tokens_user
-        FOREIGN KEY (user_id) REFERENCES users (id)
-        ON DELETE CASCADE
-        ON UPDATE CASCADE
+--
+-- Table structure for table `invoices`
+--
+
+DROP TABLE IF EXISTS `invoices`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `invoices` (
+  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
+  `payment_transaction_id` bigint unsigned NOT NULL,
+  `invoice_number` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `buyer_name` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `buyer_email` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `amount` decimal(38,2) DEFAULT NULL,
+  `issued_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `created_at` datetime(6) NOT NULL,
+  `updated_at` datetime(6) NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `uk_invoices_payment_transaction_id` (`payment_transaction_id`),
+  UNIQUE KEY `uk_invoices_invoice_number` (`invoice_number`),
+  CONSTRAINT `fk_invoices_payment_transaction` FOREIGN KEY (`payment_transaction_id`) REFERENCES `payment_transactions` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `invoices`
+--
+
+LOCK TABLES `invoices` WRITE;
+/*!40000 ALTER TABLE `invoices` DISABLE KEYS */;
+/*!40000 ALTER TABLE `invoices` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `movie_categories`
+--
+
+DROP TABLE IF EXISTS `movie_categories`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `movie_categories` (
+  `movie_id` bigint unsigned NOT NULL,
+  `category_id` bigint unsigned NOT NULL,
+  PRIMARY KEY (`movie_id`,`category_id`),
+  KEY `idx_movie_categories_category_id` (`category_id`),
+  CONSTRAINT `fk_movie_categories_category` FOREIGN KEY (`category_id`) REFERENCES `categories` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT `fk_movie_categories_movie` FOREIGN KEY (`movie_id`) REFERENCES `movies` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `movie_categories`
+--
+
+LOCK TABLES `movie_categories` WRITE;
+/*!40000 ALTER TABLE `movie_categories` DISABLE KEYS */;
+/*!40000 ALTER TABLE `movie_categories` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `movie_persons`
+--
+
+DROP TABLE IF EXISTS `movie_persons`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `movie_persons` (
+  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
+  `movie_id` bigint unsigned NOT NULL,
+  `person_id` bigint unsigned NOT NULL,
+  `role` enum('ACTOR','CAMEO','DIRECTOR','PRODUCER','VOICE_ACTOR','WRITER') COLLATE utf8mb4_unicode_ci NOT NULL,
+  `character_name` varchar(150) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `display_order` int unsigned NOT NULL DEFAULT '0',
+  `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` datetime(6) NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `uk_movie_persons_unique_role` (`movie_id`,`person_id`,`role`,`character_name`),
+  UNIQUE KEY `UKlmlr1u4n0xt6divxmru70j152` (`movie_id`,`person_id`,`role`,`character_name`),
+  KEY `idx_movie_persons_movie_id` (`movie_id`),
+  KEY `idx_movie_persons_person_id` (`person_id`),
+  KEY `idx_movie_persons_role` (`role`),
+  KEY `idx_movie_persons_display_order` (`display_order`),
+  CONSTRAINT `fk_movie_persons_movie` FOREIGN KEY (`movie_id`) REFERENCES `movies` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT `fk_movie_persons_person` FOREIGN KEY (`person_id`) REFERENCES `persons` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `movie_persons`
+--
+
+LOCK TABLES `movie_persons` WRITE;
+/*!40000 ALTER TABLE `movie_persons` DISABLE KEYS */;
+/*!40000 ALTER TABLE `movie_persons` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `movie_recommendations`
+--
+
+DROP TABLE IF EXISTS `movie_recommendations`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `movie_recommendations` (
+  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
+  `user_id` bigint unsigned NOT NULL,
+  `movie_id` bigint unsigned NOT NULL,
+  `score` decimal(5,2) NOT NULL DEFAULT '0.00',
+  `reason` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` datetime(6) NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `uk_movie_recommendations_user_movie` (`user_id`,`movie_id`),
+  UNIQUE KEY `UKt5ewuvjfbiaoerljfp8utffvd` (`user_id`,`movie_id`),
+  KEY `idx_movie_recommendations_movie_id` (`movie_id`),
+  KEY `idx_movie_recommendations_score` (`score`),
+  CONSTRAINT `fk_movie_recommendations_movie` FOREIGN KEY (`movie_id`) REFERENCES `movies` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT `fk_movie_recommendations_user` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `movie_recommendations`
+--
+
+LOCK TABLES `movie_recommendations` WRITE;
+/*!40000 ALTER TABLE `movie_recommendations` DISABLE KEYS */;
+/*!40000 ALTER TABLE `movie_recommendations` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `movie_studios`
+--
+
+DROP TABLE IF EXISTS `movie_studios`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `movie_studios` (
+  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
+  `movie_id` bigint unsigned NOT NULL,
+  `studio_id` bigint unsigned NOT NULL,
+  `role` enum('ANIMATION_STUDIO','DISTRIBUTION','NETWORK','PRODUCTION') COLLATE utf8mb4_unicode_ci NOT NULL,
+  `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` datetime(6) NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `uk_movie_studios_unique_role` (`movie_id`,`studio_id`,`role`),
+  UNIQUE KEY `UKbvutastalv0pw4cqmyvst3h9e` (`movie_id`,`studio_id`,`role`),
+  KEY `idx_movie_studios_movie_id` (`movie_id`),
+  KEY `idx_movie_studios_studio_id` (`studio_id`),
+  KEY `idx_movie_studios_role` (`role`),
+  CONSTRAINT `fk_movie_studios_movie` FOREIGN KEY (`movie_id`) REFERENCES `movies` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT `fk_movie_studios_studio` FOREIGN KEY (`studio_id`) REFERENCES `studios` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `movie_studios`
+--
+
+LOCK TABLES `movie_studios` WRITE;
+/*!40000 ALTER TABLE `movie_studios` DISABLE KEYS */;
+/*!40000 ALTER TABLE `movie_studios` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `movie_tags`
+--
+
+DROP TABLE IF EXISTS `movie_tags`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `movie_tags` (
+  `movie_id` bigint unsigned NOT NULL,
+  `tag_id` bigint unsigned NOT NULL,
+  PRIMARY KEY (`movie_id`,`tag_id`),
+  KEY `idx_movie_tags_tag_id` (`tag_id`),
+  CONSTRAINT `fk_movie_tags_movie` FOREIGN KEY (`movie_id`) REFERENCES `movies` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT `fk_movie_tags_tag` FOREIGN KEY (`tag_id`) REFERENCES `tags` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `movie_tags`
+--
+
+LOCK TABLES `movie_tags` WRITE;
+/*!40000 ALTER TABLE `movie_tags` DISABLE KEYS */;
+/*!40000 ALTER TABLE `movie_tags` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `movies`
+--
+
+DROP TABLE IF EXISTS `movies`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `movies` (
+  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
+  `title` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `original_title` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `slug` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `description` text COLLATE utf8mb4_unicode_ci,
+  `poster_url` varchar(500) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `banner_url` varchar(500) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `trailer_url` varchar(500) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `release_year` int NOT NULL,
+  `country` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `language` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `age_rating` varchar(20) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `movie_status` enum('ARCHIVED','DRAFT','PUBLISHED') COLLATE utf8mb4_unicode_ci NOT NULL,
+  `movie_type` enum('SERIES','SINGLE') COLLATE utf8mb4_unicode_ci NOT NULL,
+  `is_premium_only` tinyint(1) NOT NULL DEFAULT '0',
+  `view_count` bigint unsigned NOT NULL DEFAULT '0',
+  `favorite_count` bigint unsigned NOT NULL DEFAULT '0',
+  `average_rating` decimal(3,2) NOT NULL DEFAULT '0.00',
+  `total_ratings` int unsigned NOT NULL DEFAULT '0',
+  `total_reviews` int unsigned NOT NULL DEFAULT '0',
+  `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `published_at` datetime DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `uk_movies_slug` (`slug`),
+  UNIQUE KEY `uc_movie_title_year` (`title`,`release_year`),
+  KEY `idx_movies_title` (`title`),
+  KEY `idx_movies_release_year` (`release_year`),
+  KEY `idx_movies_country` (`country`),
+  KEY `idx_movies_language` (`language`),
+  KEY `idx_movies_movie_status` (`movie_status`),
+  KEY `idx_movies_movie_type` (`movie_type`),
+  KEY `idx_movies_is_premium_only` (`is_premium_only`),
+  KEY `idx_movies_published_at` (`published_at`),
+  KEY `idx_movie_title` (`title`),
+  KEY `idx_movie_created_at` (`created_at`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `movies`
+--
+
+LOCK TABLES `movies` WRITE;
+/*!40000 ALTER TABLE `movies` DISABLE KEYS */;
+/*!40000 ALTER TABLE `movies` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `notifications`
+--
+
+DROP TABLE IF EXISTS `notifications`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `notifications` (
+  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
+  `user_id` bigint unsigned NOT NULL,
+  `title` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `content` text COLLATE utf8mb4_unicode_ci NOT NULL,
+  `type` enum('NEW_EPISODE','PAYMENT_FAILED','PAYMENT_SUCCESS','PREMIUM_EXPIRING','SYSTEM') COLLATE utf8mb4_unicode_ci NOT NULL,
+  `is_read` tinyint(1) NOT NULL DEFAULT '0',
+  `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` datetime(6) NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `idx_notifications_user_id` (`user_id`),
+  KEY `idx_notifications_type` (`type`),
+  KEY `idx_notifications_is_read` (`is_read`),
+  KEY `idx_notifications_created_at` (`created_at`),
+  KEY `idx_notification_user_id` (`user_id`),
+  KEY `idx_notification_is_read` (`is_read`),
+  CONSTRAINT `fk_notifications_user` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `notifications`
+--
+
+LOCK TABLES `notifications` WRITE;
+/*!40000 ALTER TABLE `notifications` DISABLE KEYS */;
+/*!40000 ALTER TABLE `notifications` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `password_reset_tokens`
+--
+
+DROP TABLE IF EXISTS `password_reset_tokens`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `password_reset_tokens` (
+  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
+  `user_id` bigint unsigned NOT NULL,
+  `token` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `expires_at` datetime NOT NULL,
+  `used_at` datetime DEFAULT NULL,
+  `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` datetime(6) NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `uk_password_reset_tokens_token` (`token`),
+  KEY `idx_password_reset_tokens_user_id` (`user_id`),
+  KEY `idx_password_reset_tokens_expires_at` (`expires_at`),
+  CONSTRAINT `fk_password_reset_tokens_user` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `password_reset_tokens`
+--
+
+LOCK TABLES `password_reset_tokens` WRITE;
+/*!40000 ALTER TABLE `password_reset_tokens` DISABLE KEYS */;
+/*!40000 ALTER TABLE `password_reset_tokens` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `payment_transactions`
+--
+
+DROP TABLE IF EXISTS `payment_transactions`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `payment_transactions` (
+  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
+  `user_id` bigint unsigned NOT NULL,
+  `subscription_id` bigint unsigned NOT NULL,
+  `amount` decimal(38,2) DEFAULT NULL,
+  `currency` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `payment_method` enum('VNPAY','MOMO','PAYPAL','STRIPE','BANK_TRANSFER') COLLATE utf8mb4_unicode_ci NOT NULL,
+  `status` enum('PENDING','SUCCESS','FAILED','REFUNDED') COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'PENDING',
+  `provider_transaction_id` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `provider_response` text COLLATE utf8mb4_unicode_ci,
+  `paid_at` datetime DEFAULT NULL,
+  `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `uk_payment_transactions_provider_transaction_id` (`provider_transaction_id`),
+  KEY `idx_payment_transactions_user_id` (`user_id`),
+  KEY `idx_payment_transactions_subscription_id` (`subscription_id`),
+  KEY `idx_payment_transactions_status` (`status`),
+  KEY `idx_payment_transactions_payment_method` (`payment_method`),
+  KEY `idx_payment_transactions_paid_at` (`paid_at`),
+  CONSTRAINT `fk_payment_transactions_subscription` FOREIGN KEY (`subscription_id`) REFERENCES `user_subscriptions` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT `fk_payment_transactions_user` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `payment_transactions`
+--
+
+LOCK TABLES `payment_transactions` WRITE;
+/*!40000 ALTER TABLE `payment_transactions` DISABLE KEYS */;
+/*!40000 ALTER TABLE `payment_transactions` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `persons`
+--
+
+DROP TABLE IF EXISTS `persons`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `persons` (
+  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
+  `full_name` varchar(150) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `stage_name` varchar(150) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `biography` text COLLATE utf8mb4_unicode_ci,
+  `birth_date` date DEFAULT NULL,
+  `nationality` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `avatar_url` varchar(500) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  KEY `idx_persons_full_name` (`full_name`),
+  KEY `idx_persons_stage_name` (`stage_name`),
+  KEY `idx_persons_nationality` (`nationality`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `persons`
+--
+
+LOCK TABLES `persons` WRITE;
+/*!40000 ALTER TABLE `persons` DISABLE KEYS */;
+/*!40000 ALTER TABLE `persons` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `refresh_tokens`
+--
+
+DROP TABLE IF EXISTS `refresh_tokens`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `refresh_tokens` (
+  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
+  `user_id` bigint unsigned NOT NULL,
+  `token` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `expires_at` datetime NOT NULL,
+  `revoked_at` datetime DEFAULT NULL,
+  `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` datetime(6) NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `uk_refresh_tokens_token` (`token`),
+  KEY `idx_refresh_tokens_user_id` (`user_id`),
+  KEY `idx_refresh_tokens_expires_at` (`expires_at`),
+  KEY `idx_refresh_token_user_id` (`user_id`),
+  KEY `idx_refresh_token_token` (`token`,`user_id`),
+  CONSTRAINT `fk_refresh_tokens_user` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `refresh_tokens`
+--
+
+LOCK TABLES `refresh_tokens` WRITE;
+/*!40000 ALTER TABLE `refresh_tokens` DISABLE KEYS */;
+/*!40000 ALTER TABLE `refresh_tokens` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `reports`
+--
+
+DROP TABLE IF EXISTS `reports`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `reports` (
+  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
+  `reporter_user_id` bigint unsigned NOT NULL,
+  `comment_id` bigint unsigned DEFAULT NULL,
+  `review_id` bigint unsigned DEFAULT NULL,
+  `reason` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `description` text COLLATE utf8mb4_unicode_ci,
+  `status` enum('PENDING','REJECTED','RESOLVED') COLLATE utf8mb4_unicode_ci NOT NULL,
+  `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `resolved_at` datetime DEFAULT NULL,
+  `updated_at` datetime(6) NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `idx_reports_reporter_user_id` (`reporter_user_id`),
+  KEY `idx_reports_comment_id` (`comment_id`),
+  KEY `idx_reports_review_id` (`review_id`),
+  KEY `idx_reports_status` (`status`),
+  KEY `idx_report_status` (`status`),
+  KEY `idx_report_created_at` (`created_at`),
+  CONSTRAINT `fk_reports_comment` FOREIGN KEY (`comment_id`) REFERENCES `comments` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT `fk_reports_reporter_user` FOREIGN KEY (`reporter_user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT `fk_reports_review` FOREIGN KEY (`review_id`) REFERENCES `reviews` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `reports`
+--
+
+LOCK TABLES `reports` WRITE;
+/*!40000 ALTER TABLE `reports` DISABLE KEYS */;
+/*!40000 ALTER TABLE `reports` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `review_likes`
+--
+
+DROP TABLE IF EXISTS `review_likes`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `review_likes` (
+  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
+  `user_id` bigint unsigned NOT NULL,
+  `review_id` bigint unsigned NOT NULL,
+  `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` datetime(6) NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `uk_review_likes_user_review` (`user_id`,`review_id`),
+  UNIQUE KEY `UKb74o5l2fmrgqg556d9nyop0ns` (`user_id`,`review_id`),
+  KEY `idx_review_likes_review_id` (`review_id`),
+  CONSTRAINT `fk_review_likes_review` FOREIGN KEY (`review_id`) REFERENCES `reviews` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT `fk_review_likes_user` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `review_likes`
+--
+
+LOCK TABLES `review_likes` WRITE;
+/*!40000 ALTER TABLE `review_likes` DISABLE KEYS */;
+/*!40000 ALTER TABLE `review_likes` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `reviews`
+--
+
+DROP TABLE IF EXISTS `reviews`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `reviews` (
+  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
+  `user_id` bigint unsigned NOT NULL,
+  `movie_id` bigint unsigned NOT NULL,
+  `rating` int DEFAULT NULL,
+  `title` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `content` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `is_edited` tinyint(1) NOT NULL DEFAULT '0',
+  `status` enum('HIDDEN','REPORTED','VISIBLE') COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `like_count` int unsigned NOT NULL DEFAULT '0',
+  `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `uk_reviews_user_movie` (`user_id`,`movie_id`),
+  UNIQUE KEY `UKovijrmb7g6cvqvlgr25vb8r98` (`user_id`,`movie_id`),
+  KEY `idx_reviews_movie_id` (`movie_id`),
+  KEY `idx_reviews_status` (`status`),
+  KEY `idx_reviews_rating` (`rating`),
+  KEY `idx_review_movie_id` (`movie_id`),
+  KEY `idx_review_user_id` (`user_id`),
+  KEY `idx_review_created_at` (`created_at`),
+  CONSTRAINT `fk_reviews_movie` FOREIGN KEY (`movie_id`) REFERENCES `movies` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT `fk_reviews_user` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `reviews`
+--
+
+LOCK TABLES `reviews` WRITE;
+/*!40000 ALTER TABLE `reviews` DISABLE KEYS */;
+/*!40000 ALTER TABLE `reviews` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `search_histories`
+--
+
+DROP TABLE IF EXISTS `search_histories`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `search_histories` (
+  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
+  `user_id` bigint unsigned NOT NULL,
+  `keyword` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `searched_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `created_at` datetime(6) NOT NULL,
+  `updated_at` datetime(6) NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `idx_search_histories_user_id` (`user_id`),
+  KEY `idx_search_histories_keyword` (`keyword`),
+  KEY `idx_search_histories_searched_at` (`searched_at`),
+  KEY `idx_search_history_user_id` (`user_id`),
+  CONSTRAINT `fk_search_histories_user` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `search_histories`
+--
+
+LOCK TABLES `search_histories` WRITE;
+/*!40000 ALTER TABLE `search_histories` DISABLE KEYS */;
+/*!40000 ALTER TABLE `search_histories` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `studios`
+--
+
+DROP TABLE IF EXISTS `studios`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `studios` (
+  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
+  `name` varchar(150) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `slug` varchar(180) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `description` text COLLATE utf8mb4_unicode_ci,
+  `logo_url` varchar(500) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `country` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `website_url` varchar(500) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `uk_studios_name` (`name`),
+  UNIQUE KEY `uk_studios_slug` (`slug`),
+  UNIQUE KEY `uc_studio_name` (`name`),
+  KEY `idx_studios_country` (`country`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `studios`
+--
+
+LOCK TABLES `studios` WRITE;
+/*!40000 ALTER TABLE `studios` DISABLE KEYS */;
+/*!40000 ALTER TABLE `studios` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `subscription_plans`
+--
+
+DROP TABLE IF EXISTS `subscription_plans`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `subscription_plans` (
+  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
+  `name` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `code` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `description` text COLLATE utf8mb4_unicode_ci,
+  `price` decimal(38,2) DEFAULT NULL,
+  `duration_days` int unsigned NOT NULL,
+  `max_devices` int unsigned NOT NULL DEFAULT '1',
+  `video_quality` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `has_ads_free` tinyint(1) NOT NULL DEFAULT '1',
+  `is_active` tinyint(1) NOT NULL DEFAULT '1',
+  `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `uk_subscription_plans_name` (`name`),
+  UNIQUE KEY `uk_subscription_plans_code` (`code`),
+  KEY `idx_subscription_plans_is_active` (`is_active`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `subscription_plans`
+--
+
+LOCK TABLES `subscription_plans` WRITE;
+/*!40000 ALTER TABLE `subscription_plans` DISABLE KEYS */;
+/*!40000 ALTER TABLE `subscription_plans` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `tags`
+--
+
+DROP TABLE IF EXISTS `tags`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `tags` (
+  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
+  `name` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `slug` varchar(120) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `description` text COLLATE utf8mb4_unicode_ci,
+  `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` datetime(6) NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `uk_tags_name` (`name`),
+  UNIQUE KEY `uk_tags_slug` (`slug`),
+  UNIQUE KEY `uc_tag_name` (`name`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `tags`
+--
+
+LOCK TABLES `tags` WRITE;
+/*!40000 ALTER TABLE `tags` DISABLE KEYS */;
+/*!40000 ALTER TABLE `tags` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `user_subscriptions`
+--
+
+DROP TABLE IF EXISTS `user_subscriptions`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `user_subscriptions` (
+  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
+  `user_id` bigint unsigned NOT NULL,
+  `plan_id` bigint unsigned NOT NULL,
+  `start_at` datetime NOT NULL,
+  `end_at` datetime NOT NULL,
+  `status` enum('PENDING','ACTIVE','EXPIRED','CANCELLED') COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'PENDING',
+  `auto_renew` tinyint(1) NOT NULL DEFAULT '0',
+  `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  KEY `idx_user_subscriptions_user_id` (`user_id`),
+  KEY `idx_user_subscriptions_plan_id` (`plan_id`),
+  KEY `idx_user_subscriptions_status` (`status`),
+  KEY `idx_user_subscriptions_end_at` (`end_at`),
+  CONSTRAINT `fk_user_subscriptions_plan` FOREIGN KEY (`plan_id`) REFERENCES `subscription_plans` (`id`) ON DELETE RESTRICT ON UPDATE CASCADE,
+  CONSTRAINT `fk_user_subscriptions_user` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `user_subscriptions`
+--
+
+LOCK TABLES `user_subscriptions` WRITE;
+/*!40000 ALTER TABLE `user_subscriptions` DISABLE KEYS */;
+/*!40000 ALTER TABLE `user_subscriptions` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `users`
+--
+
+DROP TABLE IF EXISTS `users`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `users` (
+  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
+  `username` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `email` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `password` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `full_name` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `avatar_url` varchar(500) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `role` enum('ROLE_ADMIN','ROLE_USER') COLLATE utf8mb4_unicode_ci NOT NULL,
+  `account_status` enum('ACTIVE','BLOCKED','DELETED') COLLATE utf8mb4_unicode_ci NOT NULL,
+  `premium_expiry_date` datetime DEFAULT NULL,
+  `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `last_login_at` datetime DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `uk_users_username` (`username`),
+  UNIQUE KEY `uk_users_email` (`email`),
+  UNIQUE KEY `uc_user_username` (`username`),
+  UNIQUE KEY `uc_user_email` (`email`),
+  KEY `idx_users_role` (`role`),
+  KEY `idx_users_account_status` (`account_status`),
+  KEY `idx_users_premium_expiry_date` (`premium_expiry_date`),
+  KEY `idx_user_username` (`username`),
+  KEY `idx_user_email` (`email`),
+  KEY `idx_user_role` (`role`),
+  KEY `idx_user_account_status` (`account_status`),
+  KEY `idx_user_created_at` (`created_at`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `users`
+--
+
+LOCK TABLES `users` WRITE;
+/*!40000 ALTER TABLE `users` DISABLE KEYS */;
+/*!40000 ALTER TABLE `users` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `watch_histories`
+--
+
+DROP TABLE IF EXISTS `watch_histories`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `watch_histories` (
+  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
+  `user_id` bigint unsigned NOT NULL,
+  `movie_id` bigint unsigned NOT NULL,
+  `episode_id` bigint unsigned NOT NULL,
+  `watched_duration_seconds` int unsigned NOT NULL DEFAULT '0',
+  `stopped_at_second` int unsigned NOT NULL DEFAULT '0',
+  `is_completed` tinyint(1) NOT NULL DEFAULT '0',
+  `last_watched_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `uk_watch_histories_user_episode` (`user_id`,`episode_id`),
+  UNIQUE KEY `uc_watch_history_user_episode` (`user_id`,`episode_id`),
+  KEY `idx_watch_histories_movie_id` (`movie_id`),
+  KEY `idx_watch_histories_last_watched_at` (`last_watched_at`),
+  KEY `idx_watch_history_user_id` (`user_id`),
+  KEY `idx_watch_history_movie_id` (`movie_id`),
+  KEY `idx_watch_history_episode_id` (`episode_id`),
+  KEY `idx_watch_history_last_watched` (`last_watched_at`),
+  CONSTRAINT `fk_watch_histories_episode` FOREIGN KEY (`episode_id`) REFERENCES `episodes` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT `fk_watch_histories_movie` FOREIGN KEY (`movie_id`) REFERENCES `movies` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT `fk_watch_histories_user` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `watch_histories`
+--
+
+LOCK TABLES `watch_histories` WRITE;
+/*!40000 ALTER TABLE `watch_histories` DISABLE KEYS */;
+/*!40000 ALTER TABLE `watch_histories` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `watchlists`
+--
+
+DROP TABLE IF EXISTS `watchlists`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `watchlists` (
+  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
+  `user_id` bigint unsigned NOT NULL,
+  `movie_id` bigint unsigned NOT NULL,
+  `added_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `created_at` datetime(6) NOT NULL,
+  `updated_at` datetime(6) NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `uk_watchlists_user_movie` (`user_id`,`movie_id`),
+  KEY `idx_watchlists_movie_id` (`movie_id`),
+  KEY `idx_watchlist_user_id` (`user_id`),
+  KEY `idx_watchlist_movie_id` (`movie_id`),
+  CONSTRAINT `fk_watchlists_movie` FOREIGN KEY (`movie_id`) REFERENCES `movies` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT `fk_watchlists_user` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `watchlists`
+--
+
+LOCK TABLES `watchlists` WRITE;
+/*!40000 ALTER TABLE `watchlists` DISABLE KEYS */;
+/*!40000 ALTER TABLE `watchlists` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Dumping routines for database 'movie_streaming_platform'
+--
+/*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
+
+/*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
+/*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;
+/*!40014 SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS */;
+/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
+/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
+/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
+/*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
+
+-- Dump completed on 2026-04-13 22:11:33
