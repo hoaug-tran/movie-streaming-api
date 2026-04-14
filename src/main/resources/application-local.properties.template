@@ -15,6 +15,14 @@ spring.mail.username=YOUR_MAILTRAP_USERNAME
 spring.mail.password=YOUR_MAILTRAP_PASSWORD
 # Example: spring.mail.password=xxx
 
+# PayOS Payment Gateway (Get these from https://dashboard.payos.vn)
+payos.client-id=YOUR_PAYOS_CLIENT_ID
+# Example: payos.client-id=xxx
+payos.api-key=YOUR_PAYOS_API_KEY
+# Example: payos.api-key=xxx
+payos.checksum-key=YOUR_PAYOS_CHECKSUM_KEY
+# Example: payos.checksum-key=xxx
+
 # Optional: Override other properties for local development
 # spring.jpa.show-sql=true
 # logging.level.com.hoaug.movieapi=DEBUG
