@@ -1,8 +1,12 @@
 package com.hoaug.movieapi.modules.payment.presentation.controller;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -11,7 +15,10 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.hoaug.movieapi.common.enums.ErrorCode;
+import com.hoaug.movieapi.common.exception.AppException;
 import com.hoaug.movieapi.common.response.ResponseUtil;
+import com.hoaug.movieapi.modules.auth.domain.repository.AuthUserRepository;
 import com.hoaug.movieapi.modules.payment.application.service.PaymentService;
 import com.hoaug.movieapi.modules.payment.application.service.PaymentService.PaymentLinkResponse;
 
@@ -29,12 +36,15 @@ public class PaymentController {
   private final PaymentService paymentService;
   private final PayOS payOS;
   private final ObjectMapper objectMapper;
+  private final AuthUserRepository authUserRepository;
 
   @PostMapping("/payments/checkout")
   @PreAuthorize("isAuthenticated()")
-  public ResponseEntity<?> createCheckoutLink(@RequestParam Long planId, Authentication auth) {
+  public ResponseEntity<?> createCheckoutLink (@RequestParam Long planId, Authentication auth) {
     try {
-      Long userId = Long.parseLong(auth.getName());
+      String username = auth.getName();
+      Long userId = authUserRepository.findByUsername(username)
+          .orElseThrow( () -> new AppException(ErrorCode.USER_NOT_FOUND)).getId();
       PaymentLinkResponse link = paymentService.createPaymentLink(userId, planId);
       return ResponseUtil.ok(link);
     } catch (Exception e) {
@@ -44,7 +54,7 @@ public class PaymentController {
   }
 
   @PostMapping("/webhooks/payment")
-  public ResponseEntity<String> handlePaymentWebhook(@RequestBody Webhook webhook) {
+  public ResponseEntity<String> handlePaymentWebhook (@RequestBody Webhook webhook) {
     try {
       var webhookData = payOS.webhooks().verify(webhook);
 
@@ -62,6 +72,36 @@ public class PaymentController {
     } catch (Exception e) {
       log.error("Webhook error processing payment notification", e);
       return ResponseEntity.status(400).body("ERROR");
+    }
+  }
+
+  @GetMapping("/payments/success")
+  public ResponseEntity<?> handlePaymentSuccess (@RequestParam String orderCode,
+      @RequestParam(required = false) String code, @RequestParam(required = false) String id,
+      @RequestParam(required = false) String cancel,
+      @RequestParam(required = false) String status) {
+    try {
+      if (!"00".equals(code) || !"PAID".equals(status)) {
+        return ResponseUtil
+            .badRequest("Payment failed or cancelled: code=" + code + ", status=" + status);
+      }
+
+      Map<String, Object> data = new HashMap<>();
+      data.put("code", code);
+      data.put("id", id);
+      data.put("cancel", cancel);
+      data.put("status", status);
+      data.put("timestamp", System.currentTimeMillis());
+
+      String providerResponse = objectMapper.writeValueAsString(data);
+
+      paymentService.completePayment(orderCode, orderCode, providerResponse);
+
+      var paymentInfo = paymentService.getPaymentByOrderCode(orderCode);
+      return ResponseUtil.ok(paymentInfo);
+    } catch (Exception e) {
+      log.error("Payment success callback error", e);
+      return ResponseUtil.badRequest("Payment verification failed: " + e.getMessage());
     }
   }
 }
