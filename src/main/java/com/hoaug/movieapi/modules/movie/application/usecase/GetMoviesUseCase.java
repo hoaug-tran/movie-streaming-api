@@ -2,6 +2,7 @@ package com.hoaug.movieapi.modules.movie.application.usecase;
 
 import java.util.List;
 
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Component;
 
 import com.hoaug.movieapi.modules.movie.application.dto.response.MovieSummaryResponse;
@@ -19,6 +20,7 @@ public class GetMoviesUseCase {
     this.movieMapper = movieMapper;
   }
 
+  @Cacheable(cacheNames = "movies", key = "'all_published_movies'")
   public List<MovieSummaryResponse> execute () {
     return movieRepository.findAllPublished().stream().map(movieMapper::toSummaryResponse).toList();
   }

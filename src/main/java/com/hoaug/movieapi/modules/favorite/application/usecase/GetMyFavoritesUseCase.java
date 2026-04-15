@@ -2,6 +2,7 @@ package com.hoaug.movieapi.modules.favorite.application.usecase;
 
 import java.util.List;
 
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Component;
 
 import com.hoaug.movieapi.modules.favorite.application.dto.response.FavoriteResponse;
@@ -20,6 +21,7 @@ public class GetMyFavoritesUseCase {
     this.favoriteMapper = favoriteMapper;
   }
 
+  @Cacheable(cacheNames = "favorites", key = "'user:' + #userId + ':favorites'")
   public List<FavoriteResponse> execute (Long userId) {
     return favoriteRepository.findByUserIdOrderByAddedAtDesc(userId).stream()
         .map(favoriteMapper::toResponse).toList();

@@ -47,6 +47,7 @@ public class SubscriptionScheduler {
 
     expiringSubscriptions.forEach(sub -> {
       CreateNotificationRequest req = new CreateNotificationRequest();
+      req.setUserId(sub.getUserId());
       req.setTitle("Subscription Expiring Soon");
       req.setContent("Your subscription will expire on " + sub.getEndAt()
           + ". Please renew to continue watching.");

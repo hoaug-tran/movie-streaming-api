@@ -1,5 +1,6 @@
 package com.hoaug.movieapi.modules.favorite.application.usecase;
 
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.stereotype.Component;
 
 import com.hoaug.movieapi.common.event.EventPublisher;
@@ -18,6 +19,7 @@ public class RemoveFavoriteUseCase {
     this.eventPublisher = eventPublisher;
   }
 
+  @CacheEvict(cacheNames = "favorites", key = "'user:' + #userId + ':favorites'")
   public void execute (Long userId, Long movieId) {
     favoriteRepository.findByUserIdAndMovieId(userId, movieId).ifPresent(favorite -> {
       favoriteRepository.delete(favorite);

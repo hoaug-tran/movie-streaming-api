@@ -2,6 +2,7 @@ package com.hoaug.movieapi.modules.favorite.application.usecase;
 
 import java.time.LocalDateTime;
 
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.stereotype.Component;
 
 import com.hoaug.movieapi.common.enums.ErrorCode;
@@ -30,6 +31,7 @@ public class AddFavoriteUseCase {
     this.eventPublisher = eventPublisher;
   }
 
+  @CacheEvict(cacheNames = "favorites", key = "'user:' + #userId + ':favorites'")
   public FavoriteResponse execute (Long userId, Long movieId) {
     movieRepository.findById(movieId)
         .orElseThrow( () -> new AppException(ErrorCode.MOVIE_NOT_FOUND));

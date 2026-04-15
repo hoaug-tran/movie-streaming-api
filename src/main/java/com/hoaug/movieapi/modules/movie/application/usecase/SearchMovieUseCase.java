@@ -1,5 +1,6 @@
 package com.hoaug.movieapi.modules.movie.application.usecase;
 
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -21,6 +22,7 @@ public class SearchMovieUseCase {
     this.jpaMovieRepository = jpaMovieRepository;
   }
 
+  @Cacheable(cacheNames = "searchResults", key = "#request.keyword + ':' + #request.page + ':' + #request.size + ':' + #request.sortBy + ':' + #request.sortDirection")
   public SearchMovieResponse execute (SearchMovieRequest request) {
     Sort.Direction direction = "DESC".equalsIgnoreCase(request.getSortDirection())
         ? Sort.Direction.DESC

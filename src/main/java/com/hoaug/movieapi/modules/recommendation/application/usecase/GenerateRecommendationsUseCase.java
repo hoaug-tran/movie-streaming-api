@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.stereotype.Component;
 
 import com.hoaug.movieapi.modules.movie.application.dto.response.MovieSummaryResponse;
@@ -13,8 +14,6 @@ import com.hoaug.movieapi.modules.recommendation.application.dto.response.MovieR
 import com.hoaug.movieapi.modules.recommendation.application.mapper.MovieRecommendationMapper;
 import com.hoaug.movieapi.modules.recommendation.domain.model.MovieRecommendation;
 import com.hoaug.movieapi.modules.recommendation.domain.repository.MovieRecommendationRepository;
-
-// TODO: Tích hợp AI
 
 @Component
 public class GenerateRecommendationsUseCase {
@@ -30,6 +29,7 @@ public class GenerateRecommendationsUseCase {
     this.movieRecommendationMapper = movieRecommendationMapper;
   }
 
+  @CacheEvict(cacheNames = "recommendations", key = "'user:' + #request.userId + ':recommendations'")
   public List<MovieRecommendationResponse> execute (GenerateRecommendationsRequest request) {
     int limit = request.getLimit() == null || request.getLimit() <= 0 ? 10 : request.getLimit();
 

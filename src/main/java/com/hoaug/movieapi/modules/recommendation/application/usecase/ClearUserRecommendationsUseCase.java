@@ -1,5 +1,6 @@
 package com.hoaug.movieapi.modules.recommendation.application.usecase;
 
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.stereotype.Component;
 
 import com.hoaug.movieapi.modules.recommendation.domain.repository.MovieRecommendationRepository;
@@ -14,6 +15,7 @@ public class ClearUserRecommendationsUseCase {
     this.movieRecommendationRepository = movieRecommendationRepository;
   }
 
+  @CacheEvict(cacheNames = "recommendations", key = "'user:' + #userId + ':recommendations'")
   public void execute (Long userId) {
     movieRecommendationRepository.deleteAllByUserId(userId);
   }

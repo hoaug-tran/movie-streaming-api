@@ -2,6 +2,7 @@ package com.hoaug.movieapi.modules.movie.application.usecase;
 
 import java.time.LocalDateTime;
 
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.stereotype.Component;
 
 import com.hoaug.movieapi.common.enums.ErrorCode;
@@ -39,6 +40,7 @@ public class UpdateMovieStatusUseCase {
     this.getMovieStudiosUseCase = getMovieStudiosUseCase;
   }
 
+  @CacheEvict(cacheNames = "movies", key = "'all_published_movies'", condition = "#request.status == T(com.hoaug.movieapi.modules.movie.domain.model.MovieStatus).PUBLISHED")
   public MovieDetailResponse execute (Long movieId, UpdateMovieStatusRequest request) {
     Movie movie = movieRepository.findById(movieId)
         .orElseThrow( () -> new AppException(ErrorCode.MOVIE_NOT_FOUND));
