@@ -1,14 +1,14 @@
 package com.hoaug.movieapi.common.security;
 
 import java.time.Instant;
-import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.springframework.stereotype.Component;
 
 @Component
 public class RateLimiter {
-  private final Map<String, RateLimitInfo> limitMap = new HashMap<>();
+  private final Map<String, RateLimitInfo> limitMap = new ConcurrentHashMap<>();
   private static final long RATE_LIMIT_WINDOW = 60000;
 
   public boolean isAllowed (String key, int maxRequests) {
