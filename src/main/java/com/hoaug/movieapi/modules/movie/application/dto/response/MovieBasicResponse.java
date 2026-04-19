@@ -9,6 +9,8 @@ public class MovieBasicResponse {
   private Double averageRating;
   private Long viewCount;
   private Long favoriteCount;
+  private String bannerUrl;
+  private String description;
 
   public Long getId () {
     return id;
@@ -72,5 +74,21 @@ public class MovieBasicResponse {
 
   public void setFavoriteCount (Long favoriteCount) {
     this.favoriteCount = favoriteCount;
+  }
+
+  public String getBannerUrl () {
+    return bannerUrl;
+  }
+
+  public void setBannerUrl (String bannerUrl) {
+    this.bannerUrl = bannerUrl;
+  }
+
+  public String getDescription () {
+    return description;
+  }
+
+  public void setDescription (String description) {
+    this.description = description;
   }
 }

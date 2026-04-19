@@ -21,15 +21,27 @@ public class MovieMapper {
     MovieSummaryResponse response = new MovieSummaryResponse();
     response.setId(movie.getId());
     response.setTitle(movie.getTitle());
+    response.setOriginalTitle(movie.getOriginalTitle());
     response.setSlug(movie.getSlug());
+    response.setDescription(movie.getDescription());
     response.setPosterUrl(movie.getPosterUrl());
+    response.setBannerUrl(movie.getBannerUrl());
+    response.setTrailerUrl(movie.getTrailerUrl());
     response.setReleaseYear(movie.getReleaseYear());
     response.setCountry(movie.getCountry());
     response.setLanguage(movie.getLanguage());
     response.setAgeRating(movie.getAgeRating());
     response.setMovieType(movie.getMovieType().name());
+    response.setMovieStatus(movie.getMovieStatus().name());
     response.setIsPremiumOnly(movie.getIsPremiumOnly());
+    response.setViewCount(movie.getViewCount());
+    response.setFavoriteCount(movie.getFavoriteCount());
     response.setAverageRating(movie.getAverageRating());
+    response.setTotalRatings(movie.getTotalRatings());
+    response.setTotalReviews(movie.getTotalReviews());
+    response.setCreatedAt(movie.getCreatedAt());
+    response.setUpdatedAt(movie.getUpdatedAt());
+    response.setPublishedAt(movie.getPublishedAt());
     return response;
   }
 

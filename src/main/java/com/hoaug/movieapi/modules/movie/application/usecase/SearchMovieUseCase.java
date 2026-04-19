@@ -54,6 +54,8 @@ public class SearchMovieUseCase {
     res.setAverageRating(movie.getAverageRating().doubleValue());
     res.setViewCount(movie.getViewCount());
     res.setFavoriteCount(movie.getFavoriteCount());
+    res.setBannerUrl(movie.getBannerUrl());
+    res.setDescription(movie.getDescription());
     return res;
   }
 }

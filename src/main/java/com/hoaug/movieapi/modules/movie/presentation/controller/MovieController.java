@@ -3,6 +3,7 @@ package com.hoaug.movieapi.modules.movie.presentation.controller;
 import java.util.List;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -23,6 +24,7 @@ import com.hoaug.movieapi.modules.movie.application.dto.response.SearchMovieResp
 import com.hoaug.movieapi.modules.movie.application.dto.response.StudioResponse;
 import com.hoaug.movieapi.modules.movie.application.dto.response.TagResponse;
 import com.hoaug.movieapi.modules.movie.application.usecase.AdvancedSearchMovieUseCase;
+import com.hoaug.movieapi.modules.movie.application.usecase.GetCategoriesCachedUseCase;
 import com.hoaug.movieapi.modules.movie.application.usecase.GetEpisodesByMovieUseCase;
 import com.hoaug.movieapi.modules.movie.application.usecase.GetMovieByIdUseCase;
 import com.hoaug.movieapi.modules.movie.application.usecase.GetMovieBySlugUseCase;
@@ -41,6 +43,7 @@ import jakarta.validation.constraints.Positive;
 
 @RestController
 @RequestMapping("${api.prefix:/api/v1}/movies")
+@CrossOrigin(origins = "http://localhost:3000", allowCredentials = "true")
 public class MovieController {
 
   private final GetMoviesUseCase getMoviesUseCase;
@@ -48,6 +51,7 @@ public class MovieController {
   private final GetMovieBySlugUseCase getMovieBySlugUseCase;
   private final GetEpisodesByMovieUseCase getEpisodesByMovieUseCase;
   private final GetMovieCategoriesUseCase getMovieCategoriesUseCase;
+  private final GetCategoriesCachedUseCase getCategoriesCachedUseCase;
   private final GetMovieTagsUseCase getMovieTagsUseCase;
   private final GetMoviePersonsUseCase getMoviePersonsUseCase;
   private final GetMovieStudiosUseCase getMovieStudiosUseCase;
@@ -61,17 +65,19 @@ public class MovieController {
   public MovieController(GetMoviesUseCase getMoviesUseCase, GetMovieByIdUseCase getMovieByIdUseCase,
       GetMovieBySlugUseCase getMovieBySlugUseCase,
       GetEpisodesByMovieUseCase getEpisodesByMovieUseCase,
-      GetMovieCategoriesUseCase getMovieCategoriesUseCase, GetMovieTagsUseCase getMovieTagsUseCase,
-      GetMoviePersonsUseCase getMoviePersonsUseCase, GetMovieStudiosUseCase getMovieStudiosUseCase,
-      GetPersonsUseCase getPersonsUseCase, GetPersonByIdUseCase getPersonByIdUseCase,
-      GetStudiosUseCase getStudiosUseCase, GetStudioByIdUseCase getStudioByIdUseCase,
-      SearchMovieUseCase searchMovieUseCase,
+      GetMovieCategoriesUseCase getMovieCategoriesUseCase,
+      GetCategoriesCachedUseCase getCategoriesCachedUseCase,
+      GetMovieTagsUseCase getMovieTagsUseCase, GetMoviePersonsUseCase getMoviePersonsUseCase,
+      GetMovieStudiosUseCase getMovieStudiosUseCase, GetPersonsUseCase getPersonsUseCase,
+      GetPersonByIdUseCase getPersonByIdUseCase, GetStudiosUseCase getStudiosUseCase,
+      GetStudioByIdUseCase getStudioByIdUseCase, SearchMovieUseCase searchMovieUseCase,
       AdvancedSearchMovieUseCase advancedSearchMovieUseCase) {
     this.getMoviesUseCase = getMoviesUseCase;
     this.getMovieByIdUseCase = getMovieByIdUseCase;
     this.getMovieBySlugUseCase = getMovieBySlugUseCase;
     this.getEpisodesByMovieUseCase = getEpisodesByMovieUseCase;
     this.getMovieCategoriesUseCase = getMovieCategoriesUseCase;
+    this.getCategoriesCachedUseCase = getCategoriesCachedUseCase;
     this.getMovieTagsUseCase = getMovieTagsUseCase;
     this.getMoviePersonsUseCase = getMoviePersonsUseCase;
     this.getMovieStudiosUseCase = getMovieStudiosUseCase;
@@ -86,6 +92,11 @@ public class MovieController {
   @GetMapping
   public ResponseEntity<List<MovieSummaryResponse>> getMovies () {
     return ResponseUtil.ok(getMoviesUseCase.execute());
+  }
+
+  @GetMapping("/categories")
+  public ResponseEntity<List<CategoryResponse>> getCategories () {
+    return ResponseUtil.ok(getCategoriesCachedUseCase.execute());
   }
 
   @PostMapping("/search")
