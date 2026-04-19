@@ -10,7 +10,6 @@ import org.springframework.data.redis.cache.RedisCacheConfiguration;
 import org.springframework.data.redis.cache.RedisCacheManager;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.serializer.RedisSerializationContext;
-import org.springframework.data.redis.serializer.RedisSerializer;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
 
 @Configuration
@@ -31,15 +30,17 @@ public class CacheConfig {
         .withCacheConfiguration("favorites", createCacheConfiguration(Duration.ofMinutes(5)))
         .withCacheConfiguration("watchlist", createCacheConfiguration(Duration.ofMinutes(5)))
         .withCacheConfiguration("watchHistory", createCacheConfiguration(Duration.ofMinutes(2)))
+        .withCacheConfiguration("categories", createCacheConfiguration(Duration.ofHours(6)))
         .build();
   }
 
   private RedisCacheConfiguration createCacheConfiguration (Duration ttl) {
+    var serializer = org.springframework.data.redis.serializer.RedisSerializer.json();
+
     return RedisCacheConfiguration.defaultCacheConfig().entryTtl(ttl)
         .serializeKeysWith(
             RedisSerializationContext.SerializationPair.fromSerializer(new StringRedisSerializer()))
-        .serializeValuesWith(
-            RedisSerializationContext.SerializationPair.fromSerializer(RedisSerializer.json()))
+        .serializeValuesWith(RedisSerializationContext.SerializationPair.fromSerializer(serializer))
         .disableCachingNullValues();
   }
 }
