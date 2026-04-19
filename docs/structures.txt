@@ -1,0 +1,1108 @@
+Folder PATH listing for volume Windows
+Volume serial number is 8457-06C0
+C:\USERS\HOAUG\DESKTOP\DOAN1.2\MOVIE-PLATFORM\MOVIE-BACKEND\MOVIE-STREAMING-API\SRC
+├───main
+│   ├───java
+│   │   └───com
+│   │       └───hoaug
+│   │           └───movieapi
+│   │               │   HelloWorld.java
+│   │               │   MovieStreamingApiApplication.java
+│   │               │   
+│   │               ├───common
+│   │               │   ├───annotation
+│   │               │   ├───config
+│   │               │   │       CacheConfig.java
+│   │               │   │       MapperConfig.java
+│   │               │   │       PayOSBeanConfig.java
+│   │               │   │       PayOSConfig.java
+│   │               │   │       PersistenceConfig.java
+│   │               │   │       
+│   │               │   ├───constant
+│   │               │   ├───dto
+│   │               │   │   │   ApiErrorResponse.java
+│   │               │   │   │   FieldError.java
+│   │               │   │   │   
+│   │               │   │   ├───request
+│   │               │   │   └───response
+│   │               │   ├───enums
+│   │               │   │       ErrorCode.java
+│   │               │   │       
+│   │               │   ├───event
+│   │               │   │       DomainEvent.java
+│   │               │   │       EventPublisher.java
+│   │               │   │       EventPublisherImpl.java
+│   │               │   │       FavoriteAddedEvent.java
+│   │               │   │       FavoriteRemovedEvent.java
+│   │               │   │       ReviewCreatedEvent.java
+│   │               │   │       SubscriptionActivatedEvent.java
+│   │               │   │       UserLoggedInEvent.java
+│   │               │   │       
+│   │               │   ├───exception
+│   │               │   │       AppException.java
+│   │               │   │       
+│   │               │   ├───filter
+│   │               │   │       HttpLoggingFilter.java
+│   │               │   │       
+│   │               │   ├───handler
+│   │               │   │       GlobalExceptionHandler.java
+│   │               │   │       
+│   │               │   ├───mapper
+│   │               │   │       EntityMapper.java
+│   │               │   │       
+│   │               │   ├───model
+│   │               │   │       BaseEntity.java
+│   │               │   │       
+│   │               │   ├───response
+│   │               │   │       ResponseUtil.java
+│   │               │   │       
+│   │               │   ├───security
+│   │               │   │       BruteForceProtection.java
+│   │               │   │       LikeSpamValidator.java
+│   │               │   │       RateLimiter.java
+│   │               │   │       RateLimitInterceptor.java
+│   │               │   │       SpamDetector.java
+│   │               │   │       
+│   │               │   ├───service
+│   │               │   │       BaseService.java
+│   │               │   │       BaseServiceImpl.java
+│   │               │   │       
+│   │               │   ├───util
+│   │               │   │       HtmlSanitizer.java
+│   │               │   │       
+│   │               │   └───validator
+│   │               │           SafeStringValidator.java
+│   │               │           ValidSafeString.java
+│   │               │           
+│   │               ├───config
+│   │               │   │   RateLimitConfig.java
+│   │               │   │   SchedulerConfig.java
+│   │               │   │   SecurityConfig.java
+│   │               │   │   WebConfig.java
+│   │               │   │   
+│   │               │   └───properties
+│   │               │           ApiProperties.java
+│   │               │           JwtProperties.java
+│   │               │           
+│   │               └───modules
+│   │                   ├───advertisement
+│   │                   │   ├───application
+│   │                   │   │   ├───dto
+│   │                   │   │   │   ├───request
+│   │                   │   │   │   │       CreateAdvertisementRequest.java
+│   │                   │   │   │   │       CreateAdvertisementViewRequest.java
+│   │                   │   │   │   │       MarkAdvertisementClickedRequest.java
+│   │                   │   │   │   │       
+│   │                   │   │   │   └───response
+│   │                   │   │   │           AdvertisementResponse.java
+│   │                   │   │   │           AdvertisementViewResponse.java
+│   │                   │   │   │           
+│   │                   │   │   ├───mapper
+│   │                   │   │   │       AdvertisementMapper.java
+│   │                   │   │   │       
+│   │                   │   │   └───usecase
+│   │                   │   │           CreateAdvertisementUseCase.java
+│   │                   │   │           CreateAdvertisementViewUseCase.java
+│   │                   │   │           GetActiveAdvertisementsUseCase.java
+│   │                   │   │           GetAvailableAdvertisementsByTypeUseCase.java
+│   │                   │   │           GetMyAdvertisementViewsUseCase.java
+│   │                   │   │           MarkAdvertisementClickedUseCase.java
+│   │                   │   │           
+│   │                   │   ├───domain
+│   │                   │   │   ├───model
+│   │                   │   │   │       Advertisement.java
+│   │                   │   │   │       AdvertisementType.java
+│   │                   │   │   │       AdvertisementView.java
+│   │                   │   │   │       
+│   │                   │   │   ├───repository
+│   │                   │   │   │       AdvertisementRepository.java
+│   │                   │   │   │       AdvertisementViewRepository.java
+│   │                   │   │   │       
+│   │                   │   │   ├───service
+│   │                   │   │   └───strategy
+│   │                   │   ├───infrastructure
+│   │                   │   │   └───persistence
+│   │                   │   │       ├───adapter
+│   │                   │   │       │       AdvertisementRepositoryAdapter.java
+│   │                   │   │       │       AdvertisementViewRepositoryAdapter.java
+│   │                   │   │       │       
+│   │                   │   │       ├───entity
+│   │                   │   │       │       AdvertisementEntity.java
+│   │                   │   │       │       AdvertisementViewEntity.java
+│   │                   │   │       │       
+│   │                   │   │       └───repository
+│   │                   │   │               JpaAdvertisementRepository.java
+│   │                   │   │               JpaAdvertisementViewRepository.java
+│   │                   │   │               
+│   │                   │   └───presentation
+│   │                   │       └───controller
+│   │                   │               AdvertisementController.java
+│   │                   │               
+│   │                   ├───auth
+│   │                   │   ├───application
+│   │                   │   │   ├───dto
+│   │                   │   │   │   ├───request
+│   │                   │   │   │   │       ChangePasswordRequest.java
+│   │                   │   │   │   │       ForgotPasswordRequest.java
+│   │                   │   │   │   │       LoginRequest.java
+│   │                   │   │   │   │       RefreshTokenRequest.java
+│   │                   │   │   │   │       RegisterRequest.java
+│   │                   │   │   │   │       ResetPasswordRequest.java
+│   │                   │   │   │   │       
+│   │                   │   │   │   └───response
+│   │                   │   │   │           AuthResponse.java
+│   │                   │   │   │           CurrentUserResponse.java
+│   │                   │   │   │           MessageResponse.java
+│   │                   │   │   │           RefreshTokenResponse.java
+│   │                   │   │   │           
+│   │                   │   │   ├───mapper
+│   │                   │   │   ├───scheduler
+│   │                   │   │   │       CleanupScheduler.java
+│   │                   │   │   │       
+│   │                   │   │   └───usecase
+│   │                   │   │           ChangePasswordUseCase.java
+│   │                   │   │           ForgotPasswordUseCase.java
+│   │                   │   │           GetCurrentUserUseCase.java
+│   │                   │   │           LoginUseCase.java
+│   │                   │   │           LogoutUseCase.java
+│   │                   │   │           RefreshTokenUseCase.java
+│   │                   │   │           RegisterUseCase.java
+│   │                   │   │           ResetPasswordUseCase.java
+│   │                   │   │           
+│   │                   │   ├───domain
+│   │                   │   │   ├───model
+│   │                   │   │   │       PasswordResetToken.java
+│   │                   │   │   │       RefreshToken.java
+│   │                   │   │   │       
+│   │                   │   │   ├───repository
+│   │                   │   │   │       AuthUserRepository.java
+│   │                   │   │   │       PasswordResetTokenRepository.java
+│   │                   │   │   │       RefreshTokenRepository.java
+│   │                   │   │   │       
+│   │                   │   │   └───service
+│   │                   │   │           TokenService.java
+│   │                   │   │           
+│   │                   │   ├───infrastructure
+│   │                   │   │   ├───persistence
+│   │                   │   │   │   ├───adapter
+│   │                   │   │   │   │       AuthUserRepositoryAdapter.java
+│   │                   │   │   │   │       PasswordResetTokenRepositoryAdapter.java
+│   │                   │   │   │   │       RefreshTokenRepositoryAdapter.java
+│   │                   │   │   │   │       
+│   │                   │   │   │   ├───entity
+│   │                   │   │   │   │       PasswordResetTokenEntity.java
+│   │                   │   │   │   │       RefreshTokenEntity.java
+│   │                   │   │   │   │       
+│   │                   │   │   │   └───repository
+│   │                   │   │   │           JpaPasswordResetTokenRepository.java
+│   │                   │   │   │           JpaRefreshTokenRepository.java
+│   │                   │   │   │           
+│   │                   │   │   └───security
+│   │                   │   │           CustomUserDetailsService.java
+│   │                   │   │           JwtAuthenticationFilter.java
+│   │                   │   │           JwtService.java
+│   │                   │   │           
+│   │                   │   └───presentation
+│   │                   │       └───controller
+│   │                   │               AuthController.java
+│   │                   │               
+│   │                   ├───comment
+│   │                   │   ├───application
+│   │                   │   │   ├───dto
+│   │                   │   │   │   ├───request
+│   │                   │   │   │   │       CreateCommentRequest.java
+│   │                   │   │   │   │       UpdateCommentRequest.java
+│   │                   │   │   │   │       
+│   │                   │   │   │   └───response
+│   │                   │   │   │           CommentResponse.java
+│   │                   │   │   │           
+│   │                   │   │   ├───mapper
+│   │                   │   │   │       CommentMapper.java
+│   │                   │   │   │       
+│   │                   │   │   ├───usecase
+│   │                   │   │   │       CreateCommentUseCase.java
+│   │                   │   │   │       DeleteCommentUseCase.java
+│   │                   │   │   │       GetCommentByIdUseCase.java
+│   │                   │   │   │       GetMovieCommentsUseCase.java
+│   │                   │   │   │       GetRepliesUseCase.java
+│   │                   │   │   │       UpdateCommentUseCase.java
+│   │                   │   │   │       
+│   │                   │   │   └───validator
+│   │                   │   │           CommentSpamValidator.java
+│   │                   │   │           
+│   │                   │   ├───domain
+│   │                   │   │   ├───model
+│   │                   │   │   │       Comment.java
+│   │                   │   │   │       CommentStatus.java
+│   │                   │   │   │       
+│   │                   │   │   ├───repository
+│   │                   │   │   │       CommentRepository.java
+│   │                   │   │   │       
+│   │                   │   │   └───service
+│   │                   │   ├───infrastructure
+│   │                   │   │   └───persistence
+│   │                   │   │       ├───adapter
+│   │                   │   │       │       CommentRepositoryAdapter.java
+│   │                   │   │       │       
+│   │                   │   │       ├───entity
+│   │                   │   │       │       CommentEntity.java
+│   │                   │   │       │       
+│   │                   │   │       └───repository
+│   │                   │   │               JpaCommentRepository.java
+│   │                   │   │               
+│   │                   │   └───presentation
+│   │                   │       └───controller
+│   │                   │               AdminCommentController.java
+│   │                   │               CommentController.java
+│   │                   │               
+│   │                   ├───commentlike
+│   │                   │   ├───application
+│   │                   │   │   ├───dto
+│   │                   │   │   │   ├───request
+│   │                   │   │   │   └───response
+│   │                   │   │   │           CommentLikeResponse.java
+│   │                   │   │   │           
+│   │                   │   │   ├───mapper
+│   │                   │   │   │       CommentLikeMapper.java
+│   │                   │   │   │       
+│   │                   │   │   └───usecase
+│   │                   │   │           CheckCommentLikedUseCase.java
+│   │                   │   │           ToggleCommentLikeUseCase.java
+│   │                   │   │           UnlikeCommentUseCase.java
+│   │                   │   │           
+│   │                   │   ├───domain
+│   │                   │   │   ├───model
+│   │                   │   │   │       CommentLike.java
+│   │                   │   │   │       
+│   │                   │   │   ├───repository
+│   │                   │   │   │       CommentLikeRepository.java
+│   │                   │   │   │       
+│   │                   │   │   └───service
+│   │                   │   ├───infrastructure
+│   │                   │   │   └───persistence
+│   │                   │   │       ├───adapter
+│   │                   │   │       │       CommentLikeRepositoryAdapter.java
+│   │                   │   │       │       
+│   │                   │   │       ├───entity
+│   │                   │   │       │       CommentLikeEntity.java
+│   │                   │   │       │       
+│   │                   │   │       └───repository
+│   │                   │   │               JpaCommentLikeRepository.java
+│   │                   │   │               
+│   │                   │   └───presentation
+│   │                   │       └───controller
+│   │                   │               CommentLikeController.java
+│   │                   │               
+│   │                   ├───devicesession
+│   │                   │   ├───application
+│   │                   │   │   ├───dto
+│   │                   │   │   │   ├───request
+│   │                   │   │   │   │       CreateDeviceSessionRequest.java
+│   │                   │   │   │   │       
+│   │                   │   │   │   └───response
+│   │                   │   │   │           DeviceSessionResponse.java
+│   │                   │   │   │           
+│   │                   │   │   ├───event
+│   │                   │   │   │       UserLoginEventListener.java
+│   │                   │   │   │       
+│   │                   │   │   ├───mapper
+│   │                   │   │   │       DeviceSessionMapper.java
+│   │                   │   │   │       
+│   │                   │   │   └───usecase
+│   │                   │   │           CountActiveDeviceSessionsUseCase.java
+│   │                   │   │           CreateDeviceSessionUseCase.java
+│   │                   │   │           GetMyDeviceSessionsUseCase.java
+│   │                   │   │           RevokeAllMyDeviceSessionsUseCase.java
+│   │                   │   │           RevokeDeviceSessionUseCase.java
+│   │                   │   │           UpdateDeviceSessionActivityUseCase.java
+│   │                   │   │           
+│   │                   │   ├───domain
+│   │                   │   │   ├───model
+│   │                   │   │   │       DeviceSession.java
+│   │                   │   │   │       
+│   │                   │   │   ├───repository
+│   │                   │   │   │       DeviceSessionRepository.java
+│   │                   │   │   │       
+│   │                   │   │   └───service
+│   │                   │   ├───infrastructure
+│   │                   │   │   └───persistence
+│   │                   │   │       ├───adapter
+│   │                   │   │       │       DeviceSessionRepositoryAdapter.java
+│   │                   │   │       │       
+│   │                   │   │       ├───entity
+│   │                   │   │       │       DeviceSessionEntity.java
+│   │                   │   │       │       
+│   │                   │   │       └───repository
+│   │                   │   │               JpaDeviceSessionRepository.java
+│   │                   │   │               
+│   │                   │   └───presentation
+│   │                   │       └───controller
+│   │                   │               DeviceSessionController.java
+│   │                   │               
+│   │                   ├───email
+│   │                   │   ├───application
+│   │                   │   │       EmailService.java
+│   │                   │   │       
+│   │                   │   ├───domain
+│   │                   │   │       EmailRequest.java
+│   │                   │   │       EmailType.java
+│   │                   │   │       
+│   │                   │   ├───infrastructure
+│   │                   │   │       AppUrlConfig.java
+│   │                   │   │       EmailConfig.java
+│   │                   │   │       EmailTemplateProvider.java
+│   │                   │   │       
+│   │                   │   └───presentation
+│   │                   │           EmailController.java
+│   │                   │           SendForgotPasswordEmailRequest.java
+│   │                   │           
+│   │                   ├───favorite
+│   │                   │   ├───application
+│   │                   │   │   ├───dto
+│   │                   │   │   │   ├───request
+│   │                   │   │   │   └───response
+│   │                   │   │   │           FavoriteResponse.java
+│   │                   │   │   │           MovieInFavoriteResponse.java
+│   │                   │   │   │           
+│   │                   │   │   ├───event
+│   │                   │   │   │       FavoriteEventListener.java
+│   │                   │   │   │       
+│   │                   │   │   ├───mapper
+│   │                   │   │   │       FavoriteMapper.java
+│   │                   │   │   │       
+│   │                   │   │   └───usecase
+│   │                   │   │           AddFavoriteUseCase.java
+│   │                   │   │           CheckMovieInFavoriteUseCase.java
+│   │                   │   │           GetMyFavoritesUseCase.java
+│   │                   │   │           RemoveFavoriteUseCase.java
+│   │                   │   │           
+│   │                   │   ├───domain
+│   │                   │   │   ├───model
+│   │                   │   │   │       Favorite.java
+│   │                   │   │   │       
+│   │                   │   │   ├───repository
+│   │                   │   │   │       FavoriteRepository.java
+│   │                   │   │   │       
+│   │                   │   │   └───service
+│   │                   │   ├───infrastructure
+│   │                   │   │   └───persistence
+│   │                   │   │       ├───adapter
+│   │                   │   │       │       FavoriteRepositoryAdapter.java
+│   │                   │   │       │       
+│   │                   │   │       ├───entity
+│   │                   │   │       │       FavoriteEntity.java
+│   │                   │   │       │       
+│   │                   │   │       └───repository
+│   │                   │   │               JpaFavoriteRepository.java
+│   │                   │   │               
+│   │                   │   └───presentation
+│   │                   │       └───controller
+│   │                   │               FavoriteController.java
+│   │                   │               
+│   │                   ├───movie
+│   │                   │   ├───application
+│   │                   │   │   ├───dto
+│   │                   │   │   │   ├───request
+│   │                   │   │   │   │       CreateCategoryRequest.java
+│   │                   │   │   │   │       CreateEpisodeRequest.java
+│   │                   │   │   │   │       CreateMovieCategoryRequest.java
+│   │                   │   │   │   │       CreateMoviePersonRequest.java
+│   │                   │   │   │   │       CreateMovieRequest.java
+│   │                   │   │   │   │       CreateMovieStudioRequest.java
+│   │                   │   │   │   │       CreateMovieTagRequest.java
+│   │                   │   │   │   │       CreatePersonRequest.java
+│   │                   │   │   │   │       CreateStudioRequest.java
+│   │                   │   │   │   │       CreateTagRequest.java
+│   │                   │   │   │   │       SearchMovieRequest.java
+│   │                   │   │   │   │       UpdateCategoryRequest.java
+│   │                   │   │   │   │       UpdateMovieRequest.java
+│   │                   │   │   │   │       UpdateMovieStatusRequest.java
+│   │                   │   │   │   │       UpdatePersonRequest.java
+│   │                   │   │   │   │       UpdateStudioRequest.java
+│   │                   │   │   │   │       UpdateTagRequest.java
+│   │                   │   │   │   │       
+│   │                   │   │   │   └───response
+│   │                   │   │   │           CategoryResponse.java
+│   │                   │   │   │           EpisodeResponse.java
+│   │                   │   │   │           MovieBasicResponse.java
+│   │                   │   │   │           MovieDetailResponse.java
+│   │                   │   │   │           MoviePersonResponse.java
+│   │                   │   │   │           MovieStudioResponse.java
+│   │                   │   │   │           MovieSummaryResponse.java
+│   │                   │   │   │           PersonResponse.java
+│   │                   │   │   │           SearchMovieResponse.java
+│   │                   │   │   │           StudioResponse.java
+│   │                   │   │   │           TagResponse.java
+│   │                   │   │   │           
+│   │                   │   │   ├───mapper
+│   │                   │   │   │       CategoryMapper.java
+│   │                   │   │   │       MovieMapper.java
+│   │                   │   │   │       MoviePersonMapper.java
+│   │                   │   │   │       MovieStudioMapper.java
+│   │                   │   │   │       PersonMapper.java
+│   │                   │   │   │       StudioMapper.java
+│   │                   │   │   │       TagMapper.java
+│   │                   │   │   │       
+│   │                   │   │   └───usecase
+│   │                   │   │           AdvancedSearchMovieUseCase.java
+│   │                   │   │           CreateCategoryUseCase.java
+│   │                   │   │           CreateEpisodeUseCase.java
+│   │                   │   │           CreateMovieCategoryUseCase.java
+│   │                   │   │           CreateMoviePersonUseCase.java
+│   │                   │   │           CreateMovieStudioUseCase.java
+│   │                   │   │           CreateMovieTagUseCase.java
+│   │                   │   │           CreateMovieUseCase.java
+│   │                   │   │           CreatePersonUseCase.java
+│   │                   │   │           CreateStudioUseCase.java
+│   │                   │   │           CreateTagUseCase.java
+│   │                   │   │           DeleteCategoryUseCase.java
+│   │                   │   │           DeleteEpisodeUseCase.java
+│   │                   │   │           DeleteMovieCategoryUseCase.java
+│   │                   │   │           DeleteMoviePersonUseCase.java
+│   │                   │   │           DeleteMovieStudioUseCase.java
+│   │                   │   │           DeleteMovieTagUseCase.java
+│   │                   │   │           DeleteMovieUseCase.java
+│   │                   │   │           DeletePersonUseCase.java
+│   │                   │   │           DeleteStudioUseCase.java
+│   │                   │   │           DeleteTagUseCase.java
+│   │                   │   │           GetAllCategoriesUseCase.java
+│   │                   │   │           GetAllPersonsUseCase.java
+│   │                   │   │           GetAllStudiosUseCase.java
+│   │                   │   │           GetAllTagsUseCase.java
+│   │                   │   │           GetCategoriesCachedUseCase.java
+│   │                   │   │           GetCategoryByIdUseCase.java
+│   │                   │   │           GetEpisodesByMovieUseCase.java
+│   │                   │   │           GetMovieByIdUseCase.java
+│   │                   │   │           GetMovieBySlugUseCase.java
+│   │                   │   │           GetMovieCategoriesUseCase.java
+│   │                   │   │           GetMoviePersonsUseCase.java
+│   │                   │   │           GetMovieStudiosUseCase.java
+│   │                   │   │           GetMoviesUseCase.java
+│   │                   │   │           GetMovieTagsUseCase.java
+│   │                   │   │           GetPersonByIdUseCase.java
+│   │                   │   │           GetPersonsUseCase.java
+│   │                   │   │           GetStudioByIdUseCase.java
+│   │                   │   │           GetStudiosUseCase.java
+│   │                   │   │           GetTagByIdUseCase.java
+│   │                   │   │           GetTagsCachedUseCase.java
+│   │                   │   │           SearchMovieUseCase.java
+│   │                   │   │           UpdateCategoryUseCase.java
+│   │                   │   │           UpdateMovieStatusUseCase.java
+│   │                   │   │           UpdateMovieUseCase.java
+│   │                   │   │           UpdatePersonUseCase.java
+│   │                   │   │           UpdateStudioUseCase.java
+│   │                   │   │           UpdateTagUseCase.java
+│   │                   │   │           
+│   │                   │   ├───domain
+│   │                   │   │   ├───model
+│   │                   │   │   │       Category.java
+│   │                   │   │   │       Episode.java
+│   │                   │   │   │       EpisodeStatus.java
+│   │                   │   │   │       Movie.java
+│   │                   │   │   │       MoviePerson.java
+│   │                   │   │   │       MoviePersonRole.java
+│   │                   │   │   │       MovieStatus.java
+│   │                   │   │   │       MovieStudio.java
+│   │                   │   │   │       MovieStudioRole.java
+│   │                   │   │   │       MovieType.java
+│   │                   │   │   │       Person.java
+│   │                   │   │   │       Studio.java
+│   │                   │   │   │       StudioRole.java
+│   │                   │   │   │       Tag.java
+│   │                   │   │   │       
+│   │                   │   │   ├───repository
+│   │                   │   │   │       CategoryRepository.java
+│   │                   │   │   │       EpisodeRepository.java
+│   │                   │   │   │       MovieRepository.java
+│   │                   │   │   │       PersonRepository.java
+│   │                   │   │   │       StudioRepository.java
+│   │                   │   │   │       TagRepository.java
+│   │                   │   │   │       
+│   │                   │   │   └───service
+│   │                   │   ├───infrastructure
+│   │                   │   │   └───persistence
+│   │                   │   │       ├───adapter
+│   │                   │   │       │       CategoryRepositoryAdapter.java
+│   │                   │   │       │       EpisodeRepositoryAdapter.java
+│   │                   │   │       │       MovieRepositoryAdapter.java
+│   │                   │   │       │       PersonRepositoryAdapter.java
+│   │                   │   │       │       StudioRepositoryAdapter.java
+│   │                   │   │       │       TagRepositoryAdapter.java
+│   │                   │   │       │       
+│   │                   │   │       ├───entity
+│   │                   │   │       │       CategoryEntity.java
+│   │                   │   │       │       EpisodeEntity.java
+│   │                   │   │       │       MovieCategoryEntity.java
+│   │                   │   │       │       MovieEntity.java
+│   │                   │   │       │       MoviePersonEntity.java
+│   │                   │   │       │       MovieStudioEntity.java
+│   │                   │   │       │       MovieTagEntity.java
+│   │                   │   │       │       PersonEntity.java
+│   │                   │   │       │       StudioEntity.java
+│   │                   │   │       │       TagEntity.java
+│   │                   │   │       │       
+│   │                   │   │       └───repository
+│   │                   │   │               JpaCategoryRepository.java
+│   │                   │   │               JpaEpisodeRepository.java
+│   │                   │   │               JpaMovieCategoryRepository.java
+│   │                   │   │               JpaMoviePersonRepository.java
+│   │                   │   │               JpaMovieRepository.java
+│   │                   │   │               JpaMovieStudioRepository.java
+│   │                   │   │               JpaMovieTagRepository.java
+│   │                   │   │               JpaPersonRepository.java
+│   │                   │   │               JpaStudioRepository.java
+│   │                   │   │               JpaTagRepository.java
+│   │                   │   │               
+│   │                   │   └───presentation
+│   │                   │       └───controller
+│   │                   │               AdminCategoryController.java
+│   │                   │               AdminMovieController.java
+│   │                   │               AdminPersonController.java
+│   │                   │               AdminStudioController.java
+│   │                   │               AdminTagController.java
+│   │                   │               MovieController.java
+│   │                   │               
+│   │                   ├───notification
+│   │                   │   ├───application
+│   │                   │   │   ├───dto
+│   │                   │   │   │   ├───request
+│   │                   │   │   │   │       CreateNotificationRequest.java
+│   │                   │   │   │   │       MarkNotificationAsReadRequest.java
+│   │                   │   │   │   │       
+│   │                   │   │   │   └───response
+│   │                   │   │   │           NotificationResponse.java
+│   │                   │   │   │           
+│   │                   │   │   ├───mapper
+│   │                   │   │   │       NotificationMapper.java
+│   │                   │   │   │       
+│   │                   │   │   └───usecase
+│   │                   │   │           CreateNotificationUseCase.java
+│   │                   │   │           DeleteNotificationUseCase.java
+│   │                   │   │           GetMyNotificationsUseCase.java
+│   │                   │   │           GetUnreadNotificationsCountUseCase.java
+│   │                   │   │           MarkAllNotificationsAsReadUseCase.java
+│   │                   │   │           MarkAllNotificationsReadUseCase.java
+│   │                   │   │           MarkNotificationAsReadUseCase.java
+│   │                   │   │           MarkNotificationReadUseCase.java
+│   │                   │   │           
+│   │                   │   ├───domain
+│   │                   │   │   ├───model
+│   │                   │   │   │       Notification.java
+│   │                   │   │   │       NotificationType.java
+│   │                   │   │   │       
+│   │                   │   │   ├───repository
+│   │                   │   │   │       NotificationRepository.java
+│   │                   │   │   │       
+│   │                   │   │   └───service
+│   │                   │   ├───infrastructure
+│   │                   │   │   └───persistence
+│   │                   │   │       ├───adapter
+│   │                   │   │       │       NotificationRepositoryAdapter.java
+│   │                   │   │       │       
+│   │                   │   │       ├───entity
+│   │                   │   │       │       NotificationEntity.java
+│   │                   │   │       │       
+│   │                   │   │       └───repository
+│   │                   │   │               JpaNotificationRepository.java
+│   │                   │   │               
+│   │                   │   └───presentation
+│   │                   │       └───controller
+│   │                   │               NotificationController.java
+│   │                   │               
+│   │                   ├───payment
+│   │                   │   ├───application
+│   │                   │   │   └───service
+│   │                   │   │           PaymentService.java
+│   │                   │   │           
+│   │                   │   ├───domain
+│   │                   │   │   ├───model
+│   │                   │   │   └───repository
+│   │                   │   └───presentation
+│   │                   │       └───controller
+│   │                   │               PaymentController.java
+│   │                   │               
+│   │                   ├───recommendation
+│   │                   │   ├───application
+│   │                   │   │   ├───dto
+│   │                   │   │   │   ├───request
+│   │                   │   │   │   │       GenerateRecommendationsRequest.java
+│   │                   │   │   │   │       UpsertMovieRecommendationRequest.java
+│   │                   │   │   │   │       
+│   │                   │   │   │   └───response
+│   │                   │   │   │           MovieRecommendationResponse.java
+│   │                   │   │   │           
+│   │                   │   │   ├───mapper
+│   │                   │   │   │       MovieRecommendationMapper.java
+│   │                   │   │   │       
+│   │                   │   │   ├───scheduler
+│   │                   │   │   │       RecommendationScheduler.java
+│   │                   │   │   │       
+│   │                   │   │   └───usecase
+│   │                   │   │           ClearUserRecommendationsUseCase.java
+│   │                   │   │           DeleteMovieRecommendationUseCase.java
+│   │                   │   │           GenerateRecommendationsUseCase.java
+│   │                   │   │           GetMyRecommendationsUseCase.java
+│   │                   │   │           UpsertMovieRecommendationUseCase.java
+│   │                   │   │           
+│   │                   │   ├───domain
+│   │                   │   │   ├───model
+│   │                   │   │   │       MovieRecommendation.java
+│   │                   │   │   │       
+│   │                   │   │   ├───repository
+│   │                   │   │   │       MovieRecommendationRepository.java
+│   │                   │   │   │       
+│   │                   │   │   └───service
+│   │                   │   ├───infrastructure
+│   │                   │   │   └───persistence
+│   │                   │   │       ├───adapter
+│   │                   │   │       │       MovieRecommendationRepositoryAdapter.java
+│   │                   │   │       │       
+│   │                   │   │       ├───entity
+│   │                   │   │       │       MovieRecommendationEntity.java
+│   │                   │   │       │       
+│   │                   │   │       └───repository
+│   │                   │   │               JpaMovieRecommendationRepository.java
+│   │                   │   │               
+│   │                   │   └───presentation
+│   │                   │       └───controller
+│   │                   │               MovieRecommendationController.java
+│   │                   │               
+│   │                   ├───report
+│   │                   │   ├───application
+│   │                   │   │   ├───dto
+│   │                   │   │   │   ├───request
+│   │                   │   │   │   │       CreateReportRequest.java
+│   │                   │   │   │   │       ResolveReportRequest.java
+│   │                   │   │   │   │       
+│   │                   │   │   │   └───response
+│   │                   │   │   │           ReportResponse.java
+│   │                   │   │   │           
+│   │                   │   │   ├───mapper
+│   │                   │   │   │       ReportMapper.java
+│   │                   │   │   │       
+│   │                   │   │   └───usecase
+│   │                   │   │           CreateReportUseCase.java
+│   │                   │   │           GetAllReportsUseCase.java
+│   │                   │   │           GetMyReportsUseCase.java
+│   │                   │   │           ResolveReportUseCase.java
+│   │                   │   │           
+│   │                   │   ├───domain
+│   │                   │   │   ├───model
+│   │                   │   │   │       Report.java
+│   │                   │   │   │       ReportStatus.java
+│   │                   │   │   │       
+│   │                   │   │   ├───repository
+│   │                   │   │   │       ReportRepository.java
+│   │                   │   │   │       
+│   │                   │   │   └───service
+│   │                   │   ├───infrastructure
+│   │                   │   │   └───persistence
+│   │                   │   │       ├───adapter
+│   │                   │   │       │       ReportRepositoryAdapter.java
+│   │                   │   │       │       
+│   │                   │   │       ├───entity
+│   │                   │   │       │       ReportEntity.java
+│   │                   │   │       │       
+│   │                   │   │       └───repository
+│   │                   │   │               JpaReportRepository.java
+│   │                   │   │               
+│   │                   │   └───presentation
+│   │                   │       └───controller
+│   │                   │               ReportController.java
+│   │                   │               
+│   │                   ├───review
+│   │                   │   ├───application
+│   │                   │   │   ├───dto
+│   │                   │   │   │   ├───request
+│   │                   │   │   │   │       UpdateReviewStatusRequest.java
+│   │                   │   │   │   │       UpsertReviewRequest.java
+│   │                   │   │   │   │       
+│   │                   │   │   │   └───response
+│   │                   │   │   │           ReviewResponse.java
+│   │                   │   │   │           
+│   │                   │   │   ├───event
+│   │                   │   │   │       ReviewCreatedEventListener.java
+│   │                   │   │   │       
+│   │                   │   │   ├───mapper
+│   │                   │   │   │       ReviewMapper.java
+│   │                   │   │   │       
+│   │                   │   │   ├───usecase
+│   │                   │   │   │       DeleteReviewUseCase.java
+│   │                   │   │   │       GetMovieReviewsUseCase.java
+│   │                   │   │   │       GetMyReviewsUseCase.java
+│   │                   │   │   │       GetReviewByIdUseCase.java
+│   │                   │   │   │       UpdateReviewStatusUseCase.java
+│   │                   │   │   │       UpsertReviewUseCase.java
+│   │                   │   │   │       
+│   │                   │   │   └───validator
+│   │                   │   │           ReviewSpamValidator.java
+│   │                   │   │           
+│   │                   │   ├───domain
+│   │                   │   │   ├───model
+│   │                   │   │   │       CommentStatus.java
+│   │                   │   │   │       Review.java
+│   │                   │   │   │       ReviewStatus.java
+│   │                   │   │   │       
+│   │                   │   │   ├───repository
+│   │                   │   │   │       ReviewRepository.java
+│   │                   │   │   │       
+│   │                   │   │   └───service
+│   │                   │   ├───infrastructure
+│   │                   │   │   └───persistence
+│   │                   │   │       ├───adapter
+│   │                   │   │       │       ReviewRepositoryAdapter.java
+│   │                   │   │       │       
+│   │                   │   │       ├───entity
+│   │                   │   │       │       ReviewEntity.java
+│   │                   │   │       │       
+│   │                   │   │       └───repository
+│   │                   │   │               JpaReviewRepository.java
+│   │                   │   │               
+│   │                   │   └───presentation
+│   │                   │       └───controller
+│   │                   │               AdminReviewController.java
+│   │                   │               ReviewController.java
+│   │                   │               
+│   │                   ├───reviewlike
+│   │                   │   ├───application
+│   │                   │   │   ├───dto
+│   │                   │   │   │   ├───request
+│   │                   │   │   │   └───response
+│   │                   │   │   │           ReviewLikeResponse.java
+│   │                   │   │   │           
+│   │                   │   │   ├───mapper
+│   │                   │   │   │       ReviewLikeMapper.java
+│   │                   │   │   │       
+│   │                   │   │   └───usecase
+│   │                   │   │           CheckReviewLikedUseCase.java
+│   │                   │   │           ToggleReviewLikeUseCase.java
+│   │                   │   │           UnlikeReviewUseCase.java
+│   │                   │   │           
+│   │                   │   ├───domain
+│   │                   │   │   ├───model
+│   │                   │   │   │       ReviewLike.java
+│   │                   │   │   │       
+│   │                   │   │   ├───repository
+│   │                   │   │   │       ReviewLikeRepository.java
+│   │                   │   │   │       
+│   │                   │   │   └───service
+│   │                   │   ├───infrastructure
+│   │                   │   │   └───persistence
+│   │                   │   │       ├───adapter
+│   │                   │   │       │       ReviewLikeRepositoryAdapter.java
+│   │                   │   │       │       
+│   │                   │   │       ├───entity
+│   │                   │   │       │       ReviewLikeEntity.java
+│   │                   │   │       │       
+│   │                   │   │       └───repository
+│   │                   │   │               JpaReviewLikeRepository.java
+│   │                   │   │               
+│   │                   │   └───presentation
+│   │                   │       └───controller
+│   │                   │               ReviewLikeController.java
+│   │                   │               
+│   │                   ├───searchhistory
+│   │                   │   ├───application
+│   │                   │   │   ├───dto
+│   │                   │   │   │   ├───request
+│   │                   │   │   │   │       CreateSearchHistoryRequest.java
+│   │                   │   │   │   │       
+│   │                   │   │   │   └───response
+│   │                   │   │   │           SearchHistoryResponse.java
+│   │                   │   │   │           
+│   │                   │   │   ├───mapper
+│   │                   │   │   │       SearchHistoryMapper.java
+│   │                   │   │   │       
+│   │                   │   │   └───usecase
+│   │                   │   │           ClearMySearchHistoriesUseCase.java
+│   │                   │   │           CreateSearchHistoryUseCase.java
+│   │                   │   │           DeleteSearchHistoryUseCase.java
+│   │                   │   │           GetMySearchHistoriesUseCase.java
+│   │                   │   │           
+│   │                   │   ├───domain
+│   │                   │   │   ├───model
+│   │                   │   │   │       SearchHistory.java
+│   │                   │   │   │       
+│   │                   │   │   ├───repository
+│   │                   │   │   │       SearchHistoryRepository.java
+│   │                   │   │   │       
+│   │                   │   │   └───service
+│   │                   │   ├───infrastructure
+│   │                   │   │   └───persistence
+│   │                   │   │       ├───adapter
+│   │                   │   │       │       SearchHistoryRepositoryAdapter.java
+│   │                   │   │       │       
+│   │                   │   │       ├───entity
+│   │                   │   │       │       SearchHistoryEntity.java
+│   │                   │   │       │       
+│   │                   │   │       └───repository
+│   │                   │   │               JpaSearchHistoryRepository.java
+│   │                   │   │               
+│   │                   │   └───presentation
+│   │                   │       └───controller
+│   │                   │               SearchHistoryController.java
+│   │                   │               
+│   │                   ├───subscription
+│   │                   │   ├───application
+│   │                   │   │   ├───dto
+│   │                   │   │   │   ├───request
+│   │                   │   │   │   │       CreateInvoiceRequest.java
+│   │                   │   │   │   │       CreatePaymentTransactionRequest.java
+│   │                   │   │   │   │       CreateSubscriptionPlanRequest.java
+│   │                   │   │   │   │       SubscribePlanRequest.java
+│   │                   │   │   │   │       
+│   │                   │   │   │   └───response
+│   │                   │   │   │           InvoiceResponse.java
+│   │                   │   │   │           PaymentLinkResponse.java
+│   │                   │   │   │           PaymentTransactionResponse.java
+│   │                   │   │   │           SubscriptionPlanResponse.java
+│   │                   │   │   │           UserSubscriptionResponse.java
+│   │                   │   │   │           
+│   │                   │   │   ├───event
+│   │                   │   │   │       SubscriptionEventListener.java
+│   │                   │   │   │       
+│   │                   │   │   ├───mapper
+│   │                   │   │   │       SubscriptionMapper.java
+│   │                   │   │   │       
+│   │                   │   │   ├───scheduler
+│   │                   │   │   │       SubscriptionScheduler.java
+│   │                   │   │   │       
+│   │                   │   │   └───usecase
+│   │                   │   │           CreateInvoiceUseCase.java
+│   │                   │   │           CreatePaymentTransactionUseCase.java
+│   │                   │   │           CreateSubscriptionPlanUseCase.java
+│   │                   │   │           GetActiveSubscriptionPlansUseCase.java
+│   │                   │   │           GetMyInvoicesUseCase.java
+│   │                   │   │           GetMyPaymentTransactionsUseCase.java
+│   │                   │   │           GetMySubscriptionsUseCase.java
+│   │                   │   │           MarkPaymentSuccessUseCase.java
+│   │                   │   │           SubscribePlanUseCase.java
+│   │                   │   │           
+│   │                   │   ├───domain
+│   │                   │   │   ├───model
+│   │                   │   │   │       Invoice.java
+│   │                   │   │   │       PaymentMethod.java
+│   │                   │   │   │       PaymentStatus.java
+│   │                   │   │   │       PaymentTransaction.java
+│   │                   │   │   │       SubscriptionPlan.java
+│   │                   │   │   │       SubscriptionStatus.java
+│   │                   │   │   │       UserSubscription.java
+│   │                   │   │   │       
+│   │                   │   │   ├───repository
+│   │                   │   │   │       InvoiceRepository.java
+│   │                   │   │   │       PaymentTransactionRepository.java
+│   │                   │   │   │       SubscriptionPlanRepository.java
+│   │                   │   │   │       UserSubscriptionRepository.java
+│   │                   │   │   │       
+│   │                   │   │   └───service
+│   │                   │   ├───infrastructure
+│   │                   │   │   └───persistence
+│   │                   │   │       ├───adapter
+│   │                   │   │       │       InvoiceRepositoryAdapter.java
+│   │                   │   │       │       PaymentTransactionRepositoryAdapter.java
+│   │                   │   │       │       SubscriptionPlanRepositoryAdapter.java
+│   │                   │   │       │       UserSubscriptionRepositoryAdapter.java
+│   │                   │   │       │       
+│   │                   │   │       ├───entity
+│   │                   │   │       │       InvoiceEntity.java
+│   │                   │   │       │       PaymentTransactionEntity.java
+│   │                   │   │       │       SubscriptionPlanEntity.java
+│   │                   │   │       │       UserSubscriptionEntity.java
+│   │                   │   │       │       
+│   │                   │   │       └───repository
+│   │                   │   │               JpaInvoiceRepository.java
+│   │                   │   │               JpaPaymentTransactionRepository.java
+│   │                   │   │               JpaSubscriptionPlanRepository.java
+│   │                   │   │               JpaUserSubscriptionRepository.java
+│   │                   │   │               
+│   │                   │   └───presentation
+│   │                   │       └───controller
+│   │                   │               SubscriptionController.java
+│   │                   │               
+│   │                   ├───user
+│   │                   │   ├───application
+│   │                   │   │   ├───dto
+│   │                   │   │   │   ├───request
+│   │                   │   │   │   │       ChangePasswordRequest.java
+│   │                   │   │   │   │       UpdateUserProfileRequest.java
+│   │                   │   │   │   │       UpdateUserRoleRequest.java
+│   │                   │   │   │   │       UpdateUserStatusRequest.java
+│   │                   │   │   │   │       
+│   │                   │   │   │   └───response
+│   │                   │   │   │           UserDetailResponse.java
+│   │                   │   │   │           UserProfileResponse.java
+│   │                   │   │   │           UserSummaryResponse.java
+│   │                   │   │   │           
+│   │                   │   │   ├───mapper
+│   │                   │   │   │       UserMapper.java
+│   │                   │   │   │       
+│   │                   │   │   └───usecase
+│   │                   │   │           ChangeMyPasswordUseCase.java
+│   │                   │   │           DeleteUserUseCase.java
+│   │                   │   │           GetMyProfileUseCase.java
+│   │                   │   │           GetUserByIdUseCase.java
+│   │                   │   │           GetUsersUseCase.java
+│   │                   │   │           UpdateMyProfileUseCase.java
+│   │                   │   │           UpdateUserRoleUseCase.java
+│   │                   │   │           UpdateUserStatusUseCase.java
+│   │                   │   │           
+│   │                   │   ├───domain
+│   │                   │   │   ├───model
+│   │                   │   │   │       AccountStatus.java
+│   │                   │   │   │       Role.java
+│   │                   │   │   │       User.java
+│   │                   │   │   │       
+│   │                   │   │   ├───repository
+│   │                   │   │   │       UserRepository.java
+│   │                   │   │   │       
+│   │                   │   │   └───service
+│   │                   │   ├───infrastructure
+│   │                   │   │   └───persistence
+│   │                   │   │       ├───adapter
+│   │                   │   │       │       UserRepositoryAdapter.java
+│   │                   │   │       │       
+│   │                   │   │       ├───entity
+│   │                   │   │       │       UserEntity.java
+│   │                   │   │       │       
+│   │                   │   │       └───repository
+│   │                   │   │               JpaUserRepository.java
+│   │                   │   │               
+│   │                   │   └───presentation
+│   │                   │       └───controller
+│   │                   │               UserController.java
+│   │                   │               
+│   │                   ├───watchhistory
+│   │                   │   ├───application
+│   │                   │   │   ├───dto
+│   │                   │   │   │   ├───request
+│   │                   │   │   │   │       UpsertWatchHistoryRequest.java
+│   │                   │   │   │   │       
+│   │                   │   │   │   └───response
+│   │                   │   │   │           ContinueWatchingResponse.java
+│   │                   │   │   │           WatchHistoryResponse.java
+│   │                   │   │   │           
+│   │                   │   │   ├───mapper
+│   │                   │   │   │       WatchHistoryMapper.java
+│   │                   │   │   │       
+│   │                   │   │   └───usecase
+│   │                   │   │           GetContinueWatchingUseCase.java
+│   │                   │   │           GetMyMovieWatchHistoryUseCase.java
+│   │                   │   │           GetMyWatchHistoriesUseCase.java
+│   │                   │   │           UpsertWatchHistoryUseCase.java
+│   │                   │   │           
+│   │                   │   ├───domain
+│   │                   │   │   ├───model
+│   │                   │   │   │       WatchHistory.java
+│   │                   │   │   │       
+│   │                   │   │   ├───repository
+│   │                   │   │   │       WatchHistoryRepository.java
+│   │                   │   │   │       
+│   │                   │   │   └───service
+│   │                   │   ├───infrastructure
+│   │                   │   │   └───persistence
+│   │                   │   │       ├───adapter
+│   │                   │   │       │       WatchHistoryRepositoryAdapter.java
+│   │                   │   │       │       
+│   │                   │   │       ├───entity
+│   │                   │   │       │       WatchHistoryEntity.java
+│   │                   │   │       │       
+│   │                   │   │       └───repository
+│   │                   │   │               JpaWatchHistoryRepository.java
+│   │                   │   │               
+│   │                   │   └───presentation
+│   │                   │       └───controller
+│   │                   │               WatchHistoryController.java
+│   │                   │               
+│   │                   └───watchlist
+│   │                       ├───application
+│   │                       │   ├───dto
+│   │                       │   │   ├───request
+│   │                       │   │   └───response
+│   │                       │   │           MovieInWatchlistResponse.java
+│   │                       │   │           WatchlistResponse.java
+│   │                       │   │           
+│   │                       │   ├───mapper
+│   │                       │   │       WatchlistMapper.java
+│   │                       │   │       
+│   │                       │   └───usecase
+│   │                       │           AddWatchlistUseCase.java
+│   │                       │           CheckMovieInWatchlistUseCase.java
+│   │                       │           GetMyWatchlistUseCase.java
+│   │                       │           RemoveWatchlistUseCase.java
+│   │                       │           
+│   │                       ├───domain
+│   │                       │   ├───model
+│   │                       │   │       Watchlist.java
+│   │                       │   │       
+│   │                       │   ├───repository
+│   │                       │   │       WatchlistRepository.java
+│   │                       │   │       
+│   │                       │   └───service
+│   │                       ├───infrastructure
+│   │                       │   └───persistence
+│   │                       │       ├───adapter
+│   │                       │       │       WatchlistRepositoryAdapter.java
+│   │                       │       │       
+│   │                       │       ├───entity
+│   │                       │       │       WatchlistEntity.java
+│   │                       │       │       
+│   │                       │       └───repository
+│   │                       │               JpaWatchlistRepository.java
+│   │                       │               
+│   │                       └───presentation
+│   │                           └───controller
+│   │                                   WatchlistController.java
+│   │                                   
+│   └───resources
+│       │   application-local.properties
+│       │   application-local.properties.template
+│       │   application-local.yml
+│       │   application.properties
+│       │   application.yml
+│       │   logback-spring.xml
+│       │   
+│       ├───db
+│       │   ├───migration
+│       │   │       V2__add_indexes_and_constraints.sql
+│       │   │       
+│       │   └───seed
+│       ├───graphql-client
+│       ├───META-INF
+│       │   └───spring
+│       │           org.springframework.boot.env.EnvironmentPostProcessor
+│       │           
+│       ├───static
+│       └───templates
+└───test
+    ├───java
+    │   └───com
+    │       └───hoaug
+    │           ├───movieapi
+    │           │   ├───modules
+    │           │   │   ├───auth
+    │           │   │   │   └───presentation
+    │           │   │   │       └───controller
+    │           │   │   ├───comment
+    │           │   │   │   └───presentation
+    │           │   │   │       └───controller
+    │           │   │   ├───movie
+    │           │   │   │   └───presentation
+    │           │   │   │       └───controller
+    │           │   │   ├───review
+    │           │   │   │   └───presentation
+    │           │   │   │       └───controller
+    │           │   │   └───user
+    │           │   │       └───presentation
+    │           │   │           └───controller
+    │           │   └───support
+    │           │           AbstractControllerTest.java
+    │           │           AbstractIntegrationTest.java
+    │           │           AbstractRepositoryTest.java
+    │           │           AbstractServiceTest.java
+    │           │           
+    │           └───movieapp
+    │                   MovieappApplicationTests.java
+    │                   
+    └───resources
+            application-test.yml
+            
