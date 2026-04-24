@@ -37,3 +37,4 @@ build/
 application-local.properties
 hs_err_pid*.log
 application-local.yml
+DB-full.txt
