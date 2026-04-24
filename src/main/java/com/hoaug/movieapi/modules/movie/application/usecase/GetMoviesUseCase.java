@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Component;
 
+import com.hoaug.movieapi.modules.movie.application.dto.response.MovieListResponse;
 import com.hoaug.movieapi.modules.movie.application.dto.response.MovieSummaryResponse;
 import com.hoaug.movieapi.modules.movie.application.mapper.MovieMapper;
 import com.hoaug.movieapi.modules.movie.domain.repository.MovieRepository;
@@ -21,7 +22,9 @@ public class GetMoviesUseCase {
   }
 
   @Cacheable(cacheNames = "movies", key = "'all_published_movies'")
-  public List<MovieSummaryResponse> execute () {
-    return movieRepository.findAllPublished().stream().map(movieMapper::toSummaryResponse).toList();
+  public MovieListResponse execute () {
+    List<MovieSummaryResponse> movies = movieRepository.findAllPublished().stream()
+        .map(movieMapper::toSummaryResponse).toList();
+    return new MovieListResponse(movies);
   }
 }

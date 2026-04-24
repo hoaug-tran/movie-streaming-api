@@ -1,5 +1,6 @@
 package com.hoaug.movieapi.modules.movie.application.usecase;
 
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.stereotype.Component;
 
 import com.hoaug.movieapi.common.enums.ErrorCode;
@@ -22,6 +23,7 @@ public class UpdateCategoryUseCase {
     this.categoryMapper = categoryMapper;
   }
 
+  @CacheEvict(cacheNames = "categories", allEntries = true)
   public CategoryResponse execute (Long id, UpdateCategoryRequest request) {
     Category category = categoryRepository.findById(id)
         .orElseThrow( () -> new AppException(ErrorCode.CATEGORY_NOT_FOUND));

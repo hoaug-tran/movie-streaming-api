@@ -1,5 +1,6 @@
 package com.hoaug.movieapi.modules.movie.application.usecase;
 
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.stereotype.Component;
 
 import com.hoaug.movieapi.modules.movie.application.dto.request.CreateCategoryRequest;
@@ -20,6 +21,7 @@ public class CreateCategoryUseCase {
     this.categoryMapper = categoryMapper;
   }
 
+  @CacheEvict(cacheNames = "categories", allEntries = true)
   public CategoryResponse execute (CreateCategoryRequest request) {
     Category category = new Category();
     category.setName(request.getName());

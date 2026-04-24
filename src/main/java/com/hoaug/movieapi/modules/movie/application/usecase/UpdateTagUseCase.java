@@ -1,5 +1,6 @@
 package com.hoaug.movieapi.modules.movie.application.usecase;
 
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.stereotype.Component;
 
 import com.hoaug.movieapi.common.enums.ErrorCode;
@@ -21,6 +22,7 @@ public class UpdateTagUseCase {
     this.tagMapper = tagMapper;
   }
 
+  @CacheEvict(cacheNames = "tags", allEntries = true)
   public TagResponse execute (Long id, UpdateTagRequest request) {
     Tag tag = tagRepository.findById(id)
         .orElseThrow( () -> new AppException(ErrorCode.TAG_NOT_FOUND));

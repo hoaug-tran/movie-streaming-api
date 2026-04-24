@@ -24,13 +24,9 @@ public class CacheConfig {
         .withCacheConfiguration("movies", createCacheConfiguration(Duration.ofHours(24)))
         .withCacheConfiguration("searchResults", createCacheConfiguration(Duration.ofHours(1)))
         .withCacheConfiguration("recommendations", createCacheConfiguration(Duration.ofHours(4)))
-        .withCacheConfiguration("userSubscription",
-            createCacheConfiguration(Duration.ofMinutes(15)))
         .withCacheConfiguration("movieDetail", createCacheConfiguration(Duration.ofHours(12)))
-        .withCacheConfiguration("favorites", createCacheConfiguration(Duration.ofMinutes(5)))
-        .withCacheConfiguration("watchlist", createCacheConfiguration(Duration.ofMinutes(5)))
-        .withCacheConfiguration("watchHistory", createCacheConfiguration(Duration.ofMinutes(2)))
         .withCacheConfiguration("categories", createCacheConfiguration(Duration.ofHours(6)))
+        .withCacheConfiguration("tags", createCacheConfiguration(Duration.ofHours(6)))
         .build();
   }
 

@@ -2,6 +2,7 @@ package com.hoaug.movieapi.modules.movie.application.usecase;
 
 import java.time.LocalDateTime;
 
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.stereotype.Component;
 
 import com.hoaug.movieapi.common.enums.ErrorCode;
@@ -27,6 +28,7 @@ public class CreateEpisodeUseCase {
     this.movieMapper = movieMapper;
   }
 
+  @CacheEvict(cacheNames = "movieDetail", key = "#movieId")
   public EpisodeResponse execute (Long movieId, CreateEpisodeRequest request) {
     movieRepository.findById(movieId)
         .orElseThrow( () -> new AppException(ErrorCode.MOVIE_NOT_FOUND));

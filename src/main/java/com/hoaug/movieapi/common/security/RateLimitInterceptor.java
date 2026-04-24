@@ -23,6 +23,11 @@ public class RateLimitInterceptor implements HandlerInterceptor {
     String clientIp = getClientIp(request);
     String path = request.getRequestURI();
     String method = request.getMethod();
+
+    if (path.contains("/auth/oauth/")) {
+      return true;
+    }
+
     String key = method + ":" + path + ":" + clientIp;
 
     int limit = getLimit(path, method);

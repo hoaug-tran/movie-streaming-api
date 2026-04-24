@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.stereotype.Component;
 
 import com.hoaug.movieapi.common.enums.ErrorCode;
@@ -26,6 +27,7 @@ public class CreateMovieUseCase {
     this.movieMapper = movieMapper;
   }
 
+  @CacheEvict(cacheNames = "movies", key = "'all_published_movies'")
   public MovieDetailResponse execute (CreateMovieRequest request) {
     if (movieRepository.existsBySlug(request.getSlug())) {
       throw new AppException(ErrorCode.MOVIE_SLUG_EXISTED);

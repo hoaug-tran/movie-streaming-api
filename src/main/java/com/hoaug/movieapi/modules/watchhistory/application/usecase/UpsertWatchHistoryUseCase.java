@@ -2,7 +2,6 @@ package com.hoaug.movieapi.modules.watchhistory.application.usecase;
 
 import java.time.LocalDateTime;
 
-import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.stereotype.Component;
 
 import com.hoaug.movieapi.common.enums.ErrorCode;
@@ -28,7 +27,6 @@ public class UpsertWatchHistoryUseCase {
     this.watchHistoryMapper = watchHistoryMapper;
   }
 
-  @CacheEvict(cacheNames = "watchHistory", key = "'user:' + #userId + ':watchhistories'")
   public WatchHistoryResponse execute (Long userId, UpsertWatchHistoryRequest request) {
     movieRepository.findById(request.getMovieId())
         .orElseThrow( () -> new AppException(ErrorCode.MOVIE_NOT_FOUND));

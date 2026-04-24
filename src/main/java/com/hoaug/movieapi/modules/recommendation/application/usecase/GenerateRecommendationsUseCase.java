@@ -35,7 +35,8 @@ public class GenerateRecommendationsUseCase {
 
     movieRecommendationRepository.deleteAllByUserId(request.getUserId());
 
-    List<MovieSummaryResponse> movies = getMoviesUseCase.execute().stream().limit(limit).toList();
+    List<MovieSummaryResponse> movies = getMoviesUseCase.execute().getMovies().stream().limit(limit)
+        .toList();
 
     for (int i = 0; i < movies.size(); i++) {
       MovieSummaryResponse movie = movies.get(i);

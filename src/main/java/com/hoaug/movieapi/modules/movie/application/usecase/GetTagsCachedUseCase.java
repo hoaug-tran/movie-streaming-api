@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Component;
 
+import com.hoaug.movieapi.modules.movie.application.dto.response.TagListResponse;
 import com.hoaug.movieapi.modules.movie.application.dto.response.TagResponse;
 import com.hoaug.movieapi.modules.movie.application.mapper.TagMapper;
 import com.hoaug.movieapi.modules.movie.domain.repository.TagRepository;
@@ -19,8 +20,9 @@ public class GetTagsCachedUseCase {
     this.tagMapper = tagMapper;
   }
 
-  @Cacheable(value = "tags", unless = "#result.isEmpty()")
-  public List<TagResponse> execute () {
-    return tagRepository.findAll().stream().map(tagMapper::toResponse).toList();
+  @Cacheable(value = "tags", unless = "#result == null")
+  public TagListResponse execute () {
+    List<TagResponse> tags = tagRepository.findAll().stream().map(tagMapper::toResponse).toList();
+    return new TagListResponse(tags);
   }
 }

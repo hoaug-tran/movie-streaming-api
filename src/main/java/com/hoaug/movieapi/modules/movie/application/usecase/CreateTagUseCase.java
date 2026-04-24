@@ -1,5 +1,6 @@
 package com.hoaug.movieapi.modules.movie.application.usecase;
 
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.stereotype.Component;
 
 import com.hoaug.movieapi.modules.movie.application.dto.request.CreateTagRequest;
@@ -19,6 +20,7 @@ public class CreateTagUseCase {
     this.tagMapper = tagMapper;
   }
 
+  @CacheEvict(cacheNames = "tags", allEntries = true)
   public TagResponse execute (CreateTagRequest request) {
     Tag tag = new Tag();
     tag.setName(request.getName());

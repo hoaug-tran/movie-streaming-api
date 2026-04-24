@@ -2,9 +2,9 @@ package com.hoaug.movieapi.modules.subscription.application.usecase;
 
 import java.util.List;
 
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Component;
 
+import com.hoaug.movieapi.modules.subscription.application.dto.response.SubscriptionListResponse;
 import com.hoaug.movieapi.modules.subscription.application.dto.response.UserSubscriptionResponse;
 import com.hoaug.movieapi.modules.subscription.application.mapper.SubscriptionMapper;
 import com.hoaug.movieapi.modules.subscription.domain.repository.UserSubscriptionRepository;
@@ -21,9 +21,9 @@ public class GetMySubscriptionsUseCase {
     this.subscriptionMapper = subscriptionMapper;
   }
 
-  @Cacheable(cacheNames = "userSubscription", key = "'user:' + #userId + ':subscriptions'")
-  public List<UserSubscriptionResponse> execute (Long userId) {
-    return userSubscriptionRepository.findByUserIdOrderByCreatedAtDesc(userId).stream()
-        .map(subscriptionMapper::toResponse).toList();
+  public SubscriptionListResponse execute (Long userId) {
+    List<UserSubscriptionResponse> items = userSubscriptionRepository.findByUserIdOrderByCreatedAtDesc(userId)
+        .stream().map(subscriptionMapper::toResponse).toList();
+    return new SubscriptionListResponse(items);
   }
 }

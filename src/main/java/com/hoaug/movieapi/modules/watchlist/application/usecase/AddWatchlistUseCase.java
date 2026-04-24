@@ -2,7 +2,6 @@ package com.hoaug.movieapi.modules.watchlist.application.usecase;
 
 import java.time.LocalDateTime;
 
-import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.stereotype.Component;
 
 import com.hoaug.movieapi.common.enums.ErrorCode;
@@ -27,7 +26,6 @@ public class AddWatchlistUseCase {
     this.watchlistMapper = watchlistMapper;
   }
 
-  @CacheEvict(cacheNames = "watchlist", key = "'user:' + #userId + ':watchlist'")
   public WatchlistResponse execute (Long userId, Long movieId) {
     movieRepository.findById(movieId)
         .orElseThrow( () -> new AppException(ErrorCode.MOVIE_NOT_FOUND));

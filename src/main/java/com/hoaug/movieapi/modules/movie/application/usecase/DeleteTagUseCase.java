@@ -1,5 +1,6 @@
 package com.hoaug.movieapi.modules.movie.application.usecase;
 
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.stereotype.Component;
 
 import com.hoaug.movieapi.common.enums.ErrorCode;
@@ -15,6 +16,7 @@ public class DeleteTagUseCase {
     this.tagRepository = tagRepository;
   }
 
+  @CacheEvict(cacheNames = "tags", allEntries = true)
   public void execute (Long id) {
     tagRepository.findById(id).orElseThrow( () -> new AppException(ErrorCode.TAG_NOT_FOUND));
     tagRepository.deleteById(id);
