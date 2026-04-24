@@ -4,6 +4,8 @@ import java.nio.charset.StandardCharsets;
 import java.security.SecureRandom;
 import java.util.Base64;
 import java.util.Date;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.crypto.SecretKey;
 
@@ -20,14 +22,27 @@ import io.jsonwebtoken.security.Keys;
 public class JwtService implements TokenService {
 
   private final JwtProperties jwtProperties;
+  private static SecretKey SHARED_KEY;
   private final SecureRandom secureRandom = new SecureRandom();
+  private static final Logger logger = LoggerFactory.getLogger(JwtService.class);
 
   public JwtService(JwtProperties jwtProperties) {
     this.jwtProperties = jwtProperties;
+    initializeKey(jwtProperties.getSecretKey());
+  }
+
+  private synchronized void initializeKey(String secret) {
+    if (SHARED_KEY == null) {
+        if (secret == null || secret.trim().isEmpty()) {
+            throw new RuntimeException("JWT Secret Key is not configured!");
+        }
+        SHARED_KEY = Keys.hmacShaKeyFor(secret.trim().getBytes(StandardCharsets.UTF_8));
+        logger.info("JwtService SHARED_KEY initialized (HashCode: {})", SHARED_KEY.hashCode());
+    }
   }
 
   private SecretKey getSigningKey () {
-    return Keys.hmacShaKeyFor(jwtProperties.getSecretKey().getBytes(StandardCharsets.UTF_8));
+    return SHARED_KEY;
   }
 
   @Override

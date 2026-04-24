@@ -26,3 +26,15 @@ payos.checksum-key=YOUR_PAYOS_CHECKSUM_KEY
 # Optional: Override other properties for local development
 # spring.jpa.show-sql=true
 # logging.level.com.hoaug.movieapi=DEBUG
+
+# OAuth Configuration (Google OAuth)
+oauth.google.client-id=YOUR_GOOGLE_CLIENT_ID
+# Example: oauth.google.client-id=xxx.apps.googleusercontent.com
+# Get from: https://console.cloud.google.com/
+
+oauth.google.client-secret=YOUR_GOOGLE_CLIENT_SECRET
+# Example: oauth.google.client-secret=xxx
+# Get from: https://console.cloud.google.com/
+
+oauth.google.redirect-uri=http://localhost:8080/api/v1/auth/oauth/callback
+# For production, change to your deployment URL

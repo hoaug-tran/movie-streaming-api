@@ -40,22 +40,22 @@ public class SecurityConfig {
             session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
         .authorizeHttpRequests(auth -> auth
             // Public endpoints - no auth needed
-            .requestMatchers("/api/v1/auth/**").permitAll()
-            .requestMatchers(HttpMethod.GET, "/api/v1/movies/**").permitAll()
+            .requestMatchers("/api/v1/auth/me").authenticated().requestMatchers("/api/v1/auth/**")
+            .permitAll().requestMatchers(HttpMethod.GET, "/api/v1/movies/**").permitAll()
             .requestMatchers(HttpMethod.POST, "/api/v1/movies/search").permitAll()
             .requestMatchers(HttpMethod.GET, "/api/v1/movies/categories").permitAll()
             .requestMatchers("/api/v1/subscription-plans/**").permitAll()
             .requestMatchers(HttpMethod.GET, "/api/v1/subscriptions/plans").permitAll()
             .requestMatchers("/api/v1/payments/success").permitAll()
-            .requestMatchers("/api/v1/ads/**").permitAll()
-            .requestMatchers("/api/v1/webhooks/**").permitAll()
-            .requestMatchers(HttpMethod.GET, "/api/v1/search-histories/search").permitAll()
-            .requestMatchers("/actuator/health").permitAll()
-            .requestMatchers("/swagger-ui/**", "/v3/api-docs/**", "/swagger-resources/**").permitAll()
-            
+            .requestMatchers("/api/v1/ads/**").permitAll().requestMatchers("/api/v1/webhooks/**")
+            .permitAll().requestMatchers(HttpMethod.GET, "/api/v1/search-histories/search")
+            .permitAll().requestMatchers("/actuator/health").permitAll()
+            .requestMatchers("/swagger-ui/**", "/v3/api-docs/**", "/swagger-resources/**")
+            .permitAll()
+
             // Admin endpoints
             .requestMatchers("/api/v1/admin/**").hasRole("ADMIN")
-            
+
             // User personalization - auth required
             .requestMatchers("/api/v1/users/**").authenticated()
             .requestMatchers("/api/v1/watch-histories/**").authenticated()
@@ -69,7 +69,7 @@ public class SecurityConfig {
             .requestMatchers("/api/v1/device-sessions/**").authenticated()
             .requestMatchers("/api/v1/recommendations/**").authenticated()
             .requestMatchers("/api/v1/search-histories/**").authenticated()
-            
+
             // Default deny
             .anyRequest().authenticated())
         .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
