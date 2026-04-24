@@ -1,5 +1,6 @@
 package com.hoaug.movieapi.modules.movie.application.dto.response;
 
+import java.io.Serializable;
 import java.util.List;
 
 import lombok.AllArgsConstructor;
@@ -11,10 +12,6 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class SearchMovieResponse {
-  private List<MovieBasicResponse> content;
-  private int totalPages;
-  private long totalElements;
-  private int currentPage;
-  private int pageSize;
+public class MovieListResponse implements Serializable {
+    private List<MovieSummaryResponse> movies;
 }

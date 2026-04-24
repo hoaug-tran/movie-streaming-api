@@ -78,6 +78,26 @@ public class CommentRepositoryAdapter implements CommentRepository {
     jpaCommentRepository.decreaseLikeCount(commentId);
   }
 
+  @Override
+  public List<Comment> findNewComments (int limit) {
+    return jpaCommentRepository
+        .findNewComments(org.springframework.data.domain.PageRequest.of(0, limit)).stream()
+        .map(this::toDomain).toList();
+  }
+
+  @Override
+  public List<Comment> findTopComments (int limit) {
+    return jpaCommentRepository
+        .findTopComments(org.springframework.data.domain.PageRequest.of(0, limit)).stream()
+        .map(this::toDomain).toList();
+  }
+
+  @Override
+  public List<Long> findMostActiveMovieIds (int limit) {
+    return jpaCommentRepository
+        .findMostActiveMovieIds(org.springframework.data.domain.PageRequest.of(0, limit));
+  }
+
   private Comment toDomain (CommentEntity entity) {
     Comment comment = new Comment();
     comment.setId(entity.getId());

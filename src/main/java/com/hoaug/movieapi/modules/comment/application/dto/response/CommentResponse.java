@@ -7,6 +7,8 @@ public class CommentResponse {
   private Long id;
   private Long userId;
   private Long movieId;
+  private String movieSlug;
+  private String movieTitle;
   private Long parentCommentId;
   private String content;
   private Integer likeCount;
@@ -37,6 +39,22 @@ public class CommentResponse {
 
   public void setMovieId (Long movieId) {
     this.movieId = movieId;
+  }
+
+  public String getMovieSlug () {
+    return movieSlug;
+  }
+
+  public void setMovieSlug (String movieSlug) {
+    this.movieSlug = movieSlug;
+  }
+
+  public String getMovieTitle () {
+    return movieTitle;
+  }
+
+  public void setMovieTitle (String movieTitle) {
+    this.movieTitle = movieTitle;
   }
 
   public Long getParentCommentId () {

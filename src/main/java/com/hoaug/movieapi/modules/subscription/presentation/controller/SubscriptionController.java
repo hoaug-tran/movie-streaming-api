@@ -97,7 +97,7 @@ public class SubscriptionController {
   @GetMapping("/me")
   public ResponseEntity<List<UserSubscriptionResponse>> getMySubscriptions (
       Authentication authentication) {
-    return ResponseUtil.ok(getMySubscriptionsUseCase.execute(getCurrentUserId(authentication)));
+    return ResponseUtil.ok(getMySubscriptionsUseCase.execute(getCurrentUserId(authentication)).getItems());
   }
 
   @PostMapping("/payments")

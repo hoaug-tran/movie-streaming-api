@@ -2,7 +2,6 @@ package com.hoaug.movieapi.modules.subscription.application.usecase;
 
 import java.time.LocalDateTime;
 
-import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.stereotype.Component;
 
 import com.hoaug.movieapi.common.enums.ErrorCode;
@@ -31,7 +30,6 @@ public class MarkPaymentSuccessUseCase {
     this.subscriptionMapper = subscriptionMapper;
   }
 
-  @CacheEvict(cacheNames = "userSubscription", allEntries = true)
   public PaymentTransactionResponse execute (Long transactionId, String providerTransactionId,
       String providerResponse) {
     PaymentTransaction transaction = paymentTransactionRepository.findById(transactionId)

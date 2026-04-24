@@ -113,4 +113,43 @@ public class MovieRepositoryAdapter implements MovieRepository {
   public void deleteById (Long id) {
     jpaMovieRepository.deleteById(id);
   }
+
+  @Override
+  public List<Movie> findTopTrending (int limit) {
+    return jpaMovieRepository.findTopTrending(org.springframework.data.domain.PageRequest.of(0, limit))
+        .stream().map(this::toDomain).toList();
+  }
+
+  @Override
+  public List<Movie> findWeeklyNew (int limit) {
+    java.time.LocalDateTime since = java.time.LocalDateTime.now().minusDays(7);
+    return jpaMovieRepository
+        .findWeeklyNew(since, org.springframework.data.domain.PageRequest.of(0, limit)).stream()
+        .map(this::toDomain).toList();
+  }
+
+  @Override
+  public List<Movie> findTopRated (int limit) {
+    return jpaMovieRepository.findTopRated(org.springframework.data.domain.PageRequest.of(0, limit))
+        .stream().map(this::toDomain).toList();
+  }
+
+  @Override
+  public List<Movie> findTopSeries (int limit) {
+    return jpaMovieRepository.findTopSeries(org.springframework.data.domain.PageRequest.of(0, limit))
+        .stream().map(this::toDomain).toList();
+  }
+
+  @Override
+  public List<Movie> findUpcoming (int limit) {
+    return jpaMovieRepository.findUpcoming(org.springframework.data.domain.PageRequest.of(0, limit))
+        .stream().map(this::toDomain).toList();
+  }
+
+  @Override
+  public List<Movie> findByCountry (String country, int page, int size) {
+    return jpaMovieRepository
+        .findByCountry(country, org.springframework.data.domain.PageRequest.of(page, size)).stream()
+        .map(this::toDomain).toList();
+  }
 }

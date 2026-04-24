@@ -25,6 +25,7 @@ public class SubscriptionScheduler {
     this.createNotificationUseCase = createNotificationUseCase;
   }
 
+  // 1 giờ
   @Scheduled(fixedRate = 3600000)
   public void expireSubscriptions () {
     var expiredSubscriptions = userSubscriptionRepository
@@ -37,6 +38,7 @@ public class SubscriptionScheduler {
     });
   }
 
+  // 24h
   @Scheduled(fixedRate = 86400000)
   public void sendExpiringSubscriptionNotifications () {
     LocalDateTime tomorrow = LocalDateTime.now().plusDays(1);
@@ -48,14 +50,15 @@ public class SubscriptionScheduler {
     expiringSubscriptions.forEach(sub -> {
       CreateNotificationRequest req = new CreateNotificationRequest();
       req.setUserId(sub.getUserId());
-      req.setTitle("Subscription Expiring Soon");
-      req.setContent("Your subscription will expire on " + sub.getEndAt()
-          + ". Please renew to continue watching.");
+      req.setTitle("Gói thuê bao của bạn sẽ sớm kết thúc");
+      req.setContent("Gói thuê bao của bạn sẽ kết thúc vào " + sub.getEndAt()
+          + ". Hãy gia hạn để tiếp tục hưởng ưu đại nhé.");
       req.setType("PREMIUM_EXPIRING");
       createNotificationUseCase.execute(req);
     });
   }
 
+  // 24h
   @Scheduled(fixedRate = 86400000)
   public void deactivatePremiumUsers () {
     var expiredSubscriptions = userSubscriptionRepository

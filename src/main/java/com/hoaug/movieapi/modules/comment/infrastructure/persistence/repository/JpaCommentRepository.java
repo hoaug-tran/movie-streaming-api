@@ -48,4 +48,14 @@ public interface JpaCommentRepository extends JpaRepository<CommentEntity, Long>
           where c.id = :commentId
       """)
   void decreaseLikeCount (Long commentId);
+
+  // Discovery Queries
+  @Query("SELECT c FROM CommentEntity c WHERE c.status = 'VISIBLE' ORDER BY c.createdAt DESC")
+  List<CommentEntity> findNewComments (org.springframework.data.domain.Pageable pageable);
+
+  @Query("SELECT c FROM CommentEntity c WHERE c.status = 'VISIBLE' ORDER BY (c.likeCount + c.replyCount) DESC")
+  List<CommentEntity> findTopComments (org.springframework.data.domain.Pageable pageable);
+
+  @Query("SELECT c.movieId FROM CommentEntity c WHERE c.status = 'VISIBLE' GROUP BY c.movieId ORDER BY COUNT(c.id) DESC")
+  List<Long> findMostActiveMovieIds (org.springframework.data.domain.Pageable pageable);
 }

@@ -60,9 +60,7 @@ public class WatchlistController {
 
   @GetMapping("/me")
   public ResponseEntity<List<WatchlistResponse>> getMyWatchlist (Authentication authentication) {
-    List<WatchlistResponse> watchlist = getMyWatchlistUseCase
-        .execute(getCurrentUserId(authentication));
-    return ResponseUtil.ok(watchlist);
+    return ResponseUtil.ok(getMyWatchlistUseCase.execute(getCurrentUserId(authentication)).getItems());
   }
 
   @GetMapping("/me/check/{movieId}")

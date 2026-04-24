@@ -19,4 +19,16 @@ public interface MovieRepository {
   Movie save (Movie movie);
 
   void deleteById (Long id);
+
+  List<Movie> findTopTrending (int limit);
+
+  List<Movie> findWeeklyNew (int limit);
+
+  List<Movie> findTopRated (int limit);
+
+  List<Movie> findTopSeries (int limit);
+
+  List<Movie> findUpcoming (int limit);
+
+  List<Movie> findByCountry (String country, int page, int size);
 }

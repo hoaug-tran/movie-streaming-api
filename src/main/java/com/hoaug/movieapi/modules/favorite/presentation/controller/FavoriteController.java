@@ -60,9 +60,7 @@ public class FavoriteController {
 
   @GetMapping("/me")
   public ResponseEntity<List<FavoriteResponse>> getMyFavorites (Authentication authentication) {
-    List<FavoriteResponse> favorites = getMyFavoritesUseCase
-        .execute(getCurrentUserId(authentication));
-    return ResponseUtil.ok(favorites);
+    return ResponseUtil.ok(getMyFavoritesUseCase.execute(getCurrentUserId(authentication)).getItems());
   }
 
   @GetMapping("/me/check/{movieId}")

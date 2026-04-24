@@ -91,12 +91,12 @@ public class MovieController {
 
   @GetMapping
   public ResponseEntity<List<MovieSummaryResponse>> getMovies () {
-    return ResponseUtil.ok(getMoviesUseCase.execute());
+    return ResponseUtil.ok(getMoviesUseCase.execute().getMovies());
   }
 
   @GetMapping("/categories")
   public ResponseEntity<List<CategoryResponse>> getCategories () {
-    return ResponseUtil.ok(getCategoriesCachedUseCase.execute());
+    return ResponseUtil.ok(getCategoriesCachedUseCase.execute().getCategories());
   }
 
   @PostMapping("/search")

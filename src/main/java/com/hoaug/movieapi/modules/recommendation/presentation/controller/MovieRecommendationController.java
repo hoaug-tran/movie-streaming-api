@@ -58,7 +58,7 @@ public class MovieRecommendationController {
   @GetMapping("/me")
   public ResponseEntity<List<MovieRecommendationResponse>> getMyRecommendations (
       Authentication authentication) {
-    return ResponseUtil.ok(getMyRecommendationsUseCase.execute(getCurrentUserId(authentication)));
+    return ResponseUtil.ok(getMyRecommendationsUseCase.execute(getCurrentUserId(authentication)).getItems());
   }
 
   @DeleteMapping("/me/{movieId}")

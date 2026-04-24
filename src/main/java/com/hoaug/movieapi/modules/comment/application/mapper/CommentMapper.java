@@ -4,15 +4,28 @@ import org.springframework.stereotype.Component;
 
 import com.hoaug.movieapi.modules.comment.application.dto.response.CommentResponse;
 import com.hoaug.movieapi.modules.comment.domain.model.Comment;
+import com.hoaug.movieapi.modules.movie.domain.repository.MovieRepository;
 
 @Component
 public class CommentMapper {
+
+  private final MovieRepository movieRepository;
+
+  public CommentMapper(MovieRepository movieRepository) {
+    this.movieRepository = movieRepository;
+  }
 
   public CommentResponse toResponse (Comment comment) {
     CommentResponse response = new CommentResponse();
     response.setId(comment.getId());
     response.setUserId(comment.getUserId());
     response.setMovieId(comment.getMovieId());
+
+    movieRepository.findById(comment.getMovieId()).ifPresent(movie -> {
+      response.setMovieSlug(movie.getSlug());
+      response.setMovieTitle(movie.getTitle());
+    });
+
     response.setParentCommentId(comment.getParentCommentId());
     response.setContent(comment.getContent());
     response.setLikeCount(comment.getLikeCount());

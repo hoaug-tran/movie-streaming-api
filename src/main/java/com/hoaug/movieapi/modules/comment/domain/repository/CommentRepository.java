@@ -24,4 +24,10 @@ public interface CommentRepository {
   void increaseLikeCount (Long commentId);
 
   void decreaseLikeCount (Long commentId);
+
+  List<Comment> findNewComments (int limit);
+
+  List<Comment> findTopComments (int limit);
+
+  List<Long> findMostActiveMovieIds (int limit);
 }

@@ -65,8 +65,7 @@ public class WatchHistoryController {
   public ResponseEntity<List<WatchHistoryResponse>> getMyWatchHistories (
       Authentication authentication) {
     Long userId = getCurrentUserId(authentication);
-    List<WatchHistoryResponse> histories = getMyWatchHistoriesUseCase.execute(userId);
-    return ResponseUtil.ok(histories);
+    return ResponseUtil.ok(getMyWatchHistoriesUseCase.execute(userId).getItems());
   }
 
   @GetMapping("/me/continue-watching")
