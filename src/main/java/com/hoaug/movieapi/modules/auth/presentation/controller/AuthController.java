@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.hoaug.movieapi.common.response.ResponseUtil;
+import com.hoaug.movieapi.common.util.CookieUtil;
 import com.hoaug.movieapi.modules.auth.application.dto.request.ChangePasswordRequest;
 import com.hoaug.movieapi.modules.auth.application.dto.request.ForgotPasswordRequest;
 import com.hoaug.movieapi.modules.auth.application.dto.request.LoginRequest;
@@ -61,7 +62,7 @@ public class AuthController {
   public ResponseEntity<AuthResponse> register (@Valid @RequestBody RegisterRequest request,
       jakarta.servlet.http.HttpServletResponse response) {
     AuthResponse authResponse = registerUseCase.execute(request);
-    setAuthCookies(response, authResponse);
+    CookieUtil.setAuthCookies(response, authResponse);
     return ResponseUtil.created(authResponse);
   }
 
@@ -69,7 +70,7 @@ public class AuthController {
   public ResponseEntity<AuthResponse> login (@Valid @RequestBody LoginRequest request,
       jakarta.servlet.http.HttpServletResponse response) {
     AuthResponse authResponse = loginUseCase.execute(request);
-    setAuthCookies(response, authResponse);
+    CookieUtil.setAuthCookies(response, authResponse);
     return ResponseUtil.ok(authResponse);
   }
 
@@ -87,15 +88,12 @@ public class AuthController {
       @Valid @RequestBody RefreshTokenRequest request,
       jakarta.servlet.http.HttpServletResponse response) {
     RefreshTokenResponse refreshTokenResponse = refreshTokenUseCase.execute(request);
-
-    // Cập nhật lại accessToken cookie
-    jakarta.servlet.http.Cookie cookie = new jakarta.servlet.http.Cookie("accessToken",
-        refreshTokenResponse.getAccessToken());
-    cookie.setHttpOnly(true);
-    cookie.setSecure(false); // TODO Đặt thành true nếu dùng HTTPS
-    cookie.setPath("/");
-    cookie.setMaxAge(3600); // 1 giờ
-    response.addCookie(cookie);
+    
+    // Cập nhật lại cookies bằng CookieUtil
+    AuthResponse authTokens = new AuthResponse();
+    authTokens.setAccessToken(refreshTokenResponse.getAccessToken());
+    authTokens.setRefreshToken(refreshTokenResponse.getRefreshToken());
+    CookieUtil.setAuthCookies(response, authTokens);
 
     return ResponseUtil.ok(refreshTokenResponse);
   }
@@ -123,44 +121,12 @@ public class AuthController {
     }
 
     // Xóa cookies
-    clearAuthCookies(response);
+    CookieUtil.clearAuthCookies(response);
 
     return ResponseUtil.ok(new MessageResponse("Đăng xuất thành công"));
   }
 
-  private void setAuthCookies (jakarta.servlet.http.HttpServletResponse response,
-      AuthResponse authResponse) {
-    // Access Token Cookie
-    jakarta.servlet.http.Cookie accessCookie = new jakarta.servlet.http.Cookie("accessToken",
-        authResponse.getAccessToken());
-    accessCookie.setHttpOnly(true);
-    accessCookie.setSecure(false);
-    accessCookie.setPath("/");
-    accessCookie.setMaxAge(3600); // 1 giờ
-    response.addCookie(accessCookie);
 
-    // Refresh Token Cookie
-    jakarta.servlet.http.Cookie refreshCookie = new jakarta.servlet.http.Cookie("refreshToken",
-        authResponse.getRefreshToken());
-    refreshCookie.setHttpOnly(true);
-    refreshCookie.setSecure(false);
-    refreshCookie.setPath("/");
-    refreshCookie.setMaxAge(30 * 24 * 60 * 60); // 30 ngày
-    response.addCookie(refreshCookie);
-  }
-
-  private void clearAuthCookies (jakarta.servlet.http.HttpServletResponse response) {
-    jakarta.servlet.http.Cookie accessCookie = new jakarta.servlet.http.Cookie("accessToken", null);
-    accessCookie.setPath("/");
-    accessCookie.setMaxAge(0);
-    response.addCookie(accessCookie);
-
-    jakarta.servlet.http.Cookie refreshCookie = new jakarta.servlet.http.Cookie("refreshToken",
-        null);
-    refreshCookie.setPath("/");
-    refreshCookie.setMaxAge(0);
-    response.addCookie(refreshCookie);
-  }
 
   @PostMapping("/forgot-password")
   public ResponseEntity<MessageResponse> forgotPassword (

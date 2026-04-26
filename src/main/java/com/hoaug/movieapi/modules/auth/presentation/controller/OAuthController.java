@@ -14,6 +14,8 @@ import org.springframework.web.bind.annotation.RestController;
 import com.hoaug.movieapi.common.enums.ErrorCode;
 import com.hoaug.movieapi.common.exception.AppException;
 import com.hoaug.movieapi.common.response.ResponseUtil;
+import com.hoaug.movieapi.common.util.CookieUtil;
+import jakarta.servlet.http.HttpServletResponse;
 import com.hoaug.movieapi.modules.auth.application.dto.oauth.GoogleOAuthUserInfo;
 import com.hoaug.movieapi.modules.auth.application.dto.response.AuthResponse;
 import com.hoaug.movieapi.modules.auth.application.port.GoogleOAuthClient;
@@ -33,7 +35,8 @@ public class OAuthController {
   }
 
   @PostMapping("/callback/google")
-  public ResponseEntity<AuthResponse> googleCallback (@RequestBody Map<String, String> request) {
+  public ResponseEntity<AuthResponse> googleCallback (@RequestBody Map<String, String> request,
+      HttpServletResponse response) {
     String code = request.get("code");
 
     if (code == null || code.isBlank()) {
@@ -46,6 +49,8 @@ public class OAuthController {
         googleUserInfo.getProfileData(), googleUserInfo.getAccessToken(),
         googleUserInfo.getRefreshToken(), googleUserInfo.getTokenExpiry(),
         googleUserInfo.getIdToken());
+
+    CookieUtil.setAuthCookies(response, authResponse);
 
     return ResponseUtil.ok(authResponse);
   }
