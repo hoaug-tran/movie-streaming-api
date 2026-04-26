@@ -10,12 +10,28 @@ import com.hoaug.movieapi.modules.movie.application.dto.response.MovieDetailResp
 import com.hoaug.movieapi.modules.movie.application.dto.response.MoviePersonResponse;
 import com.hoaug.movieapi.modules.movie.application.dto.response.MovieStudioResponse;
 import com.hoaug.movieapi.modules.movie.application.dto.response.MovieSummaryResponse;
+import com.hoaug.movieapi.modules.movie.application.dto.response.MovieBasicResponse;
 import com.hoaug.movieapi.modules.movie.application.dto.response.TagResponse;
 import com.hoaug.movieapi.modules.movie.domain.model.Episode;
 import com.hoaug.movieapi.modules.movie.domain.model.Movie;
 
 @Component
 public class MovieMapper {
+
+  public MovieBasicResponse toBasicResponse (Movie movie) {
+    MovieBasicResponse res = new MovieBasicResponse();
+    res.setId(movie.getId());
+    res.setTitle(movie.getTitle());
+    res.setSlug(movie.getSlug());
+    res.setDescription(movie.getDescription());
+    res.setPosterUrl(movie.getPosterUrl());
+    res.setBannerUrl(movie.getBannerUrl());
+    res.setReleaseYear(movie.getReleaseYear());
+    res.setAverageRating(movie.getAverageRating() != null ? movie.getAverageRating().doubleValue() : null);
+    res.setViewCount(movie.getViewCount());
+    res.setFavoriteCount(movie.getFavoriteCount());
+    return res;
+  }
 
   public MovieSummaryResponse toSummaryResponse (Movie movie) {
     MovieSummaryResponse response = new MovieSummaryResponse();

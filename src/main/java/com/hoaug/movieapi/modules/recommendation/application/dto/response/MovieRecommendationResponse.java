@@ -3,6 +3,8 @@ package com.hoaug.movieapi.modules.recommendation.application.dto.response;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
+import com.hoaug.movieapi.modules.movie.application.dto.response.MovieBasicResponse;
+
 public class MovieRecommendationResponse {
 
   private Long id;
@@ -10,6 +12,7 @@ public class MovieRecommendationResponse {
   private BigDecimal score;
   private String reason;
   private LocalDateTime createdAt;
+  private MovieBasicResponse movie;
 
   public Long getId () {
     return id;
@@ -49,5 +52,13 @@ public class MovieRecommendationResponse {
 
   public void setCreatedAt (LocalDateTime createdAt) {
     this.createdAt = createdAt;
+  }
+
+  public MovieBasicResponse getMovie () {
+    return movie;
+  }
+
+  public void setMovie (MovieBasicResponse movie) {
+    this.movie = movie;
   }
 }

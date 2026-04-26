@@ -2,12 +2,15 @@ package com.hoaug.movieapi.modules.watchhistory.application.dto.response;
 
 import java.time.LocalDateTime;
 
+import com.hoaug.movieapi.modules.movie.application.dto.response.MovieBasicResponse;
+
 public class ContinueWatchingResponse {
   private Long movieId;
   private Long episodeId;
   private Integer stoppedAtSecond;
   private Integer watchedDurationSeconds;
   private LocalDateTime lastWatchedAt;
+  private MovieBasicResponse movie;
 
   public Long getMovieId () {
     return movieId;
@@ -47,5 +50,13 @@ public class ContinueWatchingResponse {
 
   public void setLastWatchedAt (LocalDateTime lastWatchedAt) {
     this.lastWatchedAt = lastWatchedAt;
+  }
+
+  public MovieBasicResponse getMovie () {
+    return movie;
+  }
+
+  public void setMovie (MovieBasicResponse movie) {
+    this.movie = movie;
   }
 }
