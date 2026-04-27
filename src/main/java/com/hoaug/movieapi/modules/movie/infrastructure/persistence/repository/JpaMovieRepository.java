@@ -26,7 +26,6 @@ public interface JpaMovieRepository extends JpaRepository<MovieEntity, Long> {
   Page<MovieEntity> findByMovieStatusAndTitleContaining (MovieStatus movieStatus, String title,
       Pageable pageable);
 
-  // Discovery Queries
   @Query("SELECT m FROM MovieEntity m WHERE m.movieStatus = 'PUBLISHED' ORDER BY m.viewCount DESC")
   List<MovieEntity> findTopTrending (Pageable pageable);
 
@@ -44,4 +43,25 @@ public interface JpaMovieRepository extends JpaRepository<MovieEntity, Long> {
 
   @Query("SELECT m FROM MovieEntity m WHERE m.movieStatus = 'PUBLISHED' AND m.country = :country ORDER BY m.publishedAt DESC")
   Page<MovieEntity> findByCountry (@Param("country") String country, Pageable pageable);
-}
+
+  @Query("SELECT m FROM MovieEntity m WHERE m.movieStatus = 'PUBLISHED' AND m.movieType = 'SERIES' AND m.country = :country ORDER BY m.viewCount DESC")
+  List<MovieEntity> findTopSeriesByCountry (@Param("country") String country, Pageable pageable);
+
+  @Query(value = "SELECT m.* FROM movies m LEFT JOIN movie_categories mc ON m.id = mc.movie_id LEFT JOIN categories c ON mc.category_id = c.id WHERE m.movie_status = 'PUBLISHED' AND m.movie_type = 'SERIES' AND c.slug IN ('lang-man', 'ky-ao', 'tam-ly') ORDER BY m.average_rating DESC", nativeQuery = true)
+  List<MovieEntity> findTopSeriesDrama (Pageable pageable);
+
+  @Query(value = "SELECT m.* FROM movies m LEFT JOIN movie_categories mc ON m.id = mc.movie_id LEFT JOIN categories c ON mc.category_id = c.id WHERE m.movie_status = 'PUBLISHED' AND m.movie_type = 'SINGLE' AND c.slug IN ('hanh-dong', 'phieu-luu') ORDER BY m.view_count DESC", nativeQuery = true)
+  List<MovieEntity> findActionMovies (Pageable pageable);
+
+  @Query(value = "SELECT m.* FROM movies m LEFT JOIN movie_categories mc ON m.id = mc.movie_id LEFT JOIN categories c ON mc.category_id = c.id WHERE m.movie_status = 'PUBLISHED' AND m.movie_type = 'SINGLE' AND c.slug IN ('kinh-di', 'toi-pham') ORDER BY m.average_rating DESC", nativeQuery = true)
+  List<MovieEntity> findThrillerMovies (Pageable pageable);
+
+  @Query(value = "SELECT m.* FROM movies m LEFT JOIN movie_categories mc ON m.id = mc.movie_id LEFT JOIN categories c ON mc.category_id = c.id WHERE m.movie_status = 'PUBLISHED' AND m.movie_type = 'SERIES' AND c.slug = 'hoat-hinh' ORDER BY m.view_count DESC", nativeQuery = true)
+  List<MovieEntity> findAnimeSeries (Pageable pageable);
+
+  @Query(value = "SELECT m.* FROM movies m LEFT JOIN movie_categories mc ON m.id = mc.movie_id LEFT JOIN categories c ON mc.category_id = c.id WHERE m.movie_status = 'PUBLISHED' AND m.movie_type = 'SINGLE' AND c.slug = 'hoat-hinh' ORDER BY m.view_count DESC", nativeQuery = true)
+  List<MovieEntity> findAnimeMovies (Pageable pageable);
+
+  @Query(value = "SELECT m.* FROM movies m WHERE m.movie_status = 'PUBLISHED' ORDER BY (SELECT COUNT(*) FROM comments c WHERE c.movie_id = m.id) DESC, m.view_count DESC", nativeQuery = true)
+  List<MovieEntity> findMostCommented (Pageable pageable);
+}

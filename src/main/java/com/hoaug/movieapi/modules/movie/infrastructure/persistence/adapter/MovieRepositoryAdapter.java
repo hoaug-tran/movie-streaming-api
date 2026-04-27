@@ -152,4 +152,47 @@ public class MovieRepositoryAdapter implements MovieRepository {
         .findByCountry(country, org.springframework.data.domain.PageRequest.of(page, size)).stream()
         .map(this::toDomain).toList();
   }
+
+  @Override
+  public List<Movie> findTopSeriesByCountry (String country, int limit) {
+    return jpaMovieRepository
+        .findTopSeriesByCountry(country, org.springframework.data.domain.PageRequest.of(0, limit))
+        .stream().map(this::toDomain).toList();
+  }
+
+  @Override
+  public List<Movie> findTopSeriesDrama (int limit) {
+    return jpaMovieRepository.findTopSeriesDrama(org.springframework.data.domain.PageRequest.of(0, limit))
+        .stream().map(this::toDomain).toList();
+  }
+
+  @Override
+  public List<Movie> findActionMovies (int limit) {
+    return jpaMovieRepository.findActionMovies(org.springframework.data.domain.PageRequest.of(0, limit))
+        .stream().map(this::toDomain).toList();
+  }
+
+  @Override
+  public List<Movie> findThrillerMovies (int limit) {
+    return jpaMovieRepository.findThrillerMovies(org.springframework.data.domain.PageRequest.of(0, limit))
+        .stream().map(this::toDomain).toList();
+  }
+
+  @Override
+  public List<Movie> findAnimeSeries (int limit) {
+    return jpaMovieRepository.findAnimeSeries(org.springframework.data.domain.PageRequest.of(0, limit))
+        .stream().map(this::toDomain).toList();
+  }
+
+  @Override
+  public List<Movie> findAnimeMovies (int limit) {
+    return jpaMovieRepository.findAnimeMovies(org.springframework.data.domain.PageRequest.of(0, limit))
+        .stream().map(this::toDomain).toList();
+  }
+
+  @Override
+  public List<Movie> findMostCommented (int limit) {
+    return jpaMovieRepository.findMostCommented(org.springframework.data.domain.PageRequest.of(0, limit))
+        .stream().map(this::toDomain).toList();
+  }
 }

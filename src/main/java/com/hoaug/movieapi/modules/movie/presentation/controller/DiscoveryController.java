@@ -14,8 +14,15 @@ import com.hoaug.movieapi.modules.comment.application.usecase.GetMostActiveMovie
 import com.hoaug.movieapi.modules.comment.application.usecase.GetNewCommentsUseCase;
 import com.hoaug.movieapi.modules.comment.application.usecase.GetTopCommentsUseCase;
 import com.hoaug.movieapi.modules.movie.application.dto.response.MovieListResponse;
+import com.hoaug.movieapi.modules.movie.application.usecase.GetActionMoviesUseCase;
+import com.hoaug.movieapi.modules.movie.application.usecase.GetAnimeMoviesUseCase;
+import com.hoaug.movieapi.modules.movie.application.usecase.GetAnimeSeriesUseCase;
 import com.hoaug.movieapi.modules.movie.application.usecase.GetMoviesByRegionUseCase;
+import com.hoaug.movieapi.modules.movie.application.usecase.GetMostCommentedMoviesUseCase;
+import com.hoaug.movieapi.modules.movie.application.usecase.GetThrillerMoviesUseCase;
 import com.hoaug.movieapi.modules.movie.application.usecase.GetTopRatedMoviesUseCase;
+import com.hoaug.movieapi.modules.movie.application.usecase.GetTopSeriesByRegionUseCase;
+import com.hoaug.movieapi.modules.movie.application.usecase.GetTopSeriesDramaUseCase;
 import com.hoaug.movieapi.modules.movie.application.usecase.GetTopSeriesUseCase;
 import com.hoaug.movieapi.modules.movie.application.usecase.GetTrendingMoviesUseCase;
 import com.hoaug.movieapi.modules.movie.application.usecase.GetUpcomingMoviesUseCase;
@@ -38,6 +45,13 @@ public class DiscoveryController {
   private final GetTopCommentsUseCase getTopCommentsUseCase;
   private final GetNewCommentsUseCase getNewCommentsUseCase;
   private final GetMostActiveMoviesUseCase getMostActiveMoviesUseCase;
+  private final GetTopSeriesDramaUseCase getTopSeriesDramaUseCase;
+  private final GetActionMoviesUseCase getActionMoviesUseCase;
+  private final GetThrillerMoviesUseCase getThrillerMoviesUseCase;
+  private final GetAnimeSeriesUseCase getAnimeSeriesUseCase;
+  private final GetAnimeMoviesUseCase getAnimeMoviesUseCase;
+  private final GetMostCommentedMoviesUseCase getMostCommentedMoviesUseCase;
+  private final GetTopSeriesByRegionUseCase getTopSeriesByRegionUseCase;
 
   public DiscoveryController(GetTrendingMoviesUseCase getTrendingMoviesUseCase,
       GetWeeklyNewMoviesUseCase getWeeklyNewMoviesUseCase,
@@ -45,7 +59,14 @@ public class DiscoveryController {
       GetTopRatedMoviesUseCase getTopRatedMoviesUseCase, GetTopSeriesUseCase getTopSeriesUseCase,
       GetMoviesByRegionUseCase getMoviesByRegionUseCase,
       GetTopCommentsUseCase getTopCommentsUseCase, GetNewCommentsUseCase getNewCommentsUseCase,
-      GetMostActiveMoviesUseCase getMostActiveMoviesUseCase) {
+      GetMostActiveMoviesUseCase getMostActiveMoviesUseCase,
+      GetTopSeriesDramaUseCase getTopSeriesDramaUseCase,
+      GetActionMoviesUseCase getActionMoviesUseCase,
+      GetThrillerMoviesUseCase getThrillerMoviesUseCase,
+      GetAnimeSeriesUseCase getAnimeSeriesUseCase,
+      GetAnimeMoviesUseCase getAnimeMoviesUseCase,
+      GetMostCommentedMoviesUseCase getMostCommentedMoviesUseCase,
+      GetTopSeriesByRegionUseCase getTopSeriesByRegionUseCase) {
     this.getTrendingMoviesUseCase = getTrendingMoviesUseCase;
     this.getWeeklyNewMoviesUseCase = getWeeklyNewMoviesUseCase;
     this.getUpcomingMoviesUseCase = getUpcomingMoviesUseCase;
@@ -55,6 +76,13 @@ public class DiscoveryController {
     this.getTopCommentsUseCase = getTopCommentsUseCase;
     this.getNewCommentsUseCase = getNewCommentsUseCase;
     this.getMostActiveMoviesUseCase = getMostActiveMoviesUseCase;
+    this.getTopSeriesDramaUseCase = getTopSeriesDramaUseCase;
+    this.getActionMoviesUseCase = getActionMoviesUseCase;
+    this.getThrillerMoviesUseCase = getThrillerMoviesUseCase;
+    this.getAnimeSeriesUseCase = getAnimeSeriesUseCase;
+    this.getAnimeMoviesUseCase = getAnimeMoviesUseCase;
+    this.getMostCommentedMoviesUseCase = getMostCommentedMoviesUseCase;
+    this.getTopSeriesByRegionUseCase = getTopSeriesByRegionUseCase;
   }
 
   @GetMapping("/trending")
@@ -113,5 +141,48 @@ public class DiscoveryController {
   public ResponseEntity<MovieListResponse> getMostActive (
       @RequestParam(defaultValue = "10") int limit) {
     return ResponseUtil.ok(getMostActiveMoviesUseCase.execute(limit));
+  }
+
+  @GetMapping("/series-drama")
+  @Operation(summary = "Get top drama/romance series")
+  public ResponseEntity<MovieListResponse> getSeriesDrama (@RequestParam(defaultValue = "10") int limit) {
+    return ResponseUtil.ok(getTopSeriesDramaUseCase.execute(limit));
+  }
+
+  @GetMapping("/action-movies")
+  @Operation(summary = "Get top action movies")
+  public ResponseEntity<MovieListResponse> getActionMovies (@RequestParam(defaultValue = "10") int limit) {
+    return ResponseUtil.ok(getActionMoviesUseCase.execute(limit));
+  }
+
+  @GetMapping("/thriller-movies")
+  @Operation(summary = "Get top thriller movies")
+  public ResponseEntity<MovieListResponse> getThrillerMovies (@RequestParam(defaultValue = "10") int limit) {
+    return ResponseUtil.ok(getThrillerMoviesUseCase.execute(limit));
+  }
+
+  @GetMapping("/anime-series")
+  @Operation(summary = "Get top anime series")
+  public ResponseEntity<MovieListResponse> getAnimeSeries (@RequestParam(defaultValue = "10") int limit) {
+    return ResponseUtil.ok(getAnimeSeriesUseCase.execute(limit));
+  }
+
+  @GetMapping("/anime-movies")
+  @Operation(summary = "Get top anime movies")
+  public ResponseEntity<MovieListResponse> getAnimeMovies (@RequestParam(defaultValue = "10") int limit) {
+    return ResponseUtil.ok(getAnimeMoviesUseCase.execute(limit));
+  }
+
+  @GetMapping("/most-commented")
+  @Operation(summary = "Get most commented content")
+  public ResponseEntity<MovieListResponse> getMostCommented (@RequestParam(defaultValue = "10") int limit) {
+    return ResponseUtil.ok(getMostCommentedMoviesUseCase.execute(limit));
+  }
+
+  @GetMapping("/top-series-region")
+  @Operation(summary = "Get top series by region/country")
+  public ResponseEntity<MovieListResponse> getTopSeriesByRegion (@RequestParam String country,
+      @RequestParam(defaultValue = "10") int limit) {
+    return ResponseUtil.ok(getTopSeriesByRegionUseCase.execute(country, limit));
   }
 }

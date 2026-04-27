@@ -31,4 +31,18 @@ public interface MovieRepository {
   List<Movie> findUpcoming (int limit);
 
   List<Movie> findByCountry (String country, int page, int size);
+
+  List<Movie> findTopSeriesByCountry (String country, int limit);
+
+  List<Movie> findTopSeriesDrama (int limit);
+
+  List<Movie> findActionMovies (int limit);
+
+  List<Movie> findThrillerMovies (int limit);
+
+  List<Movie> findAnimeSeries (int limit);
+
+  List<Movie> findAnimeMovies (int limit);
+
+  List<Movie> findMostCommented (int limit);
 }
