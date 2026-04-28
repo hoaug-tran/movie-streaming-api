@@ -15,6 +15,7 @@ import com.hoaug.movieapi.common.response.ResponseUtil;
 import com.hoaug.movieapi.modules.movie.application.dto.request.SearchMovieRequest;
 import com.hoaug.movieapi.modules.movie.application.dto.response.CategoryResponse;
 import com.hoaug.movieapi.modules.movie.application.dto.response.EpisodeResponse;
+import com.hoaug.movieapi.modules.movie.application.dto.response.MovieDetailAggregateResponse;
 import com.hoaug.movieapi.modules.movie.application.dto.response.MovieDetailResponse;
 import com.hoaug.movieapi.modules.movie.application.dto.response.MoviePersonResponse;
 import com.hoaug.movieapi.modules.movie.application.dto.response.MovieStudioResponse;
@@ -29,6 +30,7 @@ import com.hoaug.movieapi.modules.movie.application.usecase.GetEpisodesByMovieUs
 import com.hoaug.movieapi.modules.movie.application.usecase.GetMovieByIdUseCase;
 import com.hoaug.movieapi.modules.movie.application.usecase.GetMovieBySlugUseCase;
 import com.hoaug.movieapi.modules.movie.application.usecase.GetMovieCategoriesUseCase;
+import com.hoaug.movieapi.modules.movie.application.usecase.GetMovieDetailAggregateUseCase;
 import com.hoaug.movieapi.modules.movie.application.usecase.GetMoviePersonsUseCase;
 import com.hoaug.movieapi.modules.movie.application.usecase.GetMovieStudiosUseCase;
 import com.hoaug.movieapi.modules.movie.application.usecase.GetMovieTagsUseCase;
@@ -61,6 +63,7 @@ public class MovieController {
   private final GetStudioByIdUseCase getStudioByIdUseCase;
   private final SearchMovieUseCase searchMovieUseCase;
   private final AdvancedSearchMovieUseCase advancedSearchMovieUseCase;
+  private final GetMovieDetailAggregateUseCase getMovieDetailAggregateUseCase;
 
   public MovieController(GetMoviesUseCase getMoviesUseCase, GetMovieByIdUseCase getMovieByIdUseCase,
       GetMovieBySlugUseCase getMovieBySlugUseCase,
@@ -71,7 +74,8 @@ public class MovieController {
       GetMovieStudiosUseCase getMovieStudiosUseCase, GetPersonsUseCase getPersonsUseCase,
       GetPersonByIdUseCase getPersonByIdUseCase, GetStudiosUseCase getStudiosUseCase,
       GetStudioByIdUseCase getStudioByIdUseCase, SearchMovieUseCase searchMovieUseCase,
-      AdvancedSearchMovieUseCase advancedSearchMovieUseCase) {
+      AdvancedSearchMovieUseCase advancedSearchMovieUseCase,
+      GetMovieDetailAggregateUseCase getMovieDetailAggregateUseCase) {
     this.getMoviesUseCase = getMoviesUseCase;
     this.getMovieByIdUseCase = getMovieByIdUseCase;
     this.getMovieBySlugUseCase = getMovieBySlugUseCase;
@@ -87,6 +91,7 @@ public class MovieController {
     this.getStudioByIdUseCase = getStudioByIdUseCase;
     this.searchMovieUseCase = searchMovieUseCase;
     this.advancedSearchMovieUseCase = advancedSearchMovieUseCase;
+    this.getMovieDetailAggregateUseCase = getMovieDetailAggregateUseCase;
   }
 
   @GetMapping
@@ -119,6 +124,12 @@ public class MovieController {
   @GetMapping("/slug/{slug}")
   public ResponseEntity<MovieDetailResponse> getMovieBySlug (@PathVariable String slug) {
     return ResponseUtil.ok(getMovieBySlugUseCase.execute(slug));
+  }
+
+  @GetMapping("/slug/{slug}/detail")
+  public ResponseEntity<MovieDetailAggregateResponse> getMovieDetailAggregate (
+      @PathVariable String slug) {
+    return ResponseUtil.ok(getMovieDetailAggregateUseCase.execute(slug));
   }
 
   @GetMapping("/{id:[0-9]+}/episodes")
