@@ -42,7 +42,7 @@ public class SecurityConfig {
             // Public endpoints - no auth needed
             .requestMatchers("/api/v1/auth/me").authenticated().requestMatchers("/api/v1/auth/**")
             .permitAll().requestMatchers(HttpMethod.GET, "/api/v1/movies/**").permitAll()
-            .requestMatchers(HttpMethod.POST, "/api/v1/movies/search").permitAll()
+            .requestMatchers(HttpMethod.POST, "/api/v1/movies/search", "/api/v1/movies/search/advanced").permitAll()
             .requestMatchers(HttpMethod.GET, "/api/v1/movies/categories").permitAll()
             .requestMatchers("/api/v1/subscription-plans/**").permitAll()
             .requestMatchers(HttpMethod.GET, "/api/v1/subscriptions/plans").permitAll()
