@@ -2,6 +2,7 @@ package com.hoaug.movieapi.modules.movie.application.dto.response;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.List;
 
 public class MovieSummaryResponse {
   private Long id;
@@ -27,6 +28,7 @@ public class MovieSummaryResponse {
   private LocalDateTime createdAt;
   private LocalDateTime updatedAt;
   private LocalDateTime publishedAt;
+  private List<CategoryResponse> categories;
 
   public Long getId () {
     return id;
@@ -210,5 +212,13 @@ public class MovieSummaryResponse {
 
   public void setPublishedAt (LocalDateTime publishedAt) {
     this.publishedAt = publishedAt;
+  }
+
+  public List<CategoryResponse> getCategories () {
+    return categories;
+  }
+
+  public void setCategories (List<CategoryResponse> categories) {
+    this.categories = categories;
   }
 }

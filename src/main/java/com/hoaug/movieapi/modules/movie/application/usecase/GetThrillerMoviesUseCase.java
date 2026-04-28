@@ -12,17 +12,19 @@ public class GetThrillerMoviesUseCase {
 
   private final MovieRepository movieRepository;
   private final MovieMapper movieMapper;
+  private final GetMovieCategoriesUseCase getMovieCategoriesUseCase;
 
-  public GetThrillerMoviesUseCase(MovieRepository movieRepository, MovieMapper movieMapper) {
+  public GetThrillerMoviesUseCase(MovieRepository movieRepository, MovieMapper movieMapper, GetMovieCategoriesUseCase getMovieCategoriesUseCase) {
     this.movieRepository = movieRepository;
     this.movieMapper = movieMapper;
+    this.getMovieCategoriesUseCase = getMovieCategoriesUseCase;
   }
 
   @Cacheable(value = "movies", key = "'thriller-movies:' + #limit")
   public MovieListResponse execute (int limit) {
     return MovieListResponse.builder()
         .movies(movieRepository.findThrillerMovies(limit).stream()
-            .map(movieMapper::toSummaryResponse).toList())
+            .map(movie -> movieMapper.toSummaryResponse(movie, getMovieCategoriesUseCase.execute(movie.getId()))).toList())
         .build();
   }
 }

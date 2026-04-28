@@ -34,6 +34,10 @@ public class MovieMapper {
   }
 
   public MovieSummaryResponse toSummaryResponse (Movie movie) {
+    return toSummaryResponse(movie, List.of());
+  }
+
+  public MovieSummaryResponse toSummaryResponse (Movie movie, List<CategoryResponse> categories) {
     MovieSummaryResponse response = new MovieSummaryResponse();
     response.setId(movie.getId());
     response.setTitle(movie.getTitle());
@@ -58,6 +62,7 @@ public class MovieMapper {
     response.setCreatedAt(movie.getCreatedAt());
     response.setUpdatedAt(movie.getUpdatedAt());
     response.setPublishedAt(movie.getPublishedAt());
+    response.setCategories(categories);
     return response;
   }
 

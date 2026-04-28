@@ -12,17 +12,19 @@ public class GetTopSeriesDramaUseCase {
 
   private final MovieRepository movieRepository;
   private final MovieMapper movieMapper;
+  private final GetMovieCategoriesUseCase getMovieCategoriesUseCase;
 
-  public GetTopSeriesDramaUseCase(MovieRepository movieRepository, MovieMapper movieMapper) {
+  public GetTopSeriesDramaUseCase(MovieRepository movieRepository, MovieMapper movieMapper, GetMovieCategoriesUseCase getMovieCategoriesUseCase) {
     this.movieRepository = movieRepository;
     this.movieMapper = movieMapper;
+    this.getMovieCategoriesUseCase = getMovieCategoriesUseCase;
   }
 
   @Cacheable(value = "movies", key = "'top-series-drama:' + #limit")
   public MovieListResponse execute (int limit) {
     return MovieListResponse.builder()
         .movies(movieRepository.findTopSeriesDrama(limit).stream()
-            .map(movieMapper::toSummaryResponse).toList())
+            .map(movie -> movieMapper.toSummaryResponse(movie, getMovieCategoriesUseCase.execute(movie.getId()))).toList())
         .build();
   }
 }

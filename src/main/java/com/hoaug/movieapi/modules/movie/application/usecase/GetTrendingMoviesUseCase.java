@@ -12,17 +12,19 @@ public class GetTrendingMoviesUseCase {
 
   private final MovieRepository movieRepository;
   private final MovieMapper movieMapper;
+  private final GetMovieCategoriesUseCase getMovieCategoriesUseCase;
 
-  public GetTrendingMoviesUseCase(MovieRepository movieRepository, MovieMapper movieMapper) {
+  public GetTrendingMoviesUseCase(MovieRepository movieRepository, MovieMapper movieMapper, GetMovieCategoriesUseCase getMovieCategoriesUseCase) {
     this.movieRepository = movieRepository;
     this.movieMapper = movieMapper;
+    this.getMovieCategoriesUseCase = getMovieCategoriesUseCase;
   }
 
   @Cacheable(value = "movies", key = "'trending:' + #limit")
   public MovieListResponse execute (int limit) {
     return MovieListResponse.builder()
         .movies(movieRepository.findTopTrending(limit).stream()
-            .map(movieMapper::toSummaryResponse).toList())
+            .map(movie -> movieMapper.toSummaryResponse(movie, getMovieCategoriesUseCase.execute(movie.getId()))).toList())
         .build();
   }
 }

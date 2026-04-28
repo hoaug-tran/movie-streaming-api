@@ -1,103 +1,28 @@
 package com.hoaug.movieapi.modules.movie.application.dto.response;
 
+import java.util.List;
+
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+@Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class MovieBasicResponse {
   private Long id;
   private String title;
   private String slug;
   private String posterUrl;
+  private String bannerUrl;
+  private String description;
+  private String trailerUrl;
+  private String movieType;
   private Integer releaseYear;
   private Double averageRating;
   private Long viewCount;
   private Long favoriteCount;
-  private String bannerUrl;
-  private String description;
-  private String movieType;
-
-  public Long getId () {
-    return id;
-  }
-
-  public void setId (Long id) {
-    this.id = id;
-  }
-
-  public String getTitle () {
-    return title;
-  }
-
-  public void setTitle (String title) {
-    this.title = title;
-  }
-
-  public String getSlug () {
-    return slug;
-  }
-
-  public void setSlug (String slug) {
-    this.slug = slug;
-  }
-
-  public String getPosterUrl () {
-    return posterUrl;
-  }
-
-  public void setPosterUrl (String posterUrl) {
-    this.posterUrl = posterUrl;
-  }
-
-  public Integer getReleaseYear () {
-    return releaseYear;
-  }
-
-  public void setReleaseYear (Integer releaseYear) {
-    this.releaseYear = releaseYear;
-  }
-
-  public Double getAverageRating () {
-    return averageRating;
-  }
-
-  public void setAverageRating (Double averageRating) {
-    this.averageRating = averageRating;
-  }
-
-  public Long getViewCount () {
-    return viewCount;
-  }
-
-  public void setViewCount (Long viewCount) {
-    this.viewCount = viewCount;
-  }
-
-  public Long getFavoriteCount () {
-    return favoriteCount;
-  }
-
-  public void setFavoriteCount (Long favoriteCount) {
-    this.favoriteCount = favoriteCount;
-  }
-
-  public String getBannerUrl () {
-    return bannerUrl;
-  }
-
-  public void setBannerUrl (String bannerUrl) {
-    this.bannerUrl = bannerUrl;
-  }
-
-  public String getDescription () {
-    return description;
-  }
-
-  public void setDescription (String description) {
-    this.description = description;
-  }
-
-  public String getMovieType () {
-    return movieType;
-  }
-
-  public void setMovieType (String movieType) {
-    this.movieType = movieType;
-  }
+  private List<CategoryResponse> categories;
 }

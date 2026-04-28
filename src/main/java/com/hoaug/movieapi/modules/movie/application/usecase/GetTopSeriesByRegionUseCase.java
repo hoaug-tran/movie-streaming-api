@@ -12,17 +12,19 @@ public class GetTopSeriesByRegionUseCase {
 
   private final MovieRepository movieRepository;
   private final MovieMapper movieMapper;
+  private final GetMovieCategoriesUseCase getMovieCategoriesUseCase;
 
-  public GetTopSeriesByRegionUseCase(MovieRepository movieRepository, MovieMapper movieMapper) {
+  public GetTopSeriesByRegionUseCase(MovieRepository movieRepository, MovieMapper movieMapper, GetMovieCategoriesUseCase getMovieCategoriesUseCase) {
     this.movieRepository = movieRepository;
     this.movieMapper = movieMapper;
+    this.getMovieCategoriesUseCase = getMovieCategoriesUseCase;
   }
 
   @Cacheable(value = "movies", key = "'top-series-region:' + #country + ':' + #limit")
   public MovieListResponse execute (String country, int limit) {
     return MovieListResponse.builder()
         .movies(movieRepository.findTopSeriesByCountry(country, limit).stream()
-            .map(movieMapper::toSummaryResponse).toList())
+            .map(movie -> movieMapper.toSummaryResponse(movie, getMovieCategoriesUseCase.execute(movie.getId()))).toList())
         .build();
   }
 }

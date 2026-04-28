@@ -17,9 +17,11 @@ import com.hoaug.movieapi.modules.movie.infrastructure.persistence.repository.Jp
 @Component
 public class SearchMovieUseCase {
   private final JpaMovieRepository jpaMovieRepository;
+  private final GetMovieCategoriesUseCase getMovieCategoriesUseCase;
 
-  public SearchMovieUseCase(JpaMovieRepository jpaMovieRepository) {
+  public SearchMovieUseCase(JpaMovieRepository jpaMovieRepository, GetMovieCategoriesUseCase getMovieCategoriesUseCase) {
     this.jpaMovieRepository = jpaMovieRepository;
+    this.getMovieCategoriesUseCase = getMovieCategoriesUseCase;
   }
 
   @Cacheable(cacheNames = "searchResults", key = "#request.keyword + ':' + #request.page + ':' + #request.size + ':' + #request.sortBy + ':' + #request.sortDirection")
@@ -50,12 +52,15 @@ public class SearchMovieUseCase {
     res.setTitle(movie.getTitle());
     res.setSlug(movie.getSlug());
     res.setPosterUrl(movie.getPosterUrl());
+    res.setBannerUrl(movie.getBannerUrl());
+    res.setDescription(movie.getDescription());
+    res.setTrailerUrl(movie.getTrailerUrl());
+    res.setMovieType(movie.getMovieType().name());
     res.setReleaseYear(movie.getReleaseYear());
     res.setAverageRating(movie.getAverageRating().doubleValue());
     res.setViewCount(movie.getViewCount());
     res.setFavoriteCount(movie.getFavoriteCount());
-    res.setBannerUrl(movie.getBannerUrl());
-    res.setDescription(movie.getDescription());
+    res.setCategories(getMovieCategoriesUseCase.execute(movie.getId()));
     return res;
   }
 }

@@ -1,7 +1,6 @@
 package com.hoaug.movieapi.modules.movie.application.usecase;
 
 import java.math.BigDecimal;
-import java.util.List;
 
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
@@ -20,9 +19,11 @@ import com.hoaug.movieapi.modules.movie.infrastructure.persistence.repository.Jp
 @Component
 public class AdvancedSearchMovieUseCase {
   private final JpaMovieRepository jpaMovieRepository;
+  private final GetMovieCategoriesUseCase getMovieCategoriesUseCase;
 
-  public AdvancedSearchMovieUseCase(JpaMovieRepository jpaMovieRepository) {
+  public AdvancedSearchMovieUseCase(JpaMovieRepository jpaMovieRepository, GetMovieCategoriesUseCase getMovieCategoriesUseCase) {
     this.jpaMovieRepository = jpaMovieRepository;
+    this.getMovieCategoriesUseCase = getMovieCategoriesUseCase;
   }
 
   @Cacheable(cacheNames = "searchResults", key = "#request.keyword + ':' + #request.page + ':' + #request.size + ':' + #request.fromYear + ':' + #request.toYear + ':' + #request.minRating + ':' + #request.sortBy + ':' + #request.sortDirection")
@@ -31,31 +32,17 @@ public class AdvancedSearchMovieUseCase {
         ? Sort.Direction.DESC
         : Sort.Direction.ASC;
     Sort sort = Sort.by(direction, request.getSortBy() != null ? request.getSortBy() : "createdAt");
-    int pageNumber = request.getPage() != null ? request.getPage() : 0;
-    int pageSize = request.getSize() != null ? request.getSize() : 20;
-    Pageable candidatePageable = PageRequest.of(0, 10000, sort);
+    Pageable pageable = PageRequest.of(request.getPage() != null ? request.getPage() : 0,
+        request.getSize() != null ? request.getSize() : 20, sort);
 
-    Page<MovieEntity> page;
-    boolean hasKeyword = request.getKeyword() != null && !request.getKeyword().isBlank();
+    Page<MovieEntity> page = jpaMovieRepository.findByMovieStatus(MovieStatus.PUBLISHED, pageable);
 
-    if (request.getCategoryId() != null && hasKeyword) {
-      page = jpaMovieRepository.findByMovieStatusAndCategoryIdAndTitleContaining(
-          MovieStatus.PUBLISHED, request.getCategoryId(), request.getKeyword(), candidatePageable);
-    } else if (request.getCategoryId() != null) {
-      page = jpaMovieRepository.findByMovieStatusAndCategoryId(MovieStatus.PUBLISHED,
-          request.getCategoryId(), candidatePageable);
-    } else if (hasKeyword) {
+    if (request.getKeyword() != null && !request.getKeyword().isEmpty()) {
       page = jpaMovieRepository.findByMovieStatusAndTitleContaining(MovieStatus.PUBLISHED,
-          request.getKeyword(), candidatePageable);
-    } else {
-      page = jpaMovieRepository.findByMovieStatus(MovieStatus.PUBLISHED, candidatePageable);
+          request.getKeyword(), pageable);
     }
 
-    List<MovieEntity> filtered = page.getContent().stream().filter(movie -> {
-      if (request.getMovieType() != null && !request.getMovieType().isBlank()
-          && !movie.getMovieType().name().equalsIgnoreCase(request.getMovieType())) {
-        return false;
-      }
+    var content = page.getContent().stream().filter(movie -> {
       if (request.getFromYear() != null && movie.getReleaseYear() < request.getFromYear()) {
         return false;
       }
@@ -67,15 +54,10 @@ public class AdvancedSearchMovieUseCase {
         return false;
       }
       return true;
-    }).toList();
+    }).map(this::toBasicResponse).toList();
 
-    int fromIndex = Math.min(pageNumber * pageSize, filtered.size());
-    int toIndex = Math.min(fromIndex + pageSize, filtered.size());
-    var content = filtered.subList(fromIndex, toIndex).stream().map(this::toBasicResponse).toList();
-    int totalPages = (int) Math.ceil((double) filtered.size() / pageSize);
-
-    return new SearchMovieResponse(content, totalPages, filtered.size(), pageNumber, pageSize);
-
+    return new SearchMovieResponse(content, page.getTotalPages(), page.getTotalElements(),
+        page.getNumber(), page.getSize());
   }
 
   private MovieBasicResponse toBasicResponse (MovieEntity movie) {
@@ -84,13 +66,15 @@ public class AdvancedSearchMovieUseCase {
     res.setTitle(movie.getTitle());
     res.setSlug(movie.getSlug());
     res.setPosterUrl(movie.getPosterUrl());
-    res.setReleaseYear(movie.getReleaseYear());
-    res.setAverageRating(movie.getAverageRating().doubleValue());
-    res.setViewCount(movie.getViewCount());
-    res.setFavoriteCount(movie.getFavoriteCount());
     res.setBannerUrl(movie.getBannerUrl());
     res.setDescription(movie.getDescription());
-    res.setMovieType(movie.getMovieType().name());
+    res.setTrailerUrl(movie.getTrailerUrl());
+    res.setMovieType(movie.getMovieType() != null ? movie.getMovieType().name() : null);
+    res.setReleaseYear(movie.getReleaseYear());
+    res.setAverageRating(movie.getAverageRating() != null ? movie.getAverageRating().doubleValue() : 0.0);
+    res.setViewCount(movie.getViewCount());
+    res.setFavoriteCount(movie.getFavoriteCount());
+    res.setCategories(getMovieCategoriesUseCase.execute(movie.getId()));
     return res;
   }
 }
