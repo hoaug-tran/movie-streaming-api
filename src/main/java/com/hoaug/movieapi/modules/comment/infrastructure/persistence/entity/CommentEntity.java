@@ -19,6 +19,9 @@ public class CommentEntity extends BaseEntity {
   @Column(name = "movie_id", nullable = false)
   private Long movieId;
 
+  @Column(name = "episode_id")
+  private Long episodeId;
+
   @Column(name = "parent_comment_id")
   private Long parentCommentId;
 
@@ -49,6 +52,14 @@ public class CommentEntity extends BaseEntity {
 
   public void setMovieId (Long movieId) {
     this.movieId = movieId;
+  }
+
+  public Long getEpisodeId () {
+    return episodeId;
+  }
+
+  public void setEpisodeId (Long episodeId) {
+    this.episodeId = episodeId;
   }
 
   public Long getParentCommentId () {

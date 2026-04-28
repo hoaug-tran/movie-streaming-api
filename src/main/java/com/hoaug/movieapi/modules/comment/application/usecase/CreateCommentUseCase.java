@@ -13,6 +13,7 @@ import com.hoaug.movieapi.modules.comment.application.validator.CommentSpamValid
 import com.hoaug.movieapi.modules.comment.domain.model.Comment;
 import com.hoaug.movieapi.modules.comment.domain.model.CommentStatus;
 import com.hoaug.movieapi.modules.comment.domain.repository.CommentRepository;
+import com.hoaug.movieapi.modules.movie.domain.repository.EpisodeRepository;
 import com.hoaug.movieapi.modules.movie.domain.repository.MovieRepository;
 
 import jakarta.transaction.Transactional;
@@ -22,13 +23,16 @@ public class CreateCommentUseCase {
 
   private final CommentRepository commentRepository;
   private final MovieRepository movieRepository;
+  private final EpisodeRepository episodeRepository;
   private final CommentMapper commentMapper;
   private final CommentSpamValidator spamValidator;
 
   public CreateCommentUseCase(CommentRepository commentRepository, MovieRepository movieRepository,
-      CommentMapper commentMapper, CommentSpamValidator spamValidator) {
+      EpisodeRepository episodeRepository, CommentMapper commentMapper,
+      CommentSpamValidator spamValidator) {
     this.commentRepository = commentRepository;
     this.movieRepository = movieRepository;
+    this.episodeRepository = episodeRepository;
     this.commentMapper = commentMapper;
     this.spamValidator = spamValidator;
   }
@@ -39,6 +43,15 @@ public class CreateCommentUseCase {
 
     movieRepository.findById(request.getMovieId())
         .orElseThrow( () -> new AppException(ErrorCode.MOVIE_NOT_FOUND));
+
+    if (request.getEpisodeId() != null) {
+      boolean episodeBelongsToMovie = episodeRepository.findPublishedByMovieId(request.getMovieId())
+          .stream().anyMatch(episode -> episode.getId().equals(request.getEpisodeId()));
+
+      if (!episodeBelongsToMovie) {
+        throw new AppException(ErrorCode.EPISODE_NOT_FOUND);
+      }
+    }
 
     if (request.getParentCommentId() != null) {
       Comment parentComment = commentRepository.findById(request.getParentCommentId())
@@ -52,6 +65,7 @@ public class CreateCommentUseCase {
     Comment comment = new Comment();
     comment.setUserId(userId);
     comment.setMovieId(request.getMovieId());
+    comment.setEpisodeId(request.getEpisodeId());
     comment.setParentCommentId(request.getParentCommentId());
     comment.setContent(request.getContent());
     comment.setLikeCount(0);

@@ -11,6 +11,7 @@ public class MovieBasicResponse {
   private Long favoriteCount;
   private String bannerUrl;
   private String description;
+  private String movieType;
 
   public Long getId () {
     return id;
@@ -90,5 +91,13 @@ public class MovieBasicResponse {
 
   public void setDescription (String description) {
     this.description = description;
+  }
+
+  public String getMovieType () {
+    return movieType;
+  }
+
+  public void setMovieType (String movieType) {
+    this.movieType = movieType;
   }
 }

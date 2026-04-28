@@ -103,6 +103,7 @@ public class CommentRepositoryAdapter implements CommentRepository {
     comment.setId(entity.getId());
     comment.setUserId(entity.getUserId());
     comment.setMovieId(entity.getMovieId());
+    comment.setEpisodeId(entity.getEpisodeId());
     comment.setParentCommentId(entity.getParentCommentId());
     comment.setContent(entity.getContent());
     comment.setLikeCount(entity.getLikeCount());
@@ -118,6 +119,7 @@ public class CommentRepositoryAdapter implements CommentRepository {
     entity.setId(comment.getId());
     entity.setUserId(comment.getUserId());
     entity.setMovieId(comment.getMovieId());
+    entity.setEpisodeId(comment.getEpisodeId());
     entity.setParentCommentId(comment.getParentCommentId());
     entity.setContent(comment.getContent());
     entity.setLikeCount(comment.getLikeCount());

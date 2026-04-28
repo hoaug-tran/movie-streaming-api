@@ -20,6 +20,7 @@ public class CommentMapper {
     response.setId(comment.getId());
     response.setUserId(comment.getUserId());
     response.setMovieId(comment.getMovieId());
+    response.setEpisodeId(comment.getEpisodeId());
 
     movieRepository.findById(comment.getMovieId()).ifPresent(movie -> {
       response.setMovieSlug(movie.getSlug());

@@ -11,6 +11,8 @@ public class CreateCommentRequest {
   @NotNull(message = "Movie ID is required")
   private Long movieId;
 
+  private Long episodeId;
+
   private Long parentCommentId;
 
   @NotBlank(message = "Comment content is required")
@@ -24,6 +26,14 @@ public class CreateCommentRequest {
 
   public void setMovieId (Long movieId) {
     this.movieId = movieId;
+  }
+
+  public Long getEpisodeId () {
+    return episodeId;
+  }
+
+  public void setEpisodeId (Long episodeId) {
+    this.episodeId = episodeId;
   }
 
   public Long getParentCommentId () {

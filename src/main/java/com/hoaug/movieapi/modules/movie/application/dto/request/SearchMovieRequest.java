@@ -9,6 +9,7 @@ public class SearchMovieRequest {
   private Double minRating;
   private String sortBy;
   private String sortDirection;
+  private String movieType;
   private Integer page;
   private Integer size;
 
@@ -74,6 +75,14 @@ public class SearchMovieRequest {
 
   public void setSortDirection (String sortDirection) {
     this.sortDirection = sortDirection;
+  }
+
+  public String getMovieType () {
+    return movieType;
+  }
+
+  public void setMovieType (String movieType) {
+    this.movieType = movieType;
   }
 
   public Integer getPage () {

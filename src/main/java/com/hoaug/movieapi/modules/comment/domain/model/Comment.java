@@ -7,6 +7,7 @@ public class Comment {
   private Long id;
   private Long userId;
   private Long movieId;
+  private Long episodeId;
   private Long parentCommentId;
   private String content;
   private Integer likeCount;
@@ -37,6 +38,14 @@ public class Comment {
 
   public void setMovieId (Long movieId) {
     this.movieId = movieId;
+  }
+
+  public Long getEpisodeId () {
+    return episodeId;
+  }
+
+  public void setEpisodeId (Long episodeId) {
+    this.episodeId = episodeId;
   }
 
   public Long getParentCommentId () {

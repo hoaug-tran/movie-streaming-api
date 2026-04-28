@@ -1,6 +1,7 @@
 package com.hoaug.movieapi.modules.movie.application.usecase;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
@@ -30,17 +31,31 @@ public class AdvancedSearchMovieUseCase {
         ? Sort.Direction.DESC
         : Sort.Direction.ASC;
     Sort sort = Sort.by(direction, request.getSortBy() != null ? request.getSortBy() : "createdAt");
-    Pageable pageable = PageRequest.of(request.getPage() != null ? request.getPage() : 0,
-        request.getSize() != null ? request.getSize() : 20, sort);
+    int pageNumber = request.getPage() != null ? request.getPage() : 0;
+    int pageSize = request.getSize() != null ? request.getSize() : 20;
+    Pageable candidatePageable = PageRequest.of(0, 10000, sort);
 
-    Page<MovieEntity> page = jpaMovieRepository.findByMovieStatus(MovieStatus.PUBLISHED, pageable);
+    Page<MovieEntity> page;
+    boolean hasKeyword = request.getKeyword() != null && !request.getKeyword().isBlank();
 
-    if (request.getKeyword() != null && !request.getKeyword().isEmpty()) {
+    if (request.getCategoryId() != null && hasKeyword) {
+      page = jpaMovieRepository.findByMovieStatusAndCategoryIdAndTitleContaining(
+          MovieStatus.PUBLISHED, request.getCategoryId(), request.getKeyword(), candidatePageable);
+    } else if (request.getCategoryId() != null) {
+      page = jpaMovieRepository.findByMovieStatusAndCategoryId(MovieStatus.PUBLISHED,
+          request.getCategoryId(), candidatePageable);
+    } else if (hasKeyword) {
       page = jpaMovieRepository.findByMovieStatusAndTitleContaining(MovieStatus.PUBLISHED,
-          request.getKeyword(), pageable);
+          request.getKeyword(), candidatePageable);
+    } else {
+      page = jpaMovieRepository.findByMovieStatus(MovieStatus.PUBLISHED, candidatePageable);
     }
 
-    var content = page.getContent().stream().filter(movie -> {
+    List<MovieEntity> filtered = page.getContent().stream().filter(movie -> {
+      if (request.getMovieType() != null && !request.getMovieType().isBlank()
+          && !movie.getMovieType().name().equalsIgnoreCase(request.getMovieType())) {
+        return false;
+      }
       if (request.getFromYear() != null && movie.getReleaseYear() < request.getFromYear()) {
         return false;
       }
@@ -52,10 +67,15 @@ public class AdvancedSearchMovieUseCase {
         return false;
       }
       return true;
-    }).map(this::toBasicResponse).toList();
+    }).toList();
 
-    return new SearchMovieResponse(content, page.getTotalPages(), page.getTotalElements(),
-        page.getNumber(), page.getSize());
+    int fromIndex = Math.min(pageNumber * pageSize, filtered.size());
+    int toIndex = Math.min(fromIndex + pageSize, filtered.size());
+    var content = filtered.subList(fromIndex, toIndex).stream().map(this::toBasicResponse).toList();
+    int totalPages = (int) Math.ceil((double) filtered.size() / pageSize);
+
+    return new SearchMovieResponse(content, totalPages, filtered.size(), pageNumber, pageSize);
+
   }
 
   private MovieBasicResponse toBasicResponse (MovieEntity movie) {
@@ -68,6 +88,9 @@ public class AdvancedSearchMovieUseCase {
     res.setAverageRating(movie.getAverageRating().doubleValue());
     res.setViewCount(movie.getViewCount());
     res.setFavoriteCount(movie.getFavoriteCount());
+    res.setBannerUrl(movie.getBannerUrl());
+    res.setDescription(movie.getDescription());
+    res.setMovieType(movie.getMovieType().name());
     return res;
   }
 }

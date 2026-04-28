@@ -26,6 +26,15 @@ public interface JpaMovieRepository extends JpaRepository<MovieEntity, Long> {
   Page<MovieEntity> findByMovieStatusAndTitleContaining (MovieStatus movieStatus, String title,
       Pageable pageable);
 
+  @Query("SELECT m FROM MovieEntity m WHERE m.movieStatus = :movieStatus AND EXISTS (SELECT 1 FROM MovieCategoryEntity mc WHERE mc.movieId = m.id AND mc.categoryId = :categoryId)")
+  Page<MovieEntity> findByMovieStatusAndCategoryId (@Param("movieStatus") MovieStatus movieStatus,
+      @Param("categoryId") Long categoryId, Pageable pageable);
+
+  @Query("SELECT m FROM MovieEntity m WHERE m.movieStatus = :movieStatus AND LOWER(m.title) LIKE LOWER(CONCAT('%', :title, '%')) AND EXISTS (SELECT 1 FROM MovieCategoryEntity mc WHERE mc.movieId = m.id AND mc.categoryId = :categoryId)")
+  Page<MovieEntity> findByMovieStatusAndCategoryIdAndTitleContaining (
+      @Param("movieStatus") MovieStatus movieStatus, @Param("categoryId") Long categoryId,
+      @Param("title") String title, Pageable pageable);
+
   @Query("SELECT m FROM MovieEntity m WHERE m.movieStatus = 'PUBLISHED' ORDER BY m.viewCount DESC")
   List<MovieEntity> findTopTrending (Pageable pageable);
 
