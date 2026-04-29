@@ -13,6 +13,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.servlet.NoHandlerFoundException;
+import org.springframework.web.servlet.resource.NoResourceFoundException;
 
 import com.hoaug.movieapi.common.dto.ApiErrorResponse;
 import com.hoaug.movieapi.common.dto.FieldError;
@@ -71,11 +72,15 @@ public class GlobalExceptionHandler {
       NoHandlerFoundException exception) {
     logger.warn("Endpoint not found: {} {}", exception.getRequestURL(), exception.getMessage());
 
-    ApiErrorResponse errorResponse = ApiErrorResponse.builder().code("NOT_FOUND")
-        .message("Endpoint not found").timestamp(System.currentTimeMillis())
-        .errorId(UUID.randomUUID().toString()).build();
+    return buildNotFoundResponse();
+  }
 
-    return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponse);
+  @ExceptionHandler(NoResourceFoundException.class)
+  public ResponseEntity<ApiErrorResponse> handlingNoResourceFoundException (
+      NoResourceFoundException exception) {
+    logger.warn("Resource not found: {} {}", exception.getResourcePath(), exception.getMessage());
+
+    return buildNotFoundResponse();
   }
 
   @ExceptionHandler(value = Exception.class)
@@ -88,5 +93,13 @@ public class GlobalExceptionHandler {
         .timestamp(System.currentTimeMillis()).errorId(errorId).build();
 
     return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
+  }
+
+  private ResponseEntity<ApiErrorResponse> buildNotFoundResponse () {
+    ApiErrorResponse errorResponse = ApiErrorResponse.builder().code("NOT_FOUND")
+        .message("Endpoint not found").timestamp(System.currentTimeMillis())
+        .errorId(UUID.randomUUID().toString()).build();
+
+    return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponse);
   }
 }
