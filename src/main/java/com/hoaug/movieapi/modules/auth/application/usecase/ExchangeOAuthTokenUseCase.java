@@ -102,7 +102,7 @@ public class ExchangeOAuthTokenUseCase {
     User user = new User();
     user.setEmail(email);
     user.setFullName(fullName != null && !fullName.isBlank() ? fullName : email.split("@")[0]);
-    user.setUsername(email);
+    user.setUsername(email.split("@")[0]);
     user.setPassword(passwordEncoder.encode(UUID.randomUUID().toString()));
     user.setAvatarUrl(profilePictureUrl);
     user.setProfilePictureUrl(profilePictureUrl);

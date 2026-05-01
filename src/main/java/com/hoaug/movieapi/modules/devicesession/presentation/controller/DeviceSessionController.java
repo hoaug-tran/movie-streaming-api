@@ -58,7 +58,15 @@ public class DeviceSessionController {
 
   @PostMapping
   public ResponseEntity<DeviceSessionResponse> create (Authentication authentication,
-      @Valid @RequestBody CreateDeviceSessionRequest request) {
+      @Valid @RequestBody CreateDeviceSessionRequest request,
+      jakarta.servlet.http.HttpServletRequest httpRequest) {
+    String realIp = httpRequest.getHeader("X-Forwarded-For");
+    if (realIp == null || realIp.isBlank()) {
+      realIp = httpRequest.getRemoteAddr();
+    } else {
+      realIp = realIp.split(",")[0].trim();
+    }
+    request.setIpAddress(realIp);
     return ResponseUtil
         .created(createDeviceSessionUseCase.execute(getCurrentUserId(authentication), request));
   }

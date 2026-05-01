@@ -24,7 +24,6 @@ public class CreateDeviceSessionRequest {
 
   @NotBlank(message = "User agent is required")
   @Size(min = 1, max = 2048, message = "User agent must be between 1 and 2048 characters")
-  @ValidSafeString(minLength = 1, maxLength = 2048)
   private String userAgent;
 
   public String getDeviceName () {
