@@ -20,4 +20,9 @@ public interface JpaUserSubscriptionRepository extends JpaRepository<UserSubscri
 
   java.util.Optional<UserSubscriptionEntity> findFirstByUserIdAndStatusOrderByEndAtDesc(
       Long userId, SubscriptionStatus status);
+
+  @org.springframework.data.jpa.repository.Query(
+      "SELECT us FROM UserSubscriptionEntity us WHERE us.userId = :userId AND us.status = 'ACTIVE' AND us.endAt > CURRENT_TIMESTAMP")
+  java.util.Optional<UserSubscriptionEntity> findActiveByUserId(
+      @org.springframework.data.repository.query.Param("userId") Long userId);
 }

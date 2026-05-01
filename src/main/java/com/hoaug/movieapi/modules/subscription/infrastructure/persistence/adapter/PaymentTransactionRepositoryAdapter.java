@@ -1,10 +1,12 @@
 package com.hoaug.movieapi.modules.subscription.infrastructure.persistence.adapter;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
 import org.springframework.stereotype.Component;
 
+import com.hoaug.movieapi.modules.subscription.domain.model.PaymentStatus;
 import com.hoaug.movieapi.modules.subscription.domain.model.PaymentTransaction;
 import com.hoaug.movieapi.modules.subscription.domain.repository.PaymentTransactionRepository;
 import com.hoaug.movieapi.modules.subscription.infrastructure.persistence.entity.PaymentTransactionEntity;
@@ -40,6 +42,13 @@ public class PaymentTransactionRepositoryAdapter implements PaymentTransactionRe
   public Optional<PaymentTransaction> findByProviderTransactionId (String providerTransactionId) {
     return jpaPaymentTransactionRepository.findByProviderTransactionId(providerTransactionId)
         .map(this::toDomain);
+  }
+
+  @Override
+  public List<PaymentTransaction> findByStatusAndCreatedAtBefore (PaymentStatus status,
+      LocalDateTime cutoff) {
+    return jpaPaymentTransactionRepository.findByStatusAndCreatedAtBefore(status, cutoff).stream()
+        .map(this::toDomain).toList();
   }
 
   private PaymentTransaction toDomain (PaymentTransactionEntity entity) {

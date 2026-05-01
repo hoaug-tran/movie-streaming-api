@@ -67,7 +67,7 @@ public class PaymentService {
     transaction.setSubscriptionId(savedSubscription.getId());
     transaction.setAmount(BigDecimal.valueOf(billing.chargedAmount));
     transaction.setCurrency("VND");
-    transaction.setPaymentMethod(PaymentMethod.VNPAY);
+    transaction.setPaymentMethod(PaymentMethod.PAYOS);
     transaction.setStatus(PaymentStatus.PENDING);
     transaction.setProviderTransactionId(numericOrderCode);
     transaction.setProviderResponse(billing.toSnapshot());
@@ -140,13 +140,60 @@ public class PaymentService {
   }
 
   @Transactional
+  public PaymentSuccessResponse verifyAndSyncPayment (String orderCode, String verificationSource) {
+    PaymentTransaction transaction = paymentTransactionRepository
+        .findByProviderTransactionId(orderCode)
+        .orElseThrow( () -> new AppException(ErrorCode.PAYMENT_TRANSACTION_NOT_FOUND));
+
+    if (transaction.getStatus() == PaymentStatus.SUCCESS) {
+      return getPaymentByOrderCode(orderCode);
+    }
+
+    try {
+      var paymentLink = payOS.paymentRequests().get(Long.parseLong(orderCode));
+      String providerResponse = buildVerificationProviderResponse(verificationSource, paymentLink);
+      String payOSStatus = paymentLink.getStatus() == null ? "UNKNOWN" : paymentLink.getStatus().name();
+
+      if ("PAID".equals(payOSStatus)) {
+        String transactionId = paymentLink.getTransactions() == null
+            || paymentLink.getTransactions().isEmpty() ? orderCode
+                : paymentLink.getTransactions().get(0).getReference();
+        completePayment(orderCode, transactionId, providerResponse);
+      } else if (isTerminalFailedPayOSStatus(payOSStatus)) {
+        failPayment(orderCode, providerResponse);
+      } else {
+        transaction.setProviderResponse(mergeProviderResponse(transaction.getProviderResponse(),
+            providerResponse));
+        paymentTransactionRepository.save(transaction);
+        log.info("Payment still pending after PayOS verification: orderId={}, payOSStatus={}, source={}",
+            orderCode, payOSStatus, verificationSource);
+      }
+    } catch (NumberFormatException e) {
+      log.warn("Invalid PayOS orderCode format: orderCode={}, source={}", orderCode,
+          verificationSource);
+      throw new AppException(ErrorCode.BAD_REQUEST);
+    } catch (Exception e) {
+      log.error("PayOS verification failed: orderId={}, source={}, error={}", orderCode,
+          verificationSource, e.getMessage(), e);
+      throw new AppException(ErrorCode.PAYMENT_CREATION_FAILED);
+    }
+
+    return getPaymentByOrderCode(orderCode);
+  }
+
+  @Transactional
   public void failPayment (String orderCode, String failureReason) {
     PaymentTransaction transaction = paymentTransactionRepository
         .findByProviderTransactionId(orderCode)
         .orElseThrow( () -> new AppException(ErrorCode.PAYMENT_TRANSACTION_NOT_FOUND));
 
+    if (transaction.getStatus() == PaymentStatus.SUCCESS) {
+      log.info("Ignoring failure update for already successful payment: orderId={}", orderCode);
+      return;
+    }
+
     transaction.setStatus(PaymentStatus.FAILED);
-    transaction.setProviderResponse(failureReason);
+    transaction.setProviderResponse(mergeProviderResponse(transaction.getProviderResponse(), failureReason));
     paymentTransactionRepository.save(transaction);
 
     UserSubscription subscription = userSubscriptionRepository
@@ -258,6 +305,25 @@ public class PaymentService {
       return providerResponse;
     }
     return billingSnapshot + "\n---PAYOS_RESPONSE---\n" + providerResponse;
+  }
+
+  private boolean isTerminalFailedPayOSStatus (String payOSStatus) {
+    return "CANCELLED".equals(payOSStatus) || "EXPIRED".equals(payOSStatus)
+        || "FAILED".equals(payOSStatus);
+  }
+
+  private String buildVerificationProviderResponse (String source,
+      vn.payos.model.v2.paymentRequests.PaymentLink paymentLink) {
+    return "{\"source\":\"" + nullSafe(source) + "\",\"provider\":\"PAYOS\",\"orderCode\":"
+        + paymentLink.getOrderCode() + ",\"paymentLinkId\":\"" + nullSafe(paymentLink.getId())
+        + "\",\"status\":\"" + (paymentLink.getStatus() == null ? "UNKNOWN"
+            : paymentLink.getStatus().name()) + "\",\"amount\":" + paymentLink.getAmount()
+        + ",\"amountPaid\":" + paymentLink.getAmountPaid() + ",\"amountRemaining\":"
+        + paymentLink.getAmountRemaining() + "}";
+  }
+
+  private String nullSafe (String value) {
+    return value == null ? "" : value.replace("\\", "\\\\").replace("\"", "'");
   }
 
   private static class BillingSummary {

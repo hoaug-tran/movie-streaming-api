@@ -59,6 +59,11 @@ public class UserSubscriptionRepositoryAdapter implements UserSubscriptionReposi
         .findFirstByUserIdAndStatusOrderByEndAtDesc(userId, status).map(this::toDomain);
   }
 
+  @Override
+  public Optional<UserSubscription> findActiveByUserId (Long userId) {
+    return jpaUserSubscriptionRepository.findActiveByUserId(userId).map(this::toDomain);
+  }
+
   private UserSubscription toDomain (UserSubscriptionEntity entity) {
     UserSubscription subscription = new UserSubscription();
     subscription.setId(entity.getId());

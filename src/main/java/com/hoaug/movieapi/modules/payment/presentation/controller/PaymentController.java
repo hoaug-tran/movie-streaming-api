@@ -1,7 +1,5 @@
 package com.hoaug.movieapi.modules.payment.presentation.controller;
 
-import java.util.HashMap;
-import java.util.Map;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -81,23 +79,7 @@ public class PaymentController {
       @RequestParam(required = false) String cancel,
       @RequestParam(required = false) String status) {
     try {
-      if (!"00".equals(code) || !"PAID".equals(status)) {
-        return ResponseUtil
-            .badRequest("Payment failed or cancelled: code=" + code + ", status=" + status);
-      }
-
-      Map<String, Object> data = new HashMap<>();
-      data.put("code", code);
-      data.put("id", id);
-      data.put("cancel", cancel);
-      data.put("status", status);
-      data.put("timestamp", System.currentTimeMillis());
-
-      String providerResponse = objectMapper.writeValueAsString(data);
-
-      paymentService.completePayment(orderCode, orderCode, providerResponse);
-
-      var paymentInfo = paymentService.getPaymentByOrderCode(orderCode);
+      var paymentInfo = paymentService.verifyAndSyncPayment(orderCode, "success-redirect");
       return ResponseUtil.ok(paymentInfo);
     } catch (Exception e) {
       log.error("Payment success callback error", e);

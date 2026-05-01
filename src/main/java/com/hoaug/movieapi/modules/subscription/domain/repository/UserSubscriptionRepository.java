@@ -23,4 +23,6 @@ public interface UserSubscriptionRepository {
 
   Optional<UserSubscription> findFirstByUserIdAndStatusOrderByEndAtDesc (Long userId,
       SubscriptionStatus status);
+
+  Optional<UserSubscription> findActiveByUserId (Long userId);
 }
