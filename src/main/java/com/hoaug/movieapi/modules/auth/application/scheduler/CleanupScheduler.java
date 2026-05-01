@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.hoaug.movieapi.modules.auth.domain.repository.RefreshTokenRepository;
 import com.hoaug.movieapi.modules.devicesession.domain.repository.DeviceSessionRepository;
@@ -19,11 +20,13 @@ public class CleanupScheduler {
     this.deviceSessionRepository = deviceSessionRepository;
   }
 
+  @Transactional
   @Scheduled(fixedRate = 86400000)
   public void cleanupExpiredTokens () {
     refreshTokenRepository.deleteExpiredTokens(LocalDateTime.now());
   }
 
+  @Transactional
   @Scheduled(fixedRate = 86400000)
   public void cleanupExpiredSessions () {
     deviceSessionRepository.deleteExpiredSessions(LocalDateTime.now());
