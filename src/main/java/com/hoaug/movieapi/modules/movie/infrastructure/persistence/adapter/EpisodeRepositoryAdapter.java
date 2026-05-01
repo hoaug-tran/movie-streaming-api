@@ -1,6 +1,7 @@
 package com.hoaug.movieapi.modules.movie.infrastructure.persistence.adapter;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.stereotype.Component;
 
@@ -24,6 +25,11 @@ public class EpisodeRepositoryAdapter implements EpisodeRepository {
     return jpaEpisodeRepository
         .findByMovieIdAndStatusOrderByEpisodeNumberAsc(movieId, EpisodeStatus.PUBLISHED).stream()
         .map(this::toDomain).toList();
+  }
+
+  @Override
+  public Optional<Episode> findById (Long id) {
+    return jpaEpisodeRepository.findById(id).map(this::toDomain);
   }
 
   @Override
