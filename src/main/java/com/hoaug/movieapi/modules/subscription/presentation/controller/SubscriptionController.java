@@ -22,6 +22,7 @@ import com.hoaug.movieapi.modules.subscription.application.dto.request.CreateInv
 import com.hoaug.movieapi.modules.subscription.application.dto.request.CreatePaymentTransactionRequest;
 import com.hoaug.movieapi.modules.subscription.application.dto.request.CreateSubscriptionPlanRequest;
 import com.hoaug.movieapi.modules.subscription.application.dto.request.SubscribePlanRequest;
+import com.hoaug.movieapi.modules.subscription.application.dto.request.UpdateAutoRenewRequest;
 import com.hoaug.movieapi.modules.subscription.application.dto.response.InvoiceResponse;
 import com.hoaug.movieapi.modules.subscription.application.dto.response.PaymentTransactionResponse;
 import com.hoaug.movieapi.modules.subscription.application.dto.response.SubscriptionPlanResponse;
@@ -30,11 +31,13 @@ import com.hoaug.movieapi.modules.subscription.application.usecase.CreateInvoice
 import com.hoaug.movieapi.modules.subscription.application.usecase.CreatePaymentTransactionUseCase;
 import com.hoaug.movieapi.modules.subscription.application.usecase.CreateSubscriptionPlanUseCase;
 import com.hoaug.movieapi.modules.subscription.application.usecase.GetActiveSubscriptionPlansUseCase;
+import com.hoaug.movieapi.modules.subscription.application.usecase.GetMyCurrentSubscriptionUseCase;
 import com.hoaug.movieapi.modules.subscription.application.usecase.GetMyInvoicesUseCase;
 import com.hoaug.movieapi.modules.subscription.application.usecase.GetMyPaymentTransactionsUseCase;
 import com.hoaug.movieapi.modules.subscription.application.usecase.GetMySubscriptionsUseCase;
 import com.hoaug.movieapi.modules.subscription.application.usecase.MarkPaymentSuccessUseCase;
 import com.hoaug.movieapi.modules.subscription.application.usecase.SubscribePlanUseCase;
+import com.hoaug.movieapi.modules.subscription.application.usecase.UpdateMyAutoRenewUseCase;
 import com.hoaug.movieapi.modules.user.domain.model.User;
 
 import jakarta.validation.Valid;
@@ -47,6 +50,8 @@ public class SubscriptionController {
   private final GetActiveSubscriptionPlansUseCase getActiveSubscriptionPlansUseCase;
   private final SubscribePlanUseCase subscribePlanUseCase;
   private final GetMySubscriptionsUseCase getMySubscriptionsUseCase;
+  private final GetMyCurrentSubscriptionUseCase getMyCurrentSubscriptionUseCase;
+  private final UpdateMyAutoRenewUseCase updateMyAutoRenewUseCase;
   private final CreatePaymentTransactionUseCase createPaymentTransactionUseCase;
   private final MarkPaymentSuccessUseCase markPaymentSuccessUseCase;
   private final GetMyPaymentTransactionsUseCase getMyPaymentTransactionsUseCase;
@@ -58,6 +63,8 @@ public class SubscriptionController {
       GetActiveSubscriptionPlansUseCase getActiveSubscriptionPlansUseCase,
       SubscribePlanUseCase subscribePlanUseCase,
       GetMySubscriptionsUseCase getMySubscriptionsUseCase,
+      GetMyCurrentSubscriptionUseCase getMyCurrentSubscriptionUseCase,
+      UpdateMyAutoRenewUseCase updateMyAutoRenewUseCase,
       CreatePaymentTransactionUseCase createPaymentTransactionUseCase,
       MarkPaymentSuccessUseCase markPaymentSuccessUseCase,
       GetMyPaymentTransactionsUseCase getMyPaymentTransactionsUseCase,
@@ -67,6 +74,8 @@ public class SubscriptionController {
     this.getActiveSubscriptionPlansUseCase = getActiveSubscriptionPlansUseCase;
     this.subscribePlanUseCase = subscribePlanUseCase;
     this.getMySubscriptionsUseCase = getMySubscriptionsUseCase;
+    this.getMyCurrentSubscriptionUseCase = getMyCurrentSubscriptionUseCase;
+    this.updateMyAutoRenewUseCase = updateMyAutoRenewUseCase;
     this.createPaymentTransactionUseCase = createPaymentTransactionUseCase;
     this.markPaymentSuccessUseCase = markPaymentSuccessUseCase;
     this.getMyPaymentTransactionsUseCase = getMyPaymentTransactionsUseCase;
@@ -98,6 +107,26 @@ public class SubscriptionController {
   public ResponseEntity<List<UserSubscriptionResponse>> getMySubscriptions (
       Authentication authentication) {
     return ResponseUtil.ok(getMySubscriptionsUseCase.execute(getCurrentUserId(authentication)).getItems());
+  }
+
+  @GetMapping("/me/current")
+  public ResponseEntity<UserSubscriptionResponse> getMyCurrentSubscription (
+      Authentication authentication) {
+    return getMyCurrentSubscriptionUseCase.execute(getCurrentUserId(authentication))
+        .map(ResponseUtil::ok).orElseGet( () -> ResponseEntity.noContent().build());
+  }
+
+  @GetMapping("/me/history")
+  public ResponseEntity<List<UserSubscriptionResponse>> getMySubscriptionHistory (
+      Authentication authentication) {
+    return ResponseUtil.ok(getMySubscriptionsUseCase.execute(getCurrentUserId(authentication)).getItems());
+  }
+
+  @PatchMapping("/me/current/auto-renew")
+  public ResponseEntity<UserSubscriptionResponse> updateMyAutoRenew (Authentication authentication,
+      @Valid @RequestBody UpdateAutoRenewRequest request) {
+    return ResponseUtil
+        .ok(updateMyAutoRenewUseCase.execute(getCurrentUserId(authentication), request));
   }
 
   @PostMapping("/payments")

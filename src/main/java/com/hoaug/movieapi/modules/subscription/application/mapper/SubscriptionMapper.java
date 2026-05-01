@@ -38,6 +38,8 @@ public class SubscriptionMapper {
     response.setEndAt(subscription.getEndAt());
     response.setStatus(subscription.getStatus().name());
     response.setAutoRenew(subscription.getAutoRenew());
+    response.setCreatedAt(subscription.getCreatedAt());
+    response.setUpdatedAt(subscription.getUpdatedAt());
     return response;
   }
 

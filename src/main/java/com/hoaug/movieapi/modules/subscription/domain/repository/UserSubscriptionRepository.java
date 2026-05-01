@@ -20,4 +20,7 @@ public interface UserSubscriptionRepository {
 
   List<UserSubscription> findByStatusAndEndAtBetween (SubscriptionStatus status,
       LocalDateTime startDate, LocalDateTime endDate);
+
+  Optional<UserSubscription> findFirstByUserIdAndStatusOrderByEndAtDesc (Long userId,
+      SubscriptionStatus status);
 }

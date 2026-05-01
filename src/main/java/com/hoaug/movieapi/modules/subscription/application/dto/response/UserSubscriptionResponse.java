@@ -11,6 +11,10 @@ public class UserSubscriptionResponse {
   private LocalDateTime endAt;
   private String status;
   private Boolean autoRenew;
+  private SubscriptionPlanResponse plan;
+  private Long remainingSeconds;
+  private LocalDateTime createdAt;
+  private LocalDateTime updatedAt;
 
   public Long getId () {
     return id;
@@ -66,5 +70,37 @@ public class UserSubscriptionResponse {
 
   public void setAutoRenew (Boolean autoRenew) {
     this.autoRenew = autoRenew;
+  }
+
+  public SubscriptionPlanResponse getPlan () {
+    return plan;
+  }
+
+  public void setPlan (SubscriptionPlanResponse plan) {
+    this.plan = plan;
+  }
+
+  public Long getRemainingSeconds () {
+    return remainingSeconds;
+  }
+
+  public void setRemainingSeconds (Long remainingSeconds) {
+    this.remainingSeconds = remainingSeconds;
+  }
+
+  public LocalDateTime getCreatedAt () {
+    return createdAt;
+  }
+
+  public void setCreatedAt (LocalDateTime createdAt) {
+    this.createdAt = createdAt;
+  }
+
+  public LocalDateTime getUpdatedAt () {
+    return updatedAt;
+  }
+
+  public void setUpdatedAt (LocalDateTime updatedAt) {
+    this.updatedAt = updatedAt;
   }
 }
