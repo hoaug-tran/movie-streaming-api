@@ -2,7 +2,6 @@ package com.hoaug.movieapi.modules.user.application.dto.request;
 
 import com.hoaug.movieapi.common.validator.ValidSafeString;
 
-import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 
@@ -15,11 +14,6 @@ public class UpdateUserProfileRequest {
   @Size(max = 500, message = "Avatar URL must be at most 500 characters")
   @ValidSafeString(minLength = 0, maxLength = 500)
   private String avatarUrl;
-
-  @Email(message = "Invalid email format")
-  @Size(max = 100, message = "Email must be at most 100 characters")
-  @ValidSafeString(minLength = 0, maxLength = 100)
-  private String email;
 
   public String getFullName () {
     return fullName;
@@ -35,14 +29,6 @@ public class UpdateUserProfileRequest {
 
   public void setAvatarUrl (String avatarUrl) {
     this.avatarUrl = avatarUrl;
-  }
-
-  public String getEmail () {
-    return email;
-  }
-
-  public void setEmail (String email) {
-    this.email = email;
   }
 
 }

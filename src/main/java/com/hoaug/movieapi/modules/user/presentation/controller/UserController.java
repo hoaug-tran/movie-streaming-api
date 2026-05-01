@@ -12,13 +12,18 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.hoaug.movieapi.common.response.ResponseUtil;
 import com.hoaug.movieapi.modules.user.application.dto.request.ChangePasswordRequest;
+import com.hoaug.movieapi.modules.user.application.dto.request.StartEmailChangeRequest;
 import com.hoaug.movieapi.modules.user.application.dto.request.UpdateUserProfileRequest;
 import com.hoaug.movieapi.modules.user.application.dto.request.UpdateUserRoleRequest;
 import com.hoaug.movieapi.modules.user.application.dto.request.UpdateUserStatusRequest;
+import com.hoaug.movieapi.modules.user.application.dto.request.VerifyEmailChangeOtpRequest;
+import com.hoaug.movieapi.modules.user.application.dto.response.EmailChangeResponse;
 import com.hoaug.movieapi.modules.user.application.dto.response.UserDetailResponse;
 import com.hoaug.movieapi.modules.user.application.dto.response.UserProfileResponse;
 import com.hoaug.movieapi.modules.user.application.dto.response.UserSummaryResponse;
@@ -27,9 +32,13 @@ import com.hoaug.movieapi.modules.user.application.usecase.DeleteUserUseCase;
 import com.hoaug.movieapi.modules.user.application.usecase.GetMyProfileUseCase;
 import com.hoaug.movieapi.modules.user.application.usecase.GetUserByIdUseCase;
 import com.hoaug.movieapi.modules.user.application.usecase.GetUsersUseCase;
+import com.hoaug.movieapi.modules.user.application.usecase.StartEmailChangeUseCase;
 import com.hoaug.movieapi.modules.user.application.usecase.UpdateMyProfileUseCase;
 import com.hoaug.movieapi.modules.user.application.usecase.UpdateUserRoleUseCase;
 import com.hoaug.movieapi.modules.user.application.usecase.UpdateUserStatusUseCase;
+import com.hoaug.movieapi.modules.user.application.usecase.UploadMyAvatarUseCase;
+import com.hoaug.movieapi.modules.user.application.usecase.VerifyCurrentEmailChangeUseCase;
+import com.hoaug.movieapi.modules.user.application.usecase.VerifyNewEmailChangeUseCase;
 
 import jakarta.validation.Valid;
 
@@ -44,12 +53,20 @@ public class UserController {
   private final UpdateUserStatusUseCase updateUserStatusUseCase;
   private final UpdateUserRoleUseCase updateUserRoleUseCase;
   private final DeleteUserUseCase deleteUserUseCase;
+  private final StartEmailChangeUseCase startEmailChangeUseCase;
+  private final VerifyCurrentEmailChangeUseCase verifyCurrentEmailChangeUseCase;
+  private final VerifyNewEmailChangeUseCase verifyNewEmailChangeUseCase;
+  private final UploadMyAvatarUseCase uploadMyAvatarUseCase;
 
   public UserController(GetMyProfileUseCase getMyProfileUseCase,
       UpdateMyProfileUseCase updateMyProfileUseCase,
       ChangeMyPasswordUseCase changeMyPasswordUseCase, GetUsersUseCase getUsersUseCase,
       GetUserByIdUseCase getUserByIdUseCase, UpdateUserStatusUseCase updateUserStatusUseCase,
-      UpdateUserRoleUseCase updateUserRoleUseCase, DeleteUserUseCase deleteUserUseCase) {
+      UpdateUserRoleUseCase updateUserRoleUseCase, DeleteUserUseCase deleteUserUseCase,
+      StartEmailChangeUseCase startEmailChangeUseCase,
+      VerifyCurrentEmailChangeUseCase verifyCurrentEmailChangeUseCase,
+      VerifyNewEmailChangeUseCase verifyNewEmailChangeUseCase,
+      UploadMyAvatarUseCase uploadMyAvatarUseCase) {
     this.getMyProfileUseCase = getMyProfileUseCase;
     this.updateMyProfileUseCase = updateMyProfileUseCase;
     this.changeMyPasswordUseCase = changeMyPasswordUseCase;
@@ -58,6 +75,10 @@ public class UserController {
     this.updateUserStatusUseCase = updateUserStatusUseCase;
     this.updateUserRoleUseCase = updateUserRoleUseCase;
     this.deleteUserUseCase = deleteUserUseCase;
+    this.startEmailChangeUseCase = startEmailChangeUseCase;
+    this.verifyCurrentEmailChangeUseCase = verifyCurrentEmailChangeUseCase;
+    this.verifyNewEmailChangeUseCase = verifyNewEmailChangeUseCase;
+    this.uploadMyAvatarUseCase = uploadMyAvatarUseCase;
   }
 
   @GetMapping("/me")
@@ -71,11 +92,36 @@ public class UserController {
     return ResponseUtil.ok(updateMyProfileUseCase.execute(authentication.getName(), request));
   }
 
+  @PatchMapping(value = "/me/avatar", consumes = "multipart/form-data")
+  public ResponseEntity<UserProfileResponse> uploadMyAvatar (Authentication authentication,
+      @RequestPart("avatar") MultipartFile avatar) {
+    return ResponseUtil.ok(uploadMyAvatarUseCase.execute(authentication.getName(), avatar));
+  }
+
   @PatchMapping("/me/password")
   public ResponseEntity<Void> changeMyPassword (Authentication authentication,
       @Valid @RequestBody ChangePasswordRequest request) {
     changeMyPasswordUseCase.execute(authentication.getName(), request);
     return ResponseUtil.noContent();
+  }
+
+  @PatchMapping("/me/email-change/start")
+  public ResponseEntity<EmailChangeResponse> startEmailChange (Authentication authentication,
+      @Valid @RequestBody StartEmailChangeRequest request) {
+    return ResponseUtil.ok(startEmailChangeUseCase.execute(authentication.getName(), request));
+  }
+
+  @PatchMapping("/me/email-change/verify-current")
+  public ResponseEntity<EmailChangeResponse> verifyCurrentEmailChange (
+      Authentication authentication, @Valid @RequestBody VerifyEmailChangeOtpRequest request) {
+    return ResponseUtil
+        .ok(verifyCurrentEmailChangeUseCase.execute(authentication.getName(), request));
+  }
+
+  @PatchMapping("/me/email-change/verify-new")
+  public ResponseEntity<EmailChangeResponse> verifyNewEmailChange (Authentication authentication,
+      @Valid @RequestBody VerifyEmailChangeOtpRequest request) {
+    return ResponseUtil.ok(verifyNewEmailChangeUseCase.execute(authentication.getName(), request));
   }
 
   @PreAuthorize("hasRole('ADMIN')")

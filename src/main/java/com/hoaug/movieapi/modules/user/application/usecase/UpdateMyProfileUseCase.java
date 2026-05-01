@@ -27,14 +27,6 @@ public class UpdateMyProfileUseCase {
     user.setFullName(request.getFullName());
     user.setAvatarUrl(request.getAvatarUrl());
 
-    if (!user.getEmail().equals(request.getEmail())) {
-      if (userRepository.existsByEmail(request.getEmail())) {
-        throw new AppException(ErrorCode.EMAIL_EXISTED);
-      }
-    }
-
-    user.setEmail(request.getEmail());
-
     User savedUser = userRepository.save(user);
 
     return userMapper.toProfileResponse(savedUser);

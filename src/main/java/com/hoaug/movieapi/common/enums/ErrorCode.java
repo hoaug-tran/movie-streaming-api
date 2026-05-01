@@ -45,7 +45,9 @@ public enum ErrorCode {
   DEVICE_SESSION_NOT_FOUND(7001, "Phiên đăng nhập trên thiết bị không tồn tại hoặc đã hết hạn"),
   SEARCH_HISTORY_NOT_FOUND(7002, "Lịch sử tìm kiếm không tồn tại hoặc đã bị xóa"),
   ADVERTISEMENT_NOT_FOUND(404, "Không tìm thấy quảng cáo nào"),
-  ADVERTISEMENT_VIEW_NOT_FOUND(404, "Không tìm thấy lượt xem quảng cáo nào");
+  ADVERTISEMENT_VIEW_NOT_FOUND(404, "Không tìm thấy lượt xem quảng cáo nào"),
+  BAD_REQUEST(400, "Yêu cầu không hợp lệ"),
+  FILE_UPLOAD_FAILED(500, "Không thể tải tệp lên máy chủ");
 
   private final int statusCode;
   private final String message;
