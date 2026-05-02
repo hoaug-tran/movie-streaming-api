@@ -13,4 +13,6 @@ public interface FavoriteRepository {
   Favorite save (Favorite favorite);
 
   void delete (Favorite favorite);
+
+  void deleteByUserId (Long userId);
 }

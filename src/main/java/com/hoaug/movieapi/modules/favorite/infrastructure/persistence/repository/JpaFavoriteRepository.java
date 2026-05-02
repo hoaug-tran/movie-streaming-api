@@ -11,4 +11,6 @@ public interface JpaFavoriteRepository extends JpaRepository<FavoriteEntity, Lon
   Optional<FavoriteEntity> findByUserIdAndMovieId (Long userId, Long movieId);
 
   List<FavoriteEntity> findByUserIdOrderByAddedAtDesc (Long userId);
+
+  void deleteByUserId (Long userId);
 }

@@ -41,6 +41,11 @@ public class FavoriteRepositoryAdapter implements FavoriteRepository {
     jpaFavoriteRepository.delete(toEntity(favorite));
   }
 
+  @Override
+  public void deleteByUserId (Long userId) {
+    jpaFavoriteRepository.deleteByUserId(userId);
+  }
+
   private Favorite toDomain (FavoriteEntity entity) {
     Favorite favorite = new Favorite();
     favorite.setId(entity.getId());

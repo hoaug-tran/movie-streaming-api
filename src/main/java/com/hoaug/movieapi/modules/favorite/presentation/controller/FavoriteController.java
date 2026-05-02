@@ -19,6 +19,7 @@ import com.hoaug.movieapi.modules.favorite.application.dto.response.FavoriteResp
 import com.hoaug.movieapi.modules.favorite.application.dto.response.MovieInFavoriteResponse;
 import com.hoaug.movieapi.modules.favorite.application.usecase.AddFavoriteUseCase;
 import com.hoaug.movieapi.modules.favorite.application.usecase.CheckMovieInFavoriteUseCase;
+import com.hoaug.movieapi.modules.favorite.application.usecase.ClearMyFavoritesUseCase;
 import com.hoaug.movieapi.modules.favorite.application.usecase.GetMyFavoritesUseCase;
 import com.hoaug.movieapi.modules.favorite.application.usecase.RemoveFavoriteUseCase;
 import com.hoaug.movieapi.modules.user.domain.model.User;
@@ -29,16 +30,19 @@ public class FavoriteController {
 
   private final AddFavoriteUseCase addFavoriteUseCase;
   private final RemoveFavoriteUseCase removeFavoriteUseCase;
+  private final ClearMyFavoritesUseCase clearMyFavoritesUseCase;
   private final GetMyFavoritesUseCase getMyFavoritesUseCase;
   private final CheckMovieInFavoriteUseCase checkMovieInFavoriteUseCase;
   private final AuthUserRepository authUserRepository;
 
   public FavoriteController(AddFavoriteUseCase addFavoriteUseCase,
-      RemoveFavoriteUseCase removeFavoriteUseCase, GetMyFavoritesUseCase getMyFavoritesUseCase,
+      RemoveFavoriteUseCase removeFavoriteUseCase, ClearMyFavoritesUseCase clearMyFavoritesUseCase,
+      GetMyFavoritesUseCase getMyFavoritesUseCase,
       CheckMovieInFavoriteUseCase checkMovieInFavoriteUseCase,
       AuthUserRepository authUserRepository) {
     this.addFavoriteUseCase = addFavoriteUseCase;
     this.removeFavoriteUseCase = removeFavoriteUseCase;
+    this.clearMyFavoritesUseCase = clearMyFavoritesUseCase;
     this.getMyFavoritesUseCase = getMyFavoritesUseCase;
     this.checkMovieInFavoriteUseCase = checkMovieInFavoriteUseCase;
     this.authUserRepository = authUserRepository;
@@ -61,6 +65,12 @@ public class FavoriteController {
   @GetMapping("/me")
   public ResponseEntity<List<FavoriteResponse>> getMyFavorites (Authentication authentication) {
     return ResponseUtil.ok(getMyFavoritesUseCase.execute(getCurrentUserId(authentication)).getItems());
+  }
+
+  @DeleteMapping("/me")
+  public ResponseEntity<Void> clearMyFavorites (Authentication authentication) {
+    clearMyFavoritesUseCase.execute(getCurrentUserId(authentication));
+    return ResponseUtil.noContent();
   }
 
   @GetMapping("/me/check/{movieId}")
