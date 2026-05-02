@@ -17,5 +17,7 @@ public interface PaymentTransactionRepository {
 
   Optional<PaymentTransaction> findByProviderTransactionId (String providerTransactionId);
 
+  Optional<PaymentTransaction> findBySubscriptionId (Long subscriptionId);
+
   List<PaymentTransaction> findByStatusAndCreatedAtBefore (PaymentStatus status, LocalDateTime cutoff);
 }

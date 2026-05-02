@@ -45,6 +45,12 @@ public class PaymentTransactionRepositoryAdapter implements PaymentTransactionRe
   }
 
   @Override
+  public Optional<PaymentTransaction> findBySubscriptionId (Long subscriptionId) {
+    return jpaPaymentTransactionRepository.findBySubscriptionId(subscriptionId)
+        .map(this::toDomain);
+  }
+
+  @Override
   public List<PaymentTransaction> findByStatusAndCreatedAtBefore (PaymentStatus status,
       LocalDateTime cutoff) {
     return jpaPaymentTransactionRepository.findByStatusAndCreatedAtBefore(status, cutoff).stream()

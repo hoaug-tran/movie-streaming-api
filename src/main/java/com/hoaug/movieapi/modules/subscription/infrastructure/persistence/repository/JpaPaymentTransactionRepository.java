@@ -16,6 +16,8 @@ public interface JpaPaymentTransactionRepository
 
   Optional<PaymentTransactionEntity> findByProviderTransactionId (String providerTransactionId);
 
+  Optional<PaymentTransactionEntity> findBySubscriptionId (Long subscriptionId);
+
   List<PaymentTransactionEntity> findByStatusAndCreatedAtBefore (PaymentStatus status,
       LocalDateTime cutoff);
 }

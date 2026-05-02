@@ -5,6 +5,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -83,6 +84,25 @@ public class PaymentController {
       return ResponseUtil.ok(paymentInfo);
     } catch (Exception e) {
       log.error("Payment success callback error", e);
+      return ResponseUtil.badRequest("Payment verification failed: " + e.getMessage());
+    }
+  }
+
+  @PostMapping("/payments/{orderCode}/verify")
+  @PreAuthorize("isAuthenticated()")
+  public ResponseEntity<?> verifyPayment (@PathVariable String orderCode, Authentication auth) {
+    try {
+      String username = auth.getName();
+      Long userId = authUserRepository.findByUsername(username)
+          .orElseThrow( () -> new AppException(ErrorCode.USER_NOT_FOUND)).getId();
+      var paymentInfo = paymentService.verifyUserPayment(orderCode, userId);
+      return ResponseUtil.ok(paymentInfo);
+    } catch (AppException e) {
+      log.warn("Manual payment verification rejected: orderCode={}, reason={}", orderCode,
+          e.getMessage());
+      return ResponseUtil.badRequest(e.getMessage());
+    } catch (Exception e) {
+      log.error("Manual payment verification error", e);
       return ResponseUtil.badRequest("Payment verification failed: " + e.getMessage());
     }
   }

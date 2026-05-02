@@ -64,6 +64,13 @@ public class UserSubscriptionRepositoryAdapter implements UserSubscriptionReposi
     return jpaUserSubscriptionRepository.findActiveByUserId(userId).map(this::toDomain);
   }
 
+  @Override
+  public List<UserSubscription> findByStatusAndCreatedAtBefore (SubscriptionStatus status,
+      LocalDateTime dateTime) {
+    return jpaUserSubscriptionRepository.findByStatusAndCreatedAtBefore(status, dateTime).stream()
+        .map(this::toDomain).toList();
+  }
+
   private UserSubscription toDomain (UserSubscriptionEntity entity) {
     UserSubscription subscription = new UserSubscription();
     subscription.setId(entity.getId());

@@ -13,15 +13,18 @@ import org.springframework.transaction.annotation.Transactional;
 import com.hoaug.movieapi.common.config.PayOSConfig;
 import com.hoaug.movieapi.common.enums.ErrorCode;
 import com.hoaug.movieapi.common.exception.AppException;
+import com.hoaug.movieapi.modules.subscription.domain.model.Invoice;
 import com.hoaug.movieapi.modules.subscription.domain.model.PaymentMethod;
 import com.hoaug.movieapi.modules.subscription.domain.model.PaymentStatus;
 import com.hoaug.movieapi.modules.subscription.domain.model.PaymentTransaction;
 import com.hoaug.movieapi.modules.subscription.domain.model.SubscriptionPlan;
 import com.hoaug.movieapi.modules.subscription.domain.model.SubscriptionStatus;
 import com.hoaug.movieapi.modules.subscription.domain.model.UserSubscription;
+import com.hoaug.movieapi.modules.subscription.domain.repository.InvoiceRepository;
 import com.hoaug.movieapi.modules.subscription.domain.repository.PaymentTransactionRepository;
 import com.hoaug.movieapi.modules.subscription.domain.repository.SubscriptionPlanRepository;
 import com.hoaug.movieapi.modules.subscription.domain.repository.UserSubscriptionRepository;
+import com.hoaug.movieapi.modules.user.domain.repository.UserRepository;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -36,10 +39,13 @@ public class PaymentService {
   private static final String BILLING_NEW = "NEW";
   private static final String BILLING_RENEWAL = "RENEWAL";
   private static final String BILLING_UPGRADE = "UPGRADE";
+  public static final int PENDING_PAYMENT_TIMEOUT_MINUTES = 15;
 
   private final PaymentTransactionRepository paymentTransactionRepository;
   private final UserSubscriptionRepository userSubscriptionRepository;
   private final SubscriptionPlanRepository subscriptionPlanRepository;
+  private final InvoiceRepository invoiceRepository;
+  private final UserRepository userRepository;
   private final PayOS payOS;
   private final PayOSConfig payOSConfig;
 
@@ -135,6 +141,8 @@ public class PaymentService {
     subscription.setStatus(SubscriptionStatus.ACTIVE);
     userSubscriptionRepository.save(subscription);
 
+    ensureInvoiceForSuccessfulPayment(transaction);
+
     log.info("Payment completed successfully: orderId={}, transactionId={}", orderCode,
         transactionId);
   }
@@ -146,6 +154,11 @@ public class PaymentService {
         .orElseThrow( () -> new AppException(ErrorCode.PAYMENT_TRANSACTION_NOT_FOUND));
 
     if (transaction.getStatus() == PaymentStatus.SUCCESS) {
+      return getPaymentByOrderCode(orderCode);
+    }
+
+    if (isPendingPaymentExpired(transaction, LocalDateTime.now())) {
+      failPayment(orderCode, buildTimeoutProviderResponse(verificationSource, transaction));
       return getPaymentByOrderCode(orderCode);
     }
 
@@ -161,6 +174,8 @@ public class PaymentService {
         completePayment(orderCode, transactionId, providerResponse);
       } else if (isTerminalFailedPayOSStatus(payOSStatus)) {
         failPayment(orderCode, providerResponse);
+      } else if (isPendingPaymentExpired(transaction, LocalDateTime.now())) {
+        failPayment(orderCode, buildTimeoutProviderResponse(verificationSource, transaction));
       } else {
         transaction.setProviderResponse(mergeProviderResponse(transaction.getProviderResponse(),
             providerResponse));
@@ -182,6 +197,19 @@ public class PaymentService {
   }
 
   @Transactional
+  public PaymentSuccessResponse verifyUserPayment (String orderCode, Long userId) {
+    PaymentTransaction transaction = paymentTransactionRepository
+        .findByProviderTransactionId(orderCode)
+        .orElseThrow( () -> new AppException(ErrorCode.PAYMENT_TRANSACTION_NOT_FOUND));
+
+    if (!transaction.getUserId().equals(userId)) {
+      throw new AppException(ErrorCode.FORBIDDEN);
+    }
+
+    return verifyAndSyncPayment(orderCode, "profile-manual-verification");
+  }
+
+  @Transactional
   public void failPayment (String orderCode, String failureReason) {
     PaymentTransaction transaction = paymentTransactionRepository
         .findByProviderTransactionId(orderCode)
@@ -200,7 +228,7 @@ public class PaymentService {
         .findById(transaction.getSubscriptionId())
         .orElseThrow( () -> new AppException(ErrorCode.SUBSCRIPTION_PLAN_NOT_FOUND));
 
-    subscription.setStatus(SubscriptionStatus.PENDING);
+    subscription.setStatus(SubscriptionStatus.CANCELLED);
     userSubscriptionRepository.save(subscription);
 
     log.warn("Payment failed: orderId={}, reason={}", orderCode, failureReason);
@@ -307,9 +335,43 @@ public class PaymentService {
     return billingSnapshot + "\n---PAYOS_RESPONSE---\n" + providerResponse;
   }
 
+  private void ensureInvoiceForSuccessfulPayment (PaymentTransaction transaction) {
+    var existingInvoice = invoiceRepository.findByPaymentTransactionId(transaction.getId());
+    if (existingInvoice.isPresent()) {
+      log.info("Invoice already exists for successful payment: paymentId={}, invoiceNumber={}",
+          transaction.getId(), existingInvoice.get().getInvoiceNumber());
+      return;
+    }
+
+    var user = userRepository.findById(transaction.getUserId())
+        .orElseThrow( () -> new AppException(ErrorCode.USER_NOT_FOUND));
+
+    Invoice invoice = new Invoice();
+    invoice.setPaymentTransactionId(transaction.getId());
+    invoice.setInvoiceNumber("INV-" + transaction.getId() + "-" + System.currentTimeMillis());
+    invoice.setBuyerName(user.getFullName() == null || user.getFullName().isBlank()
+        ? user.getUsername() : user.getFullName());
+    invoice.setBuyerEmail(user.getEmail());
+    invoice.setAmount(transaction.getAmount());
+    invoice.setIssuedAt(LocalDateTime.now());
+    invoiceRepository.save(invoice);
+  }
+
   private boolean isTerminalFailedPayOSStatus (String payOSStatus) {
     return "CANCELLED".equals(payOSStatus) || "EXPIRED".equals(payOSStatus)
         || "FAILED".equals(payOSStatus);
+  }
+
+  private boolean isPendingPaymentExpired (PaymentTransaction transaction, LocalDateTime now) {
+    return transaction.getStatus() == PaymentStatus.PENDING && transaction.getCreatedAt() != null
+        && transaction.getCreatedAt().isBefore(now.minusMinutes(PENDING_PAYMENT_TIMEOUT_MINUTES));
+  }
+
+  private String buildTimeoutProviderResponse (String source, PaymentTransaction transaction) {
+    return "{\"source\":\"" + nullSafe(source)
+        + "\",\"provider\":\"LOCAL_RECONCILIATION\",\"orderCode\":\""
+        + nullSafe(transaction.getProviderTransactionId()) + "\",\"status\":\"TIMEOUT\",\"timeoutMinutes\":"
+        + PENDING_PAYMENT_TIMEOUT_MINUTES + "}";
   }
 
   private String buildVerificationProviderResponse (String source,

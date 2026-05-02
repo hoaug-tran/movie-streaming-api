@@ -18,6 +18,9 @@ public interface JpaUserSubscriptionRepository extends JpaRepository<UserSubscri
   List<UserSubscriptionEntity> findByStatusAndEndAtBetween (SubscriptionStatus status,
       LocalDateTime startDate, LocalDateTime endDate);
 
+  List<UserSubscriptionEntity> findByStatusAndCreatedAtBefore (SubscriptionStatus status,
+      LocalDateTime createdAt);
+
   java.util.Optional<UserSubscriptionEntity> findFirstByUserIdAndStatusOrderByEndAtDesc(
       Long userId, SubscriptionStatus status);
 

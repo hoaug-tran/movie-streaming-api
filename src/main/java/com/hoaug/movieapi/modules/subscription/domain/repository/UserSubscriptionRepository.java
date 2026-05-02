@@ -25,4 +25,7 @@ public interface UserSubscriptionRepository {
       SubscriptionStatus status);
 
   Optional<UserSubscription> findActiveByUserId (Long userId);
+
+  List<UserSubscription> findByStatusAndCreatedAtBefore (SubscriptionStatus status,
+      LocalDateTime dateTime);
 }
