@@ -21,7 +21,7 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import com.hoaug.movieapi.modules.auth.infrastructure.security.JwtAuthenticationFilter;
 
-@Configuration
+@Configuration(proxyBeanMethods = false)
 @EnableWebSecurity
 @EnableMethodSecurity
 public class SecurityConfig {
@@ -47,7 +47,9 @@ public class SecurityConfig {
             .requestMatchers("/api/v1/subscription-plans/**").permitAll()
             .requestMatchers(HttpMethod.GET, "/api/v1/subscriptions/plans").permitAll()
             .requestMatchers("/api/v1/payments/success").permitAll()
+            .requestMatchers(HttpMethod.GET, "/api/v1/advertisements/active", "/api/v1/advertisements/type/**").permitAll()
             .requestMatchers("/api/v1/ads/**").permitAll()
+            .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
             .requestMatchers("/api/v1/webhooks/**").permitAll()
             .requestMatchers(HttpMethod.GET, "/api/v1/search-histories/search").permitAll()
             .requestMatchers("/api/v1/discovery/**").permitAll()
@@ -70,6 +72,7 @@ public class SecurityConfig {
             .requestMatchers("/api/v1/notifications/**").authenticated()
             .requestMatchers("/api/v1/device-sessions/**").authenticated()
             .requestMatchers("/api/v1/recommendations/**").authenticated()
+            .requestMatchers(HttpMethod.GET, "/api/v1/stream/keys/**").permitAll()
             .requestMatchers("/api/v1/search-histories/**").authenticated()
 
             // Default deny

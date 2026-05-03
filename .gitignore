@@ -38,3 +38,6 @@ application-local.properties
 hs_err_pid*.log
 application-local.yml
 DB-full.txt
+
+# Local FFmpeg binary bundle
+/tools/ffmpeg/bin/*.exe
