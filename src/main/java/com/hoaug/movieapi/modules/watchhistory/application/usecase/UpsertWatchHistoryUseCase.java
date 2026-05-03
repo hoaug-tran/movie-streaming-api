@@ -94,7 +94,8 @@ public class UpsertWatchHistoryUseCase {
     if (duration <= 0) {
       return Boolean.TRUE.equals(clientCompleted);
     }
-    return Boolean.TRUE.equals(clientCompleted) || stoppedAtSecond >= duration - COMPLETION_GRACE_SECONDS
+    return Boolean.TRUE.equals(clientCompleted)
+        || stoppedAtSecond >= duration - COMPLETION_GRACE_SECONDS
         || stoppedAtSecond >= Math.floor(duration * COMPLETION_PERCENT);
   }
 }

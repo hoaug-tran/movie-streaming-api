@@ -33,7 +33,7 @@ public class WatchHistoryMapper {
     response.setResumeSecond(duration > 0 ? Math.min(stoppedAtSecond, Math.max(0, duration - 10))
         : stoppedAtSecond);
     response.setProgressPercent(duration > 0 ? Math.min(100.0, stoppedAtSecond * 100.0 / duration)
-        : (Boolean.TRUE.equals(watchHistory.getIsCompleted()) ? 100.0 : null));
+        : (Boolean.TRUE.equals(watchHistory.getIsCompleted()) ? 100.0 : 0.0));
     response.setIsCompleted(watchHistory.getIsCompleted());
     response.setLastWatchedAt(watchHistory.getLastWatchedAt());
     response.setMovie(movie);
