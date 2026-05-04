@@ -4,7 +4,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -23,7 +22,6 @@ import com.hoaug.movieapi.modules.auth.application.usecase.ExchangeOAuthTokenUse
 
 @RestController
 @RequestMapping("/api/v1/auth/oauth")
-@CrossOrigin(origins = "http://localhost:3000")
 public class OAuthController {
   private final ExchangeOAuthTokenUseCase exchangeOAuthTokenUseCase;
   private final GoogleOAuthClient googleOAuthClient;
