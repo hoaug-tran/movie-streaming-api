@@ -6,15 +6,21 @@ import com.hoaug.movieapi.modules.advertisement.application.dto.response.Adverti
 import com.hoaug.movieapi.modules.advertisement.application.dto.response.AdvertisementViewResponse;
 import com.hoaug.movieapi.modules.advertisement.domain.model.Advertisement;
 import com.hoaug.movieapi.modules.advertisement.domain.model.AdvertisementView;
+import com.hoaug.movieapi.shared.media.MediaUrlResolver;
 
 @Component
 public class AdvertisementMapper {
+  private final MediaUrlResolver mediaUrlResolver;
+
+  public AdvertisementMapper (MediaUrlResolver mediaUrlResolver) {
+    this.mediaUrlResolver = mediaUrlResolver;
+  }
 
   public AdvertisementResponse toResponse (Advertisement advertisement) {
     AdvertisementResponse response = new AdvertisementResponse();
     response.setId(advertisement.getId());
     response.setTitle(advertisement.getTitle());
-    response.setVideoUrl(advertisement.getVideoUrl());
+    response.setVideoUrl(mediaUrlResolver.resolve(advertisement.getVideoUrl()));
     response.setTargetUrl(advertisement.getTargetUrl());
     response.setDurationSeconds(advertisement.getDurationSeconds());
     response.setAdType(advertisement.getAdType().name());

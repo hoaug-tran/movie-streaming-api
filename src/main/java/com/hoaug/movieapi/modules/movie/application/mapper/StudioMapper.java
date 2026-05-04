@@ -4,9 +4,15 @@ import org.springframework.stereotype.Component;
 
 import com.hoaug.movieapi.modules.movie.application.dto.response.StudioResponse;
 import com.hoaug.movieapi.modules.movie.domain.model.Studio;
+import com.hoaug.movieapi.shared.media.MediaUrlResolver;
 
 @Component
 public class StudioMapper {
+  private final MediaUrlResolver mediaUrlResolver;
+
+  public StudioMapper (MediaUrlResolver mediaUrlResolver) {
+    this.mediaUrlResolver = mediaUrlResolver;
+  }
 
   public StudioResponse toResponse (Studio studio) {
     StudioResponse response = new StudioResponse();
@@ -14,7 +20,7 @@ public class StudioMapper {
     response.setName(studio.getName());
     response.setSlug(studio.getSlug());
     response.setDescription(studio.getDescription());
-    response.setLogoUrl(studio.getLogoUrl());
+    response.setLogoUrl(mediaUrlResolver.resolve(studio.getLogoUrl()));
     response.setCountry(studio.getCountry());
     response.setWebsiteUrl(studio.getWebsiteUrl());
     return response;

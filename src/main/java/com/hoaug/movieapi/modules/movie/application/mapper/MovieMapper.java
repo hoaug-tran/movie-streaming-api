@@ -14,9 +14,15 @@ import com.hoaug.movieapi.modules.movie.application.dto.response.MovieBasicRespo
 import com.hoaug.movieapi.modules.movie.application.dto.response.TagResponse;
 import com.hoaug.movieapi.modules.movie.domain.model.Episode;
 import com.hoaug.movieapi.modules.movie.domain.model.Movie;
+import com.hoaug.movieapi.shared.media.MediaUrlResolver;
 
 @Component
 public class MovieMapper {
+  private final MediaUrlResolver mediaUrlResolver;
+
+  public MovieMapper (MediaUrlResolver mediaUrlResolver) {
+    this.mediaUrlResolver = mediaUrlResolver;
+  }
 
   public MovieBasicResponse toBasicResponse (Movie movie) {
     MovieBasicResponse res = new MovieBasicResponse();
@@ -24,8 +30,8 @@ public class MovieMapper {
     res.setTitle(movie.getTitle());
     res.setSlug(movie.getSlug());
     res.setDescription(movie.getDescription());
-    res.setPosterUrl(movie.getPosterUrl());
-    res.setBannerUrl(movie.getBannerUrl());
+    res.setPosterUrl(mediaUrlResolver.resolve(movie.getPosterUrl()));
+    res.setBannerUrl(mediaUrlResolver.resolve(movie.getBannerUrl()));
     res.setReleaseYear(movie.getReleaseYear());
     res.setAverageRating(movie.getAverageRating() != null ? movie.getAverageRating().doubleValue() : null);
     res.setViewCount(movie.getViewCount());
@@ -44,9 +50,9 @@ public class MovieMapper {
     response.setOriginalTitle(movie.getOriginalTitle());
     response.setSlug(movie.getSlug());
     response.setDescription(movie.getDescription());
-    response.setPosterUrl(movie.getPosterUrl());
-    response.setBannerUrl(movie.getBannerUrl());
-    response.setTrailerUrl(movie.getTrailerUrl());
+    response.setPosterUrl(mediaUrlResolver.resolve(movie.getPosterUrl()));
+    response.setBannerUrl(mediaUrlResolver.resolve(movie.getBannerUrl()));
+    response.setTrailerUrl(mediaUrlResolver.resolve(movie.getTrailerUrl()));
     response.setReleaseYear(movie.getReleaseYear());
     response.setCountry(movie.getCountry());
     response.setLanguage(movie.getLanguage());
@@ -75,9 +81,9 @@ public class MovieMapper {
     response.setOriginalTitle(movie.getOriginalTitle());
     response.setSlug(movie.getSlug());
     response.setDescription(movie.getDescription());
-    response.setPosterUrl(movie.getPosterUrl());
-    response.setBannerUrl(movie.getBannerUrl());
-    response.setTrailerUrl(movie.getTrailerUrl());
+    response.setPosterUrl(mediaUrlResolver.resolve(movie.getPosterUrl()));
+    response.setBannerUrl(mediaUrlResolver.resolve(movie.getBannerUrl()));
+    response.setTrailerUrl(mediaUrlResolver.resolve(movie.getTrailerUrl()));
     response.setReleaseYear(movie.getReleaseYear());
     response.setCountry(movie.getCountry());
     response.setLanguage(movie.getLanguage());
@@ -104,8 +110,8 @@ public class MovieMapper {
     response.setId(episode.getId());
     response.setTitle(episode.getTitle());
     response.setEpisodeNumber(episode.getEpisodeNumber());
-    response.setVideoUrl(episode.getVideoUrl());
-    response.setThumbnailUrl(episode.getThumbnailUrl());
+    response.setVideoUrl(mediaUrlResolver.resolve(episode.getVideoUrl()));
+    response.setThumbnailUrl(mediaUrlResolver.resolve(episode.getThumbnailUrl()));
     response.setDurationSeconds(episode.getDurationSeconds());
     response.setIsFreePreview(episode.getIsFreePreview());
     response.setStatus(episode.getStatus());

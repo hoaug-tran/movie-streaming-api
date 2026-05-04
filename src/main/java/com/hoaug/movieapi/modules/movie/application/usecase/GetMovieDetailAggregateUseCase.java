@@ -25,7 +25,7 @@ public class GetMovieDetailAggregateUseCase {
     MovieDetailResponse movie = getMovieBySlugUseCase.execute(slug);
     MovieDetailAggregateResponse response = new MovieDetailAggregateResponse();
     response.setMovie(movie);
-    response.setComments(getMovieCommentsUseCase.execute(movie.getId()));
+    response.setComments(getMovieCommentsUseCase.execute(movie.getId(), null));
     response.setReviews(getMovieReviewsUseCase.execute(movie.getId()));
     return response;
   }
