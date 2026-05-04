@@ -36,6 +36,13 @@ public class CommentRepositoryAdapter implements CommentRepository {
   }
 
   @Override
+  public List<Comment> findVisibleCommentsByMovieIdOrderByCreatedAtDesc (Long movieId) {
+    return jpaCommentRepository
+        .findByMovieIdAndStatusOrderByCreatedAtDesc(movieId, CommentStatus.VISIBLE)
+        .stream().map(this::toDomain).toList();
+  }
+
+  @Override
   public List<Comment> findVisibleRepliesByParentCommentIdOrderByCreatedAtAsc (
       Long parentCommentId) {
     return jpaCommentRepository
@@ -76,6 +83,12 @@ public class CommentRepositoryAdapter implements CommentRepository {
   @Transactional
   public void decreaseLikeCount (Long commentId) {
     jpaCommentRepository.decreaseLikeCount(commentId);
+  }
+
+  @Override
+  @Transactional
+  public void updateLikeCount (Long commentId, int likeCount) {
+    jpaCommentRepository.updateLikeCount(commentId, likeCount);
   }
 
   @Override

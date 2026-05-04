@@ -11,6 +11,8 @@ public interface CommentRepository {
 
   List<Comment> findVisibleRootCommentsByMovieIdOrderByCreatedAtDesc (Long movieId);
 
+  List<Comment> findVisibleCommentsByMovieIdOrderByCreatedAtDesc (Long movieId);
+
   List<Comment> findVisibleRepliesByParentCommentIdOrderByCreatedAtAsc (Long parentCommentId);
 
   Comment save (Comment comment);
@@ -24,6 +26,8 @@ public interface CommentRepository {
   void increaseLikeCount (Long commentId);
 
   void decreaseLikeCount (Long commentId);
+
+  void updateLikeCount (Long commentId, int likeCount);
 
   List<Comment> findNewComments (int limit);
 

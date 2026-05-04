@@ -8,6 +8,10 @@ public interface CommentLikeRepository {
 
   Optional<CommentLike> findByUserIdAndCommentId (Long userId, Long commentId);
 
+  boolean existsByUserIdAndCommentId (Long userId, Long commentId);
+
+  long countByCommentId (Long commentId);
+
   CommentLike save (CommentLike commentLike);
 
   void delete (CommentLike commentLike);

@@ -14,6 +14,9 @@ public interface JpaCommentRepository extends JpaRepository<CommentEntity, Long>
   List<CommentEntity> findByMovieIdAndParentCommentIdIsNullAndStatusOrderByCreatedAtDesc (
       Long movieId, CommentStatus status);
 
+  List<CommentEntity> findByMovieIdAndStatusOrderByCreatedAtDesc (Long movieId,
+      CommentStatus status);
+
   List<CommentEntity> findByParentCommentIdAndStatusOrderByCreatedAtAsc (Long parentCommentId,
       CommentStatus status);
 
@@ -48,6 +51,14 @@ public interface JpaCommentRepository extends JpaRepository<CommentEntity, Long>
           where c.id = :commentId
       """)
   void decreaseLikeCount (Long commentId);
+
+  @Modifying
+  @Query("""
+          update CommentEntity c
+          set c.likeCount = :likeCount
+          where c.id = :commentId
+      """)
+  void updateLikeCount (Long commentId, int likeCount);
 
   // Discovery Queries
   @Query("SELECT c FROM CommentEntity c WHERE c.status = 'VISIBLE' ORDER BY c.createdAt DESC")

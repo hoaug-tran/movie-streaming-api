@@ -24,6 +24,16 @@ public class CommentLikeRepositoryAdapter implements CommentLikeRepository {
   }
 
   @Override
+  public boolean existsByUserIdAndCommentId (Long userId, Long commentId) {
+    return jpaCommentLikeRepository.existsByUserIdAndCommentId(userId, commentId);
+  }
+
+  @Override
+  public long countByCommentId (Long commentId) {
+    return jpaCommentLikeRepository.countByCommentId(commentId);
+  }
+
+  @Override
   public CommentLike save (CommentLike commentLike) {
     CommentLikeEntity savedEntity = jpaCommentLikeRepository.save(toEntity(commentLike));
     return toDomain(savedEntity);

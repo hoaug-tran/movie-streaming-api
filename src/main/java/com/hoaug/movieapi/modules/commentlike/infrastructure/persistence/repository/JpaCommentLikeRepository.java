@@ -9,4 +9,8 @@ import com.hoaug.movieapi.modules.commentlike.infrastructure.persistence.entity.
 public interface JpaCommentLikeRepository extends JpaRepository<CommentLikeEntity, Long> {
 
   Optional<CommentLikeEntity> findByUserIdAndCommentId (Long userId, Long commentId);
+
+  boolean existsByUserIdAndCommentId (Long userId, Long commentId);
+
+  long countByCommentId (Long commentId);
 }

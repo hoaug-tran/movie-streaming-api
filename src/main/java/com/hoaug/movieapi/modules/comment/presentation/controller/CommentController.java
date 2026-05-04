@@ -84,8 +84,10 @@ public class CommentController {
   }
 
   @GetMapping("/movie/{movieId}")
-  public ResponseEntity<List<CommentResponse>> getMovieComments (@PathVariable Long movieId) {
-    List<CommentResponse> comments = getMovieCommentsUseCase.execute(movieId);
+  public ResponseEntity<List<CommentResponse>> getMovieComments (Authentication authentication,
+      @PathVariable Long movieId) {
+    Long currentUserId = authentication == null ? null : getCurrentUserId(authentication);
+    List<CommentResponse> comments = getMovieCommentsUseCase.execute(movieId, currentUserId);
     return ResponseUtil.ok(comments);
   }
 

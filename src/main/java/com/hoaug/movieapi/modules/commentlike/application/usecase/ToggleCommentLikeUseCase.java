@@ -41,7 +41,7 @@ public class ToggleCommentLikeUseCase {
 
     return commentLikeRepository.findByUserIdAndCommentId(userId, commentId).map(existingLike -> {
       commentLikeRepository.delete(existingLike);
-      commentRepository.decreaseLikeCount(commentId);
+      syncCommentLikeCount(commentId);
       return commentLikeMapper.toResponse(commentId, false);
     }).orElseGet( () -> {
       CommentLike commentLike = new CommentLike();
@@ -49,8 +49,13 @@ public class ToggleCommentLikeUseCase {
       commentLike.setCommentId(commentId);
       commentLike.setCreatedAt(LocalDateTime.now());
       commentLikeRepository.save(commentLike);
-      commentRepository.increaseLikeCount(commentId);
+      syncCommentLikeCount(commentId);
       return commentLikeMapper.toResponse(commentId, true);
     });
+  }
+
+  private void syncCommentLikeCount (Long commentId) {
+    long realLikeCount = commentLikeRepository.countByCommentId(commentId);
+    commentRepository.updateLikeCount(commentId, Math.toIntExact(realLikeCount));
   }
 }

@@ -15,6 +15,10 @@ public class CommentResponse {
   private Integer likeCount;
   private Integer replyCount;
   private String status;
+  private String authorUsername;
+  private String authorFullName;
+  private String authorAvatarUrl;
+  private Boolean likedByCurrentUser;
   private LocalDateTime createdAt;
   private LocalDateTime updatedAt;
 
@@ -104,6 +108,38 @@ public class CommentResponse {
 
   public void setStatus (String status) {
     this.status = status;
+  }
+
+  public String getAuthorUsername () {
+    return authorUsername;
+  }
+
+  public void setAuthorUsername (String authorUsername) {
+    this.authorUsername = authorUsername;
+  }
+
+  public String getAuthorFullName () {
+    return authorFullName;
+  }
+
+  public void setAuthorFullName (String authorFullName) {
+    this.authorFullName = authorFullName;
+  }
+
+  public String getAuthorAvatarUrl () {
+    return authorAvatarUrl;
+  }
+
+  public void setAuthorAvatarUrl (String authorAvatarUrl) {
+    this.authorAvatarUrl = authorAvatarUrl;
+  }
+
+  public Boolean getLikedByCurrentUser () {
+    return likedByCurrentUser;
+  }
+
+  public void setLikedByCurrentUser (Boolean likedByCurrentUser) {
+    this.likedByCurrentUser = likedByCurrentUser;
   }
 
   public LocalDateTime getCreatedAt () {

@@ -37,7 +37,7 @@ public class AdminCommentController {
 
   @GetMapping("/movie/{movieId}")
   public ResponseEntity<List<CommentResponse>> getMovieComments (@PathVariable Long movieId) {
-    return ResponseUtil.ok(getMovieCommentsUseCase.execute(movieId));
+    return ResponseUtil.ok(getMovieCommentsUseCase.execute(movieId, null));
   }
 
   @PutMapping("/{id}/status")
