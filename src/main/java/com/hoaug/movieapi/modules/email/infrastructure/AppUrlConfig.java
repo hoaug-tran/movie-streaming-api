@@ -4,11 +4,13 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
 
+import com.hoaug.movieapi.config.properties.AppUrlProperties;
+
 import lombok.Data;
 
 @Data
 @Configuration
-@EnableConfigurationProperties
+@EnableConfigurationProperties(AppUrlProperties.class)
 @ConfigurationProperties(prefix = "app.url")
 public class AppUrlConfig {
   private String base;

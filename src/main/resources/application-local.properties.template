@@ -1,4 +1,11 @@
 
+# Local Network / Browser Origins
+# Change this block when testing from another LAN device.
+app.url.base=http://localhost:3000
+app.url.api-base=http://localhost:8080
+app.url.media-base=http://localhost
+app.cors.allowed-origins=http://localhost:3000,http://movie.local:3000
+
 # Database Configuration (Local MySQL)
 spring.datasource.password=YOUR_LOCAL_DB_PASSWORD
 # Example: spring.datasource.password=xxx
