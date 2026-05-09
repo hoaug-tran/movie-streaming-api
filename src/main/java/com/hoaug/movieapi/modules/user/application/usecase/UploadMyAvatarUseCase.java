@@ -37,7 +37,7 @@ public class UploadMyAvatarUseCase {
   }
 
   public UserProfileResponse execute (String username, MultipartFile avatar) {
-    if (!StringUtils.hasText(properties.getDirectory()) || !StringUtils.hasText(properties.getPublicBaseUrl())) {
+    if (!StringUtils.hasText(properties.getDirectory())) {
       throw new AppException(ErrorCode.BAD_REQUEST);
     }
 
@@ -68,9 +68,9 @@ public class UploadMyAvatarUseCase {
       throw new AppException(ErrorCode.FILE_UPLOAD_FAILED);
     }
 
-    String publicUrl = properties.getPublicBaseUrl().replaceAll("/+$", "") + "/" + filename;
-    user.setAvatarUrl(publicUrl);
-    user.setProfilePictureUrl(publicUrl);
+    String avatarUrl = "/avatar/" + filename;
+    user.setAvatarUrl(avatarUrl);
+    user.setProfilePictureUrl(avatarUrl);
 
     return userMapper.toProfileResponse(userRepository.save(user));
   }
