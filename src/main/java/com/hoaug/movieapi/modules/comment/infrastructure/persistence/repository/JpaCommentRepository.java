@@ -2,6 +2,8 @@ package com.hoaug.movieapi.modules.comment.infrastructure.persistence.repository
 
 import java.util.List;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -13,6 +15,9 @@ public interface JpaCommentRepository extends JpaRepository<CommentEntity, Long>
 
   List<CommentEntity> findByMovieIdAndParentCommentIdIsNullAndStatusOrderByCreatedAtDesc (
       Long movieId, CommentStatus status);
+
+  Page<CommentEntity> findByMovieIdAndParentCommentIdIsNullAndStatusOrderByCreatedAtDesc (
+      Long movieId, CommentStatus status, Pageable pageable);
 
   List<CommentEntity> findByMovieIdAndStatusOrderByCreatedAtDesc (Long movieId,
       CommentStatus status);
@@ -60,7 +65,6 @@ public interface JpaCommentRepository extends JpaRepository<CommentEntity, Long>
       """)
   void updateLikeCount (Long commentId, int likeCount);
 
-  // Discovery Queries
   @Query("SELECT c FROM CommentEntity c WHERE c.status = 'VISIBLE' ORDER BY c.createdAt DESC")
   List<CommentEntity> findNewComments (org.springframework.data.domain.Pageable pageable);
 

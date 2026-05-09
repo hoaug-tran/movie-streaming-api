@@ -53,8 +53,8 @@ public class CreateReportUseCase {
     report.setReporterUserId(reporterUserId);
     report.setCommentId(request.getCommentId());
     report.setReviewId(request.getReviewId());
-    report.setReason(request.getReason());
-    report.setDescription(request.getDescription());
+    report.setReason(request.getReason().trim());
+    report.setDescription(request.getDescription() == null ? null : request.getDescription().trim());
     report.setStatus(ReportStatus.PENDING);
     report.setCreatedAt(LocalDateTime.now());
 

@@ -11,8 +11,10 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.hoaug.movieapi.common.dto.PageResponse;
 import com.hoaug.movieapi.common.enums.ErrorCode;
 import com.hoaug.movieapi.common.exception.AppException;
 import com.hoaug.movieapi.common.response.ResponseUtil;
@@ -88,6 +90,16 @@ public class CommentController {
       @PathVariable Long movieId) {
     Long currentUserId = authentication == null ? null : getCurrentUserId(authentication);
     List<CommentResponse> comments = getMovieCommentsUseCase.execute(movieId, currentUserId);
+    return ResponseUtil.ok(comments);
+  }
+
+  @GetMapping("/movie/{movieId}/page")
+  public ResponseEntity<PageResponse<CommentResponse>> getMovieCommentsPage (
+      Authentication authentication, @PathVariable Long movieId,
+      @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size) {
+    Long currentUserId = authentication == null ? null : getCurrentUserId(authentication);
+    PageResponse<CommentResponse> comments = getMovieCommentsUseCase.execute(movieId,
+        currentUserId, page, size);
     return ResponseUtil.ok(comments);
   }
 

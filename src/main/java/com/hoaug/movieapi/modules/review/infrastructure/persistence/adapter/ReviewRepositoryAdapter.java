@@ -3,6 +3,8 @@ package com.hoaug.movieapi.modules.review.infrastructure.persistence.adapter;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
 
 import com.hoaug.movieapi.modules.review.domain.model.Review;
@@ -34,6 +36,11 @@ public class ReviewRepositoryAdapter implements ReviewRepository {
   @Override
   public List<Review> findByMovieIdOrderByCreatedAtDesc (Long movieId) {
     return repo.findByMovieIdOrderByCreatedAtDesc(movieId).stream().map(this::toDomain).toList();
+  }
+
+  @Override
+  public Page<Review> findByMovieIdOrderByCreatedAtDesc (Long movieId, Pageable pageable) {
+    return repo.findByMovieIdOrderByCreatedAtDesc(movieId, pageable).map(this::toDomain);
   }
 
   @Override

@@ -3,6 +3,9 @@ package com.hoaug.movieapi.modules.review.domain.repository;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+
 import com.hoaug.movieapi.modules.review.domain.model.Review;
 
 public interface ReviewRepository {
@@ -11,6 +14,8 @@ public interface ReviewRepository {
   Optional<Review> findByUserIdAndMovieId (Long userId, Long movieId);
 
   List<Review> findByMovieIdOrderByCreatedAtDesc (Long movieId);
+
+  Page<Review> findByMovieIdOrderByCreatedAtDesc (Long movieId, Pageable pageable);
 
   List<Review> findByUserId (Long userId);
 

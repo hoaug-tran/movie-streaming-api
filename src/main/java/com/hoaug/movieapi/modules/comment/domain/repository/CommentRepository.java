@@ -3,6 +3,9 @@ package com.hoaug.movieapi.modules.comment.domain.repository;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+
 import com.hoaug.movieapi.modules.comment.domain.model.Comment;
 
 public interface CommentRepository {
@@ -10,6 +13,9 @@ public interface CommentRepository {
   Optional<Comment> findById (Long id);
 
   List<Comment> findVisibleRootCommentsByMovieIdOrderByCreatedAtDesc (Long movieId);
+
+  Page<Comment> findVisibleRootCommentsByMovieIdOrderByCreatedAtDesc (Long movieId,
+      Pageable pageable);
 
   List<Comment> findVisibleCommentsByMovieIdOrderByCreatedAtDesc (Long movieId);
 

@@ -20,16 +20,20 @@ public class UpsertReviewUseCase {
   private final ReviewMapper mapper;
   private final ReviewSpamValidator spamValidator;
   private final EventPublisher eventPublisher;
+  private final ReviewEligibilityUseCase reviewEligibilityUseCase;
 
   public UpsertReviewUseCase(ReviewRepository repo, ReviewMapper mapper,
-      ReviewSpamValidator spamValidator, EventPublisher eventPublisher) {
+      ReviewSpamValidator spamValidator, EventPublisher eventPublisher,
+      ReviewEligibilityUseCase reviewEligibilityUseCase) {
     this.repo = repo;
     this.mapper = mapper;
     this.spamValidator = spamValidator;
     this.eventPublisher = eventPublisher;
+    this.reviewEligibilityUseCase = reviewEligibilityUseCase;
   }
 
   public ReviewResponse execute (Long userId, UpsertReviewRequest req) {
+    reviewEligibilityUseCase.validateCanReview(userId, req.getMovieId());
     spamValidator.validate(userId, req.getMovieId(), req.getContent(), req.getRating());
 
     Review review = repo.findByUserIdAndMovieId(userId, req.getMovieId()).orElseGet(Review::new);

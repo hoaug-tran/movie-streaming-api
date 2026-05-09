@@ -3,6 +3,8 @@ package com.hoaug.movieapi.modules.comment.infrastructure.persistence.adapter;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
 
 import com.hoaug.movieapi.modules.comment.domain.model.Comment;
@@ -33,6 +35,15 @@ public class CommentRepositoryAdapter implements CommentRepository {
         .findByMovieIdAndParentCommentIdIsNullAndStatusOrderByCreatedAtDesc(movieId,
             CommentStatus.VISIBLE)
         .stream().map(this::toDomain).toList();
+  }
+
+  @Override
+  public Page<Comment> findVisibleRootCommentsByMovieIdOrderByCreatedAtDesc (Long movieId,
+      Pageable pageable) {
+    return jpaCommentRepository
+        .findByMovieIdAndParentCommentIdIsNullAndStatusOrderByCreatedAtDesc(movieId,
+            CommentStatus.VISIBLE, pageable)
+        .map(this::toDomain);
   }
 
   @Override
