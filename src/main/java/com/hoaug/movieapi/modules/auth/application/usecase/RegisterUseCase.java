@@ -1,44 +1,35 @@
 package com.hoaug.movieapi.modules.auth.application.usecase;
 
-import java.io.UnsupportedEncodingException;
 import java.time.LocalDateTime;
 
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
 import com.hoaug.movieapi.common.enums.ErrorCode;
 import com.hoaug.movieapi.common.exception.AppException;
 import com.hoaug.movieapi.modules.auth.application.dto.request.RegisterRequest;
-import com.hoaug.movieapi.modules.auth.application.dto.response.AuthResponse;
+import com.hoaug.movieapi.modules.auth.application.dto.response.OtpChallengeResponse;
+import com.hoaug.movieapi.modules.auth.application.service.AuthOtpService;
+import com.hoaug.movieapi.modules.auth.domain.model.AuthOtpPurpose;
 import com.hoaug.movieapi.modules.auth.domain.repository.AuthUserRepository;
-import com.hoaug.movieapi.modules.auth.domain.service.TokenService;
-import com.hoaug.movieapi.modules.email.application.EmailService;
 import com.hoaug.movieapi.modules.user.domain.model.AccountStatus;
 import com.hoaug.movieapi.modules.user.domain.model.Role;
 import com.hoaug.movieapi.modules.user.domain.model.User;
-
-import jakarta.mail.MessagingException;
 
 @Component
 public class RegisterUseCase {
   private final AuthUserRepository authUserRepository;
   private final PasswordEncoder passwordEncoder;
-  private final TokenService tokenService;
-  private final EmailService emailService;
-
-  @Value("${app.url.email-verification}")
-  private String emailVerificationUrl;
+  private final AuthOtpService authOtpService;
 
   public RegisterUseCase(AuthUserRepository authUserRepository, PasswordEncoder passwordEncoder,
-      TokenService tokenService, EmailService emailService) {
+      AuthOtpService authOtpService) {
     this.authUserRepository = authUserRepository;
     this.passwordEncoder = passwordEncoder;
-    this.tokenService = tokenService;
-    this.emailService = emailService;
+    this.authOtpService = authOtpService;
   }
 
-  public AuthResponse execute (RegisterRequest request) {
+  public OtpChallengeResponse execute (RegisterRequest request) {
     if (authUserRepository.existsByUsername(request.getUsername())) {
       throw new AppException(ErrorCode.USER_EXISTED);
     }
@@ -54,31 +45,13 @@ public class RegisterUseCase {
     user.setFullName(request.getFullName());
     user.setAvatarUrl(request.getAvatarUrl());
     user.setRole(Role.ROLE_USER);
-    user.setAccountStatus(AccountStatus.ACTIVE);
+    user.setAccountStatus(AccountStatus.PENDING);
     user.setCreatedAt(LocalDateTime.now());
     user.setUpdatedAt(LocalDateTime.now());
 
     User savedUser = authUserRepository.save(user);
 
-    try {
-      String verificationLink = emailVerificationUrl + savedUser.getEmail();
-      emailService.sendSignupSuccessEmail(savedUser.getEmail(), savedUser.getFullName(),
-          verificationLink);
-    } catch (MessagingException | UnsupportedEncodingException e) {
-      org.slf4j.LoggerFactory.getLogger(this.getClass()).warn("Failed to send signup email", e);
-    }
-
-    String accessToken = tokenService.generateAccessToken(savedUser.getUsername());
-
-    AuthResponse response = new AuthResponse();
-    response.setAccessToken(accessToken);
-    response.setTokenType("Bearer");
-    response.setUserId(savedUser.getId());
-    response.setUsername(savedUser.getUsername());
-    response.setEmail(savedUser.getEmail());
-    response.setFullName(savedUser.getFullName());
-    response.setRole(savedUser.getRole());
-
-    return response;
+    return authOtpService.issue(AuthOtpPurpose.REGISTER, savedUser.getId(), savedUser.getEmail(),
+        savedUser.getFullName(), null);
   }
 }

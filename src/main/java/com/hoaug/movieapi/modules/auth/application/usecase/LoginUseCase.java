@@ -10,32 +10,35 @@ import com.hoaug.movieapi.common.exception.AppException;
 import com.hoaug.movieapi.common.security.BruteForceProtection;
 import com.hoaug.movieapi.modules.auth.application.dto.request.LoginRequest;
 import com.hoaug.movieapi.modules.auth.application.dto.response.AuthResponse;
-import com.hoaug.movieapi.modules.auth.domain.model.RefreshToken;
+import com.hoaug.movieapi.modules.auth.application.dto.response.LoginResult;
+import com.hoaug.movieapi.modules.auth.application.dto.response.OtpChallengeResponse;
+import com.hoaug.movieapi.modules.auth.application.service.AuthOtpService;
+import com.hoaug.movieapi.modules.auth.domain.model.AuthOtpPurpose;
 import com.hoaug.movieapi.modules.auth.domain.repository.AuthUserRepository;
-import com.hoaug.movieapi.modules.auth.domain.repository.RefreshTokenRepository;
-import com.hoaug.movieapi.modules.auth.domain.service.TokenService;
 import com.hoaug.movieapi.modules.user.domain.model.AccountStatus;
 import com.hoaug.movieapi.modules.user.domain.model.User;
+
+import jakarta.servlet.http.HttpServletRequest;
 
 @Component
 public class LoginUseCase {
   private final AuthUserRepository authUserRepository;
-  private final RefreshTokenRepository refreshTokenRepository;
   private final PasswordEncoder passwordEncoder;
-  private final TokenService tokenService;
   private final BruteForceProtection bruteForceProtection;
+  private final AuthOtpService authOtpService;
+  private final TrustedDeviceUseCase trustedDeviceUseCase;
 
-  public LoginUseCase(AuthUserRepository authUserRepository,
-      RefreshTokenRepository refreshTokenRepository, PasswordEncoder passwordEncoder,
-      TokenService tokenService, BruteForceProtection bruteForceProtection) {
+  public LoginUseCase(AuthUserRepository authUserRepository, PasswordEncoder passwordEncoder,
+      BruteForceProtection bruteForceProtection, AuthOtpService authOtpService,
+      TrustedDeviceUseCase trustedDeviceUseCase) {
     this.authUserRepository = authUserRepository;
-    this.refreshTokenRepository = refreshTokenRepository;
     this.passwordEncoder = passwordEncoder;
-    this.tokenService = tokenService;
     this.bruteForceProtection = bruteForceProtection;
+    this.authOtpService = authOtpService;
+    this.trustedDeviceUseCase = trustedDeviceUseCase;
   }
 
-  public AuthResponse execute (LoginRequest request) {
+  public LoginResult execute (LoginRequest request, HttpServletRequest httpRequest) {
     String userIdentifier = request.getUsernameOrEmail();
 
     if (bruteForceProtection.isLocked(userIdentifier)) {
@@ -59,32 +62,19 @@ public class LoginUseCase {
 
     bruteForceProtection.recordSuccess(userIdentifier);
 
-    LocalDateTime now = LocalDateTime.now();
+    if (request.isRememberMe() && trustedDeviceUseCase.isTrusted(user.getId(), httpRequest)) {
+      AuthResponse directAuth = trustedDeviceUseCase.completeLogin(user, request.isRememberMe(),
+          httpRequest);
+      return new LoginResult(directAuth, null);
+    }
 
+    LocalDateTime now = LocalDateTime.now();
     user.setLastLoginAt(now);
     user.setUpdatedAt(now);
     authUserRepository.save(user);
 
-    String accessToken = tokenService.generateAccessToken(user.getUsername());
-    String refreshTokenValue = tokenService.generateRefreshToken();
-
-    RefreshToken refreshToken = new RefreshToken();
-    refreshToken.setUserId(user.getId());
-    refreshToken.setToken(refreshTokenValue);
-    refreshToken.setExpiresAt(now.plusDays(30));
-    refreshToken.setCreatedAt(now);
-    refreshTokenRepository.save(refreshToken);
-
-    AuthResponse response = new AuthResponse();
-    response.setAccessToken(accessToken);
-    response.setRefreshToken(refreshTokenValue);
-    response.setTokenType("Bearer");
-    response.setUserId(user.getId());
-    response.setUsername(user.getUsername());
-    response.setEmail(user.getEmail());
-    response.setFullName(user.getFullName());
-    response.setRole(user.getRole());
-
-    return response;
+    OtpChallengeResponse challenge = authOtpService.issue(AuthOtpPurpose.LOGIN, user.getId(),
+        user.getEmail(), user.getFullName(), null);
+    return new LoginResult(null, challenge);
   }
 }

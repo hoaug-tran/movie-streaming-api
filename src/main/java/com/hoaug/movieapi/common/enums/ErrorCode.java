@@ -9,6 +9,10 @@ public enum ErrorCode {
   ACCOUNT_NOT_ACTIVE(403, "Tài khoản của bạn chưa được kích hoạt hoặc đang bị khóa"),
   INVALID_REFRESH_TOKEN(401, "Refresh token không hợp lệ"),
   INVALID_RESET_TOKEN(400, "Token đặt lại mật khẩu không hợp lệ"),
+  INVALID_OTP(400, "Mã OTP không hợp lệ"),
+  OTP_EXPIRED(400, "Mã OTP đã hết hạn"),
+  OTP_RESEND_COOLDOWN(429, "Vui lòng chờ 60 giây trước khi gửi lại mã OTP"),
+  OTP_REQUIRED(202, "Cần xác minh OTP qua email"),
   MOVIE_NOT_FOUND(404, "Không tìm thấy bộ phim này"),
   MOVIE_SLUG_EXISTED(409, "Đường dẫn phim (slug) này đã tồn tại."),
   CATEGORY_NOT_FOUND(404, "Không tìm thấy danh mục phim này"),
@@ -20,6 +24,7 @@ public enum ErrorCode {
   COMMENT_NOT_FOUND(404, "Bình luận không tồn tại"),
   COMMENT_LIKE_NOT_FOUND(404, "Bạn chưa thích bình luận này"),
   REVIEW_LIKE_NOT_FOUND(404, "Bạn chưa thích đánh giá này"),
+  REVIEW_WATCH_PROGRESS_NOT_ENOUGH(403, "Bạn cần xem ít nhất 80% nội dung phim trước khi đánh giá"),
   INVALID_COMMENT_PARENT(400, "Bình luận cấp cha không hợp lệ hoặc không cùng phim"),
   FORBIDDEN(403, "Bạn không có quyền thực hiện thao tác này"),
   UNAUTHORIZED(401, "Bạn không được phép truy cập tài nguyên này"),
@@ -47,7 +52,8 @@ public enum ErrorCode {
   ADVERTISEMENT_NOT_FOUND(404, "Không tìm thấy quảng cáo nào"),
   ADVERTISEMENT_VIEW_NOT_FOUND(404, "Không tìm thấy lượt xem quảng cáo nào"),
   BAD_REQUEST(400, "Yêu cầu không hợp lệ"),
-  FILE_UPLOAD_FAILED(500, "Không thể tải tệp lên máy chủ");
+  FILE_UPLOAD_FAILED(500, "Không thể tải tệp lên máy chủ"),
+  UNCATEGORIZED_EXCEPTION(500, "Đã xảy ra lỗi không xác định, vui lòng thử lại sau");
 
   private final int statusCode;
   private final String message;

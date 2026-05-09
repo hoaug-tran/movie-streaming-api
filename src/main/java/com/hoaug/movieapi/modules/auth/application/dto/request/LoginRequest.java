@@ -16,6 +16,8 @@ public class LoginRequest {
   @ValidSafeString(minLength = 6, maxLength = 255)
   private String password;
 
+  private boolean rememberMe;
+
   public String getUsernameOrEmail () {
     return usernameOrEmail;
   }
@@ -30,6 +32,14 @@ public class LoginRequest {
 
   public void setPassword (String password) {
     this.password = password;
+  }
+
+  public boolean isRememberMe () {
+    return rememberMe;
+  }
+
+  public void setRememberMe (boolean rememberMe) {
+    this.rememberMe = rememberMe;
   }
 
 }

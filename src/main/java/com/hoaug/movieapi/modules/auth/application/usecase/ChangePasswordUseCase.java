@@ -9,6 +9,9 @@ import org.springframework.stereotype.Component;
 import com.hoaug.movieapi.common.enums.ErrorCode;
 import com.hoaug.movieapi.common.exception.AppException;
 import com.hoaug.movieapi.modules.auth.application.dto.request.ChangePasswordRequest;
+import com.hoaug.movieapi.modules.auth.application.service.AuthOtpService;
+import com.hoaug.movieapi.modules.auth.domain.model.AuthOtpChallenge;
+import com.hoaug.movieapi.modules.auth.domain.model.AuthOtpPurpose;
 import com.hoaug.movieapi.modules.auth.domain.repository.AuthUserRepository;
 import com.hoaug.movieapi.modules.auth.domain.repository.RefreshTokenRepository;
 import com.hoaug.movieapi.modules.email.application.EmailService;
@@ -23,22 +26,30 @@ public class ChangePasswordUseCase {
   private final RefreshTokenRepository refreshTokenRepository;
   private final PasswordEncoder passwordEncoder;
   private final EmailService emailService;
+  private final AuthOtpService authOtpService;
 
   public ChangePasswordUseCase(AuthUserRepository authUserRepository,
       RefreshTokenRepository refreshTokenRepository, PasswordEncoder passwordEncoder,
-      EmailService emailService) {
+      EmailService emailService, AuthOtpService authOtpService) {
     this.authUserRepository = authUserRepository;
     this.refreshTokenRepository = refreshTokenRepository;
     this.passwordEncoder = passwordEncoder;
     this.emailService = emailService;
+    this.authOtpService = authOtpService;
   }
 
   public void execute (String username, ChangePasswordRequest request) {
     User user = authUserRepository.findByUsername(username)
         .orElseThrow( () -> new AppException(ErrorCode.USER_NOT_FOUND));
 
-    if (!passwordEncoder.matches(request.getOldPassword(), user.getPassword())) {
+    if (!passwordEncoder.matches(request.getCurrentPassword(), user.getPassword())) {
       throw new AppException(ErrorCode.INVALID_CREDENTIALS);
+    }
+
+    AuthOtpChallenge challenge = authOtpService.verify(AuthOtpPurpose.PASSWORD_CHANGE,
+        request.getChallengeToken(), request.getOtp());
+    if (!user.getId().equals(challenge.getUserId())) {
+      throw new AppException(ErrorCode.FORBIDDEN);
     }
 
     user.setPassword(passwordEncoder.encode(request.getNewPassword()));

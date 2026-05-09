@@ -9,13 +9,17 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.cache.RedisCacheConfiguration;
 import org.springframework.data.redis.cache.RedisCacheManager;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.serializer.Jackson2JsonRedisSerializer;
 import org.springframework.data.redis.serializer.RedisSerializationContext;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.hoaug.movieapi.modules.auth.domain.model.AuthOtpChallenge;
 
 @Configuration
 @EnableCaching
 public class CacheConfig {
-
   @Bean
   public CacheManager cacheManager (RedisConnectionFactory factory) {
     RedisCacheConfiguration defaultConfig = createCacheConfiguration(Duration.ofHours(1));
@@ -26,8 +30,22 @@ public class CacheConfig {
         .withCacheConfiguration("recommendations", createCacheConfiguration(Duration.ofHours(4)))
         .withCacheConfiguration("movieDetail", createCacheConfiguration(Duration.ofHours(12)))
         .withCacheConfiguration("categories", createCacheConfiguration(Duration.ofHours(6)))
-        .withCacheConfiguration("tags", createCacheConfiguration(Duration.ofHours(6)))
-        .build();
+        .withCacheConfiguration("tags", createCacheConfiguration(Duration.ofHours(6))).build();
+  }
+
+  @Bean
+  public RedisTemplate<String, AuthOtpChallenge> authOtpChallengeRedisTemplate (RedisConnectionFactory factory,
+      ObjectMapper objectMapper) {
+    RedisTemplate<String, AuthOtpChallenge> template = new RedisTemplate<>();
+    Jackson2JsonRedisSerializer<AuthOtpChallenge> serializer = new Jackson2JsonRedisSerializer<>(objectMapper,
+        AuthOtpChallenge.class);
+    template.setConnectionFactory(factory);
+    template.setKeySerializer(new StringRedisSerializer());
+    template.setValueSerializer(serializer);
+    template.setHashKeySerializer(new StringRedisSerializer());
+    template.setHashValueSerializer(serializer);
+    template.afterPropertiesSet();
+    return template;
   }
 
   private RedisCacheConfiguration createCacheConfiguration (Duration ttl) {

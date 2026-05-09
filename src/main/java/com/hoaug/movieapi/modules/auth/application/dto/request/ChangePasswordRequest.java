@@ -7,23 +7,29 @@ import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 
 public class ChangePasswordRequest {
-  @NotBlank(message = "Old password is required")
-  @Size(min = 6, max = 255, message = "Password must be between 6 and 255 characters")
+  @NotBlank(message = "Mật khẩu hiện tại không được để trống")
+  @Size(min = 6, max = 255, message = "Mật khẩu phải từ 6 đến 255 ký tự")
   @ValidSafeString(minLength = 6, maxLength = 255)
-  private String oldPassword;
+  private String currentPassword;
 
-  @NotBlank(message = "New password is required")
-  @Size(min = 6, max = 255, message = "Password must be between 6 and 255 characters")
-  @Pattern(regexp = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]+$", message = "Password must contain uppercase, lowercase, number and special character")
+  @NotBlank(message = "Mật khẩu mới không được để trống")
+  @Size(min = 6, max = 255, message = "Mật khẩu phải từ 6 đến 255 ký tự")
   @ValidSafeString(minLength = 6, maxLength = 255)
   private String newPassword;
 
-  public String getOldPassword () {
-    return oldPassword;
+  @NotBlank(message = "Challenge token không được để trống")
+  private String challengeToken;
+
+  @NotBlank(message = "Mã OTP không được để trống")
+  @Pattern(regexp = "^\\d{6}$", message = "Mã OTP phải gồm 6 chữ số")
+  private String otp;
+
+  public String getCurrentPassword () {
+    return currentPassword;
   }
 
-  public void setOldPassword (String oldPassword) {
-    this.oldPassword = oldPassword;
+  public void setCurrentPassword (String currentPassword) {
+    this.currentPassword = currentPassword;
   }
 
   public String getNewPassword () {
@@ -33,4 +39,21 @@ public class ChangePasswordRequest {
   public void setNewPassword (String newPassword) {
     this.newPassword = newPassword;
   }
+
+  public String getChallengeToken () {
+    return challengeToken;
+  }
+
+  public void setChallengeToken (String challengeToken) {
+    this.challengeToken = challengeToken;
+  }
+
+  public String getOtp () {
+    return otp;
+  }
+
+  public void setOtp (String otp) {
+    this.otp = otp;
+  }
 }
+

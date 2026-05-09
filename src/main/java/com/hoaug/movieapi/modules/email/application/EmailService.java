@@ -73,7 +73,7 @@ public class EmailService {
     variables.put("verificationLink", verificationLink);
 
     String htmlContent = emailTemplateProvider.getTemplate(EmailType.SIGNUP_SUCCESS, variables);
-    sendHtmlEmail(to, "Chào mừng bạn đến với Gio Phim", htmlContent);
+    sendHtmlEmail(to, "Chào mừng bạn đến với Gió Phim", htmlContent);
     return true;
   }
 
@@ -96,7 +96,7 @@ public class EmailService {
 
     String htmlContent = emailTemplateProvider.getTemplate(EmailType.ACCOUNT_NOTIFICATION,
         variables);
-    sendHtmlEmail(to, "Thông báo từ Gio Phim", htmlContent);
+    sendHtmlEmail(to, "Thông báo từ Gió Phim", htmlContent);
     return true;
   }
 
