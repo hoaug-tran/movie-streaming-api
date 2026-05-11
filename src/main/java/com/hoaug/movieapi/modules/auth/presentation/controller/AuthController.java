@@ -106,9 +106,12 @@ public class AuthController {
   @PostMapping("/login/verify-otp")
   public ResponseEntity<AuthResponse> verifyLoginOtp (@Valid @RequestBody VerifyOtpRequest request,
       HttpServletRequest httpRequest, HttpServletResponse response) {
-    AuthResponse authResponse = verifyLoginOtpUseCase.execute(request, httpRequest);
-    CookieUtil.setAuthCookies(response, authResponse);
-    return ResponseUtil.ok(authResponse);
+    VerifyLoginOtpUseCase.Result result = verifyLoginOtpUseCase.execute(request, httpRequest);
+    CookieUtil.setAuthCookies(response, result.authResponse());
+    if (result.trustedDeviceCookie() != null) {
+      response.addCookie(result.trustedDeviceCookie());
+    }
+    return ResponseUtil.ok(result.authResponse());
   }
 
   @GetMapping("/me")

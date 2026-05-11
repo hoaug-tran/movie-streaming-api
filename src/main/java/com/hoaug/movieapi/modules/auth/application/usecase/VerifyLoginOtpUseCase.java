@@ -17,6 +17,7 @@ import com.hoaug.movieapi.modules.auth.domain.repository.RefreshTokenRepository;
 import com.hoaug.movieapi.modules.auth.domain.service.TokenService;
 import com.hoaug.movieapi.modules.user.domain.model.User;
 
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 
 @Component
@@ -26,6 +27,9 @@ public class VerifyLoginOtpUseCase {
   private final RefreshTokenRepository refreshTokenRepository;
   private final TokenService tokenService;
   private final TrustedDeviceUseCase trustedDeviceUseCase;
+
+  public record Result(AuthResponse authResponse, Cookie trustedDeviceCookie) {
+  }
 
   public VerifyLoginOtpUseCase(AuthOtpService authOtpService,
       AuthUserRepository authUserRepository, RefreshTokenRepository refreshTokenRepository,
@@ -37,7 +41,7 @@ public class VerifyLoginOtpUseCase {
     this.trustedDeviceUseCase = trustedDeviceUseCase;
   }
 
-  public AuthResponse execute (VerifyOtpRequest request, HttpServletRequest httpRequest) {
+  public Result execute (VerifyOtpRequest request, HttpServletRequest httpRequest) {
     AuthOtpChallenge challenge = authOtpService.verify(AuthOtpPurpose.LOGIN,
         request.getChallengeToken(), request.getOtp());
 
@@ -56,9 +60,7 @@ public class VerifyLoginOtpUseCase {
     refreshToken.setCreatedAt(now);
     refreshTokenRepository.save(refreshToken);
 
-    if (request.isRememberMe()) {
-      trustedDeviceUseCase.trust(user.getId(), httpRequest);
-    }
+    Cookie trustedDeviceCookie = request.isRememberMe() ? trustedDeviceUseCase.trust(user.getId()) : null;
 
     AuthResponse response = new AuthResponse();
     response.setAccessToken(accessToken);
@@ -69,6 +71,6 @@ public class VerifyLoginOtpUseCase {
     response.setEmail(user.getEmail());
     response.setFullName(user.getFullName());
     response.setRole(user.getRole());
-    return response;
+    return new Result(response, trustedDeviceCookie);
   }
 }

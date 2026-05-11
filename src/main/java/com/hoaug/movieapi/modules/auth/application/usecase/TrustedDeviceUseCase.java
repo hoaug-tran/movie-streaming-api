@@ -40,7 +40,7 @@ public class TrustedDeviceUseCase {
         .orElse(false);
   }
 
-  public void trust (Long userId, HttpServletRequest httpRequest) {
+  public Cookie trust (Long userId) {
     String deviceToken = UUID.randomUUID().toString() + UUID.randomUUID().toString();
     LocalDateTime now = LocalDateTime.now();
 
@@ -51,10 +51,7 @@ public class TrustedDeviceUseCase {
     refreshToken.setCreatedAt(now);
     refreshTokenRepository.save(refreshToken);
 
-    jakarta.servlet.http.HttpServletResponse response = null;
-    if (httpRequest.getAttribute("javax.servlet.http.HttpServletResponse") instanceof jakarta.servlet.http.HttpServletResponse r) {
-      response = r;
-    }
+    return buildDeviceCookie(deviceToken);
   }
 
   public AuthResponse completeLogin (User user, boolean rememberMe,
