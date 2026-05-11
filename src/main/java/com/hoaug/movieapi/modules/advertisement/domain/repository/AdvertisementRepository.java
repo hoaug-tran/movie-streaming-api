@@ -12,6 +12,10 @@ public interface AdvertisementRepository {
 
   Advertisement save (Advertisement advertisement);
 
+  void deleteById (Long id);
+
+  List<Advertisement> findAllOrderByPriorityDescCreatedAtDesc ();
+
   List<Advertisement> findByIsActiveTrueOrderByPriorityDescCreatedAtDesc ();
 
   List<Advertisement> findByAdTypeAndIsActiveTrueOrderByPriorityDescCreatedAtDesc (

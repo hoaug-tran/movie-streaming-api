@@ -60,13 +60,13 @@ public class ReportController {
     return ResponseUtil.ok(getMyReportsUseCase.execute(getCurrentUserId(authentication)));
   }
 
-  @PreAuthorize("hasRole('ADMIN')")
+  @PreAuthorize("hasAnyRole('ADMIN','MODERATOR')")
   @GetMapping
   public ResponseEntity<List<ReportResponse>> getAllReports () {
     return ResponseUtil.ok(getAllReportsUseCase.execute());
   }
 
-  @PreAuthorize("hasRole('ADMIN')")
+  @PreAuthorize("hasAnyRole('ADMIN','MODERATOR')")
   @PatchMapping("/{reportId}/resolve")
   public ResponseEntity<ReportResponse> resolve (@PathVariable Long reportId,
       @Valid @RequestBody ResolveReportRequest request) {

@@ -9,8 +9,12 @@ import com.hoaug.movieapi.modules.advertisement.infrastructure.persistence.entit
 
 public interface JpaAdvertisementRepository extends JpaRepository<AdvertisementEntity, Long> {
 
+  List<AdvertisementEntity> findAllByOrderByPriorityDescCreatedAtDesc ();
+
   List<AdvertisementEntity> findByIsActiveTrueOrderByPriorityDescCreatedAtDesc ();
 
   List<AdvertisementEntity> findByAdTypeAndIsActiveTrueOrderByPriorityDescCreatedAtDesc (
       AdvertisementType adType);
+
+  List<AdvertisementEntity> findTop5ByIsActiveTrueOrderByPriorityDescCreatedAtDesc ();
 }

@@ -5,10 +5,12 @@ import java.util.List;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -23,6 +25,7 @@ import com.hoaug.movieapi.modules.subscription.application.dto.request.CreatePay
 import com.hoaug.movieapi.modules.subscription.application.dto.request.CreateSubscriptionPlanRequest;
 import com.hoaug.movieapi.modules.subscription.application.dto.request.SubscribePlanRequest;
 import com.hoaug.movieapi.modules.subscription.application.dto.request.UpdateAutoRenewRequest;
+import com.hoaug.movieapi.modules.subscription.application.dto.request.UpdateSubscriptionPlanRequest;
 import com.hoaug.movieapi.modules.subscription.application.dto.response.InvoiceResponse;
 import com.hoaug.movieapi.modules.subscription.application.dto.response.PaymentTransactionResponse;
 import com.hoaug.movieapi.modules.subscription.application.dto.response.SubscriptionPlanResponse;
@@ -38,6 +41,8 @@ import com.hoaug.movieapi.modules.subscription.application.usecase.GetMySubscrip
 import com.hoaug.movieapi.modules.subscription.application.usecase.MarkPaymentSuccessUseCase;
 import com.hoaug.movieapi.modules.subscription.application.usecase.SubscribePlanUseCase;
 import com.hoaug.movieapi.modules.subscription.application.usecase.UpdateMyAutoRenewUseCase;
+import com.hoaug.movieapi.modules.subscription.application.usecase.UpdateSubscriptionPlanUseCase;
+import com.hoaug.movieapi.modules.subscription.application.usecase.DeleteSubscriptionPlanUseCase;
 import com.hoaug.movieapi.modules.user.domain.model.User;
 
 import jakarta.validation.Valid;
@@ -47,6 +52,8 @@ import jakarta.validation.Valid;
 public class SubscriptionController {
 
   private final CreateSubscriptionPlanUseCase createSubscriptionPlanUseCase;
+  private final UpdateSubscriptionPlanUseCase updateSubscriptionPlanUseCase;
+  private final DeleteSubscriptionPlanUseCase deleteSubscriptionPlanUseCase;
   private final GetActiveSubscriptionPlansUseCase getActiveSubscriptionPlansUseCase;
   private final SubscribePlanUseCase subscribePlanUseCase;
   private final GetMySubscriptionsUseCase getMySubscriptionsUseCase;
@@ -60,6 +67,8 @@ public class SubscriptionController {
   private final AuthUserRepository authUserRepository;
 
   public SubscriptionController(CreateSubscriptionPlanUseCase createSubscriptionPlanUseCase,
+      UpdateSubscriptionPlanUseCase updateSubscriptionPlanUseCase,
+      DeleteSubscriptionPlanUseCase deleteSubscriptionPlanUseCase,
       GetActiveSubscriptionPlansUseCase getActiveSubscriptionPlansUseCase,
       SubscribePlanUseCase subscribePlanUseCase,
       GetMySubscriptionsUseCase getMySubscriptionsUseCase,
@@ -71,6 +80,8 @@ public class SubscriptionController {
       CreateInvoiceUseCase createInvoiceUseCase, GetMyInvoicesUseCase getMyInvoicesUseCase,
       AuthUserRepository authUserRepository) {
     this.createSubscriptionPlanUseCase = createSubscriptionPlanUseCase;
+    this.updateSubscriptionPlanUseCase = updateSubscriptionPlanUseCase;
+    this.deleteSubscriptionPlanUseCase = deleteSubscriptionPlanUseCase;
     this.getActiveSubscriptionPlansUseCase = getActiveSubscriptionPlansUseCase;
     this.subscribePlanUseCase = subscribePlanUseCase;
     this.getMySubscriptionsUseCase = getMySubscriptionsUseCase;
@@ -89,6 +100,20 @@ public class SubscriptionController {
   public ResponseEntity<SubscriptionPlanResponse> createPlan (
       @Valid @RequestBody CreateSubscriptionPlanRequest request) {
     return ResponseUtil.created(createSubscriptionPlanUseCase.execute(request));
+  }
+
+  @PreAuthorize("hasRole('ADMIN')")
+  @PutMapping("/plans/{planId}")
+  public ResponseEntity<SubscriptionPlanResponse> updatePlan (@PathVariable Long planId,
+      @Valid @RequestBody UpdateSubscriptionPlanRequest request) {
+    return ResponseUtil.ok(updateSubscriptionPlanUseCase.execute(planId, request));
+  }
+
+  @PreAuthorize("hasRole('ADMIN')")
+  @DeleteMapping("/plans/{planId}")
+  public ResponseEntity<Void> deletePlan (@PathVariable Long planId) {
+    deleteSubscriptionPlanUseCase.execute(planId);
+    return ResponseUtil.noContent();
   }
 
   @GetMapping("/plans")

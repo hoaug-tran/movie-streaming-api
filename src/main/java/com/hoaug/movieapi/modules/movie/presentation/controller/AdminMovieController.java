@@ -19,6 +19,7 @@ import com.hoaug.movieapi.modules.movie.application.dto.request.CreateMovieTagRe
 import com.hoaug.movieapi.modules.movie.application.dto.request.CreatePersonRequest;
 import com.hoaug.movieapi.modules.movie.application.dto.request.CreateStudioRequest;
 import com.hoaug.movieapi.modules.movie.application.dto.request.UpdateMovieRequest;
+import com.hoaug.movieapi.modules.movie.application.dto.request.UpdateMovieInteractionLocksRequest;
 import com.hoaug.movieapi.modules.movie.application.dto.request.UpdateMovieStatusRequest;
 import com.hoaug.movieapi.modules.movie.application.dto.response.CategoryResponse;
 import com.hoaug.movieapi.modules.movie.application.dto.response.EpisodeResponse;
@@ -44,6 +45,7 @@ import com.hoaug.movieapi.modules.movie.application.usecase.DeleteMovieTagUseCas
 import com.hoaug.movieapi.modules.movie.application.usecase.DeleteMovieUseCase;
 import com.hoaug.movieapi.modules.movie.application.usecase.UpdateMovieStatusUseCase;
 import com.hoaug.movieapi.modules.movie.application.usecase.UpdateMovieUseCase;
+import com.hoaug.movieapi.modules.movie.application.usecase.UpdateMovieInteractionLocksUseCase;
 
 import jakarta.validation.Valid;
 
@@ -55,6 +57,7 @@ public class AdminMovieController {
   private final CreateMovieUseCase createMovieUseCase;
   private final UpdateMovieUseCase updateMovieUseCase;
   private final UpdateMovieStatusUseCase updateMovieStatusUseCase;
+  private final UpdateMovieInteractionLocksUseCase updateMovieInteractionLocksUseCase;
   private final DeleteMovieUseCase deleteMovieUseCase;
   private final CreateEpisodeUseCase createEpisodeUseCase;
   private final DeleteEpisodeUseCase deleteEpisodeUseCase;
@@ -71,6 +74,7 @@ public class AdminMovieController {
 
   public AdminMovieController(CreateMovieUseCase createMovieUseCase,
       UpdateMovieUseCase updateMovieUseCase, UpdateMovieStatusUseCase updateMovieStatusUseCase,
+      UpdateMovieInteractionLocksUseCase updateMovieInteractionLocksUseCase,
       DeleteMovieUseCase deleteMovieUseCase, CreateEpisodeUseCase createEpisodeUseCase,
       DeleteEpisodeUseCase deleteEpisodeUseCase, CreatePersonUseCase createPersonUseCase,
       CreateStudioUseCase createStudioUseCase,
@@ -84,6 +88,7 @@ public class AdminMovieController {
     this.createMovieUseCase = createMovieUseCase;
     this.updateMovieUseCase = updateMovieUseCase;
     this.updateMovieStatusUseCase = updateMovieStatusUseCase;
+    this.updateMovieInteractionLocksUseCase = updateMovieInteractionLocksUseCase;
     this.deleteMovieUseCase = deleteMovieUseCase;
     this.createEpisodeUseCase = createEpisodeUseCase;
     this.deleteEpisodeUseCase = deleteEpisodeUseCase;
@@ -114,6 +119,13 @@ public class AdminMovieController {
   public MovieDetailResponse updateMovieStatus (@PathVariable Long id,
       @Valid @RequestBody UpdateMovieStatusRequest request) {
     return updateMovieStatusUseCase.execute(id, request);
+  }
+
+  @PatchMapping("/{id}/interaction-locks")
+  @PreAuthorize("hasAnyRole('ADMIN','MODERATOR')")
+  public MovieDetailResponse updateMovieInteractionLocks (@PathVariable Long id,
+      @Valid @RequestBody UpdateMovieInteractionLocksRequest request) {
+    return updateMovieInteractionLocksUseCase.execute(id, request);
   }
 
   @DeleteMapping("/{id}")

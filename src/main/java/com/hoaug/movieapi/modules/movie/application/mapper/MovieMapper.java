@@ -97,6 +97,8 @@ public class MovieMapper {
     response.setTotalRatings(movie.getTotalRatings());
     response.setTotalReviews(movie.getTotalReviews());
     response.setPublishedAt(movie.getPublishedAt());
+    response.setCommentsLocked(Boolean.TRUE.equals(movie.getCommentsLocked()));
+    response.setReviewsLocked(Boolean.TRUE.equals(movie.getReviewsLocked()));
     response.setEpisodes(episodes.stream().map(this::toEpisodeResponse).toList());
     response.setCategories(categories);
     response.setTags(tags);

@@ -25,6 +25,8 @@ public enum ErrorCode {
   COMMENT_LIKE_NOT_FOUND(404, "Bạn chưa thích bình luận này"),
   REVIEW_LIKE_NOT_FOUND(404, "Bạn chưa thích đánh giá này"),
   REVIEW_WATCH_PROGRESS_NOT_ENOUGH(403, "Bạn cần xem ít nhất 80% nội dung phim trước khi đánh giá"),
+  MOVIE_COMMENTS_LOCKED(403, "Bình luận của phim này đang bị khóa"),
+  MOVIE_REVIEWS_LOCKED(403, "Đánh giá của phim này đang bị khóa"),
   INVALID_COMMENT_PARENT(400, "Bình luận cấp cha không hợp lệ hoặc không cùng phim"),
   FORBIDDEN(403, "Bạn không có quyền thực hiện thao tác này"),
   UNAUTHORIZED(401, "Bạn không được phép truy cập tài nguyên này"),

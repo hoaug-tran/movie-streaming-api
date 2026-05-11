@@ -14,4 +14,12 @@ public interface JpaUserRepository extends JpaRepository<UserEntity, Long> {
     boolean existsByUsername(String username);
 
     boolean existsByEmail(String email);
+
+    long countByAccountStatus(com.hoaug.movieapi.modules.user.domain.model.AccountStatus accountStatus);
+
+    long countByRole(com.hoaug.movieapi.modules.user.domain.model.Role role);
+
+    long countByCreatedAtAfter(java.time.LocalDateTime createdAt);
+
+    long countByLastLoginAtAfter(java.time.LocalDateTime lastLoginAt);
 }

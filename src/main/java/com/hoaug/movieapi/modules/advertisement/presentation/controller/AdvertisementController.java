@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -19,14 +20,19 @@ import com.hoaug.movieapi.common.response.ResponseUtil;
 import com.hoaug.movieapi.modules.advertisement.application.dto.request.CreateAdvertisementRequest;
 import com.hoaug.movieapi.modules.advertisement.application.dto.request.CreateAdvertisementViewRequest;
 import com.hoaug.movieapi.modules.advertisement.application.dto.request.MarkAdvertisementClickedRequest;
+import com.hoaug.movieapi.modules.advertisement.application.dto.request.UpdateAdvertisementRequest;
 import com.hoaug.movieapi.modules.advertisement.application.dto.response.AdvertisementResponse;
 import com.hoaug.movieapi.modules.advertisement.application.dto.response.AdvertisementViewResponse;
 import com.hoaug.movieapi.modules.advertisement.application.usecase.CreateAdvertisementUseCase;
 import com.hoaug.movieapi.modules.advertisement.application.usecase.CreateAdvertisementViewUseCase;
+import com.hoaug.movieapi.modules.advertisement.application.usecase.DeleteAdvertisementUseCase;
 import com.hoaug.movieapi.modules.advertisement.application.usecase.GetActiveAdvertisementsUseCase;
 import com.hoaug.movieapi.modules.advertisement.application.usecase.GetAvailableAdvertisementsByTypeUseCase;
 import com.hoaug.movieapi.modules.advertisement.application.usecase.GetMyAdvertisementViewsUseCase;
 import com.hoaug.movieapi.modules.advertisement.application.usecase.MarkAdvertisementClickedUseCase;
+import com.hoaug.movieapi.modules.advertisement.application.usecase.UpdateAdvertisementUseCase;
+import com.hoaug.movieapi.modules.advertisement.application.mapper.AdvertisementMapper;
+import com.hoaug.movieapi.modules.advertisement.domain.repository.AdvertisementRepository;
 import com.hoaug.movieapi.modules.auth.domain.repository.AuthUserRepository;
 import com.hoaug.movieapi.modules.user.domain.model.User;
 
@@ -42,6 +48,10 @@ public class AdvertisementController {
   private final CreateAdvertisementViewUseCase createAdvertisementViewUseCase;
   private final MarkAdvertisementClickedUseCase markAdvertisementClickedUseCase;
   private final GetMyAdvertisementViewsUseCase getMyAdvertisementViewsUseCase;
+  private final UpdateAdvertisementUseCase updateAdvertisementUseCase;
+  private final DeleteAdvertisementUseCase deleteAdvertisementUseCase;
+  private final AdvertisementRepository advertisementRepository;
+  private final AdvertisementMapper advertisementMapper;
   private final AuthUserRepository authUserRepository;
 
   public AdvertisementController(CreateAdvertisementUseCase createAdvertisementUseCase,
@@ -50,6 +60,10 @@ public class AdvertisementController {
       CreateAdvertisementViewUseCase createAdvertisementViewUseCase,
       MarkAdvertisementClickedUseCase markAdvertisementClickedUseCase,
       GetMyAdvertisementViewsUseCase getMyAdvertisementViewsUseCase,
+      UpdateAdvertisementUseCase updateAdvertisementUseCase,
+      DeleteAdvertisementUseCase deleteAdvertisementUseCase,
+      AdvertisementRepository advertisementRepository,
+      AdvertisementMapper advertisementMapper,
       AuthUserRepository authUserRepository) {
     this.createAdvertisementUseCase = createAdvertisementUseCase;
     this.getActiveAdvertisementsUseCase = getActiveAdvertisementsUseCase;
@@ -57,7 +71,18 @@ public class AdvertisementController {
     this.createAdvertisementViewUseCase = createAdvertisementViewUseCase;
     this.markAdvertisementClickedUseCase = markAdvertisementClickedUseCase;
     this.getMyAdvertisementViewsUseCase = getMyAdvertisementViewsUseCase;
+    this.updateAdvertisementUseCase = updateAdvertisementUseCase;
+    this.deleteAdvertisementUseCase = deleteAdvertisementUseCase;
+    this.advertisementRepository = advertisementRepository;
+    this.advertisementMapper = advertisementMapper;
     this.authUserRepository = authUserRepository;
+  }
+
+  @PreAuthorize("hasRole('ADMIN')")
+  @GetMapping
+  public ResponseEntity<List<AdvertisementResponse>> getAll () {
+    return ResponseUtil.ok(advertisementRepository.findAllOrderByPriorityDescCreatedAtDesc().stream()
+        .map(advertisementMapper::toResponse).toList());
   }
 
   @PreAuthorize("hasRole('ADMIN')")
@@ -65,6 +90,20 @@ public class AdvertisementController {
   public ResponseEntity<AdvertisementResponse> create (
       @Valid @RequestBody CreateAdvertisementRequest request) {
     return ResponseUtil.created(createAdvertisementUseCase.execute(request));
+  }
+
+  @PreAuthorize("hasRole('ADMIN')")
+  @PatchMapping("/{id}")
+  public ResponseEntity<AdvertisementResponse> update (@PathVariable Long id,
+      @Valid @RequestBody UpdateAdvertisementRequest request) {
+    return ResponseUtil.ok(updateAdvertisementUseCase.execute(id, request));
+  }
+
+  @PreAuthorize("hasRole('ADMIN')")
+  @DeleteMapping("/{id}")
+  public ResponseEntity<Void> delete (@PathVariable Long id) {
+    deleteAdvertisementUseCase.execute(id);
+    return ResponseEntity.noContent().build();
   }
 
   @GetMapping("/active")

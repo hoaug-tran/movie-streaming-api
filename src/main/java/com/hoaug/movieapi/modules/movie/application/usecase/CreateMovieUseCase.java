@@ -53,6 +53,8 @@ public class CreateMovieUseCase {
     movie.setAverageRating(BigDecimal.ZERO);
     movie.setTotalRatings(0);
     movie.setTotalReviews(0);
+    movie.setCommentsLocked(false);
+    movie.setReviewsLocked(false);
     movie.setCreatedAt(LocalDateTime.now());
     movie.setUpdatedAt(LocalDateTime.now());
 

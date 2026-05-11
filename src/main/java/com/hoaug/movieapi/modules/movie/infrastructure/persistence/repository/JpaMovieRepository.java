@@ -13,6 +13,15 @@ import com.hoaug.movieapi.modules.movie.domain.model.MovieStatus;
 import com.hoaug.movieapi.modules.movie.infrastructure.persistence.entity.MovieEntity;
 
 public interface JpaMovieRepository extends JpaRepository<MovieEntity, Long> {
+  @Query(value = "SELECT m.* FROM movies m ORDER BY m.view_count DESC LIMIT 10", nativeQuery = true)
+  List<MovieEntity> findTop10Viewed ();
+
+  @Query(value = "SELECT m.* FROM movies m ORDER BY m.average_rating DESC LIMIT 10", nativeQuery = true)
+  List<MovieEntity> findTop10Rated ();
+
+  @Query(value = "SELECT m.* FROM movies m ORDER BY m.created_at DESC LIMIT 10", nativeQuery = true)
+  List<MovieEntity> findTop10Latest ();
+
   List<MovieEntity> findByMovieStatus (MovieStatus movieStatus);
 
   Optional<MovieEntity> findByIdAndMovieStatus (Long id, MovieStatus movieStatus);
@@ -73,4 +82,30 @@ public interface JpaMovieRepository extends JpaRepository<MovieEntity, Long> {
 
   @Query(value = "SELECT m.* FROM movies m WHERE m.movie_status = 'PUBLISHED' ORDER BY (SELECT COUNT(*) FROM comments c WHERE c.movie_id = m.id) DESC, m.view_count DESC", nativeQuery = true)
   List<MovieEntity> findMostCommented (Pageable pageable);
-}
+
+  @Query("SELECT m FROM MovieEntity m WHERE m.movieStatus = 'PUBLISHED' AND m.movieType = 'SINGLE' ORDER BY m.viewCount DESC")
+  List<MovieEntity> findTopSingleMovies (Pageable pageable);
+
+  @Query("SELECT m FROM MovieEntity m WHERE m.movieStatus = 'PUBLISHED' AND m.movieType = 'SERIES' ORDER BY m.viewCount DESC")
+  List<MovieEntity> findTopSeriesMovies (Pageable pageable);
+
+  @Query(value = "SELECT m.* FROM movies m WHERE m.movie_status = 'PUBLISHED' ORDER BY (m.view_count + m.favorite_count + (m.total_reviews * 8) + (SELECT COUNT(*) * 4 FROM comments c WHERE c.movie_id = m.id)) DESC", nativeQuery = true)
+  List<MovieEntity> findMostInteractedMovies (Pageable pageable);
+
+  long countByMovieStatus (MovieStatus movieStatus);
+
+  long countByMovieType (com.hoaug.movieapi.modules.movie.domain.model.MovieType movieType);
+
+  long countByIsPremiumOnlyTrue ();
+
+  long countByPublishedAtAfter (java.time.LocalDateTime publishedAt);
+
+  @Query("SELECT COALESCE(SUM(m.viewCount), 0) FROM MovieEntity m")
+  long sumViewCount ();
+
+  @Query("SELECT COALESCE(SUM(m.favoriteCount), 0) FROM MovieEntity m")
+  long sumFavoriteCount ();
+
+  @Query("SELECT COALESCE(AVG(m.averageRating), 0) FROM MovieEntity m")
+  java.math.BigDecimal averageRatingAcrossCatalog ();
+}

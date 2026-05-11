@@ -41,6 +41,11 @@ public class SubscriptionPlanRepositoryAdapter implements SubscriptionPlanReposi
   }
 
   @Override
+  public void deleteById (Long id) {
+    jpaSubscriptionPlanRepository.deleteById(id);
+  }
+
+  @Override
   public List<SubscriptionPlan> findByIsActiveTrueOrderByPriceAsc () {
     return jpaSubscriptionPlanRepository.findByIsActiveTrueOrderByPriceAsc().stream()
         .map(this::toDomain).toList();

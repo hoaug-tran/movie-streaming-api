@@ -79,6 +79,12 @@ public class MovieEntity extends BaseEntity {
   @Column(name = "published_at")
   private LocalDateTime publishedAt;
 
+  @Column(name = "comments_locked", nullable = false)
+  private Boolean commentsLocked;
+
+  @Column(name = "reviews_locked", nullable = false)
+  private Boolean reviewsLocked;
+
   public String getTitle () {
     return title;
   }
@@ -237,5 +243,21 @@ public class MovieEntity extends BaseEntity {
 
   public void setPublishedAt (LocalDateTime publishedAt) {
     this.publishedAt = publishedAt;
+  }
+
+  public Boolean getCommentsLocked () {
+    return commentsLocked;
+  }
+
+  public void setCommentsLocked (Boolean commentsLocked) {
+    this.commentsLocked = commentsLocked;
+  }
+
+  public Boolean getReviewsLocked () {
+    return reviewsLocked;
+  }
+
+  public void setReviewsLocked (Boolean reviewsLocked) {
+    this.reviewsLocked = reviewsLocked;
   }
 }

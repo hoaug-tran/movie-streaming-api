@@ -32,6 +32,17 @@ public class AdvertisementRepositoryAdapter implements AdvertisementRepository {
   }
 
   @Override
+  public void deleteById (Long id) {
+    jpaAdvertisementRepository.deleteById(id);
+  }
+
+  @Override
+  public List<Advertisement> findAllOrderByPriorityDescCreatedAtDesc () {
+    return jpaAdvertisementRepository.findAllByOrderByPriorityDescCreatedAtDesc().stream()
+        .map(this::toDomain).toList();
+  }
+
+  @Override
   public List<Advertisement> findByIsActiveTrueOrderByPriorityDescCreatedAtDesc () {
     return jpaAdvertisementRepository.findByIsActiveTrueOrderByPriorityDescCreatedAtDesc().stream()
         .map(this::toDomain).toList();

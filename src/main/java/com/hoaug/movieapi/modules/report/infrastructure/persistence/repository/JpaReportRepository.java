@@ -11,4 +11,13 @@ public interface JpaReportRepository extends JpaRepository<ReportEntity, Long> {
   List<ReportEntity> findByReporterUserIdOrderByCreatedAtDesc (Long reporterUserId);
 
   List<ReportEntity> findAllByOrderByCreatedAtDesc ();
+
+
+  long countByStatus (com.hoaug.movieapi.modules.report.domain.model.ReportStatus status);
+
+  long countByCommentIdIsNotNull ();
+
+  long countByReviewIdIsNotNull ();
+
+  long countByCreatedAtAfter (java.time.LocalDateTime createdAt);
 }

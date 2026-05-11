@@ -41,8 +41,12 @@ public class CreateCommentUseCase {
   public CommentResponse execute (Long userId, CreateCommentRequest request) {
     spamValidator.validate(userId, request.getContent());
 
-    movieRepository.findById(request.getMovieId())
+    var movie = movieRepository.findById(request.getMovieId())
         .orElseThrow( () -> new AppException(ErrorCode.MOVIE_NOT_FOUND));
+
+    if (Boolean.TRUE.equals(movie.getCommentsLocked())) {
+      throw new AppException(ErrorCode.MOVIE_COMMENTS_LOCKED);
+    }
 
     if (request.getEpisodeId() != null) {
       boolean episodeBelongsToMovie = episodeRepository.findPublishedByMovieId(request.getMovieId())

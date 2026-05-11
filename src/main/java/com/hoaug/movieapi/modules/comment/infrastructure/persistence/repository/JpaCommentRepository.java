@@ -73,4 +73,16 @@ public interface JpaCommentRepository extends JpaRepository<CommentEntity, Long>
 
   @Query("SELECT c.movieId FROM CommentEntity c WHERE c.status = 'VISIBLE' GROUP BY c.movieId ORDER BY COUNT(c.id) DESC")
   List<Long> findMostActiveMovieIds (org.springframework.data.domain.Pageable pageable);
+
+
+  long countByStatus (CommentStatus status);
+
+  long countByParentCommentIdIsNull ();
+
+  long countByParentCommentIdIsNotNull ();
+
+  long countByCreatedAtAfter (java.time.LocalDateTime createdAt);
+
+  @Query("SELECT COALESCE(SUM(c.likeCount), 0) FROM CommentEntity c")
+  long sumLikeCount ();
 }

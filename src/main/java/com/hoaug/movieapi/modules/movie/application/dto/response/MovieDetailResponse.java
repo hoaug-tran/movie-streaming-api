@@ -26,6 +26,8 @@ public class MovieDetailResponse {
   private Integer totalRatings;
   private Integer totalReviews;
   private LocalDateTime publishedAt;
+  private Boolean commentsLocked;
+  private Boolean reviewsLocked;
   private List<EpisodeResponse> episodes;
   private List<CategoryResponse> categories;
   private List<TagResponse> tags;
@@ -198,6 +200,22 @@ public class MovieDetailResponse {
 
   public void setPublishedAt (LocalDateTime publishedAt) {
     this.publishedAt = publishedAt;
+  }
+
+  public Boolean getCommentsLocked () {
+    return commentsLocked;
+  }
+
+  public void setCommentsLocked (Boolean commentsLocked) {
+    this.commentsLocked = commentsLocked;
+  }
+
+  public Boolean getReviewsLocked () {
+    return reviewsLocked;
+  }
+
+  public void setReviewsLocked (Boolean reviewsLocked) {
+    this.reviewsLocked = reviewsLocked;
   }
 
   public List<EpisodeResponse> getEpisodes () {

@@ -78,6 +78,8 @@ public class MovieRepositoryAdapter implements MovieRepository {
     movie.setCreatedAt(entity.getCreatedAt());
     movie.setUpdatedAt(entity.getUpdatedAt());
     movie.setPublishedAt(entity.getPublishedAt());
+    movie.setCommentsLocked(Boolean.TRUE.equals(entity.getCommentsLocked()));
+    movie.setReviewsLocked(Boolean.TRUE.equals(entity.getReviewsLocked()));
     return movie;
   }
 
@@ -106,6 +108,8 @@ public class MovieRepositoryAdapter implements MovieRepository {
     entity.setCreatedAt(movie.getCreatedAt());
     entity.setUpdatedAt(movie.getUpdatedAt());
     entity.setPublishedAt(movie.getPublishedAt());
+    entity.setCommentsLocked(Boolean.TRUE.equals(movie.getCommentsLocked()));
+    entity.setReviewsLocked(Boolean.TRUE.equals(movie.getReviewsLocked()));
     return entity;
   }
 

@@ -12,6 +12,8 @@ public interface CommentRepository {
 
   Optional<Comment> findById (Long id);
 
+  List<Comment> findAll ();
+
   List<Comment> findVisibleRootCommentsByMovieIdOrderByCreatedAtDesc (Long movieId);
 
   Page<Comment> findVisibleRootCommentsByMovieIdOrderByCreatedAtDesc (Long movieId,

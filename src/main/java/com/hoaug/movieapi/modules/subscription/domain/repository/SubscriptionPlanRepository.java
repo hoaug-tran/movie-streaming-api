@@ -15,5 +15,7 @@ public interface SubscriptionPlanRepository {
 
   SubscriptionPlan save (SubscriptionPlan subscriptionPlan);
 
+  void deleteById (Long id);
+
   List<SubscriptionPlan> findByIsActiveTrueOrderByPriceAsc ();
 }

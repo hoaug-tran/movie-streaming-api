@@ -30,6 +30,11 @@ public class CommentRepositoryAdapter implements CommentRepository {
   }
 
   @Override
+  public List<Comment> findAll () {
+    return jpaCommentRepository.findAll().stream().map(this::toDomain).toList();
+  }
+
+  @Override
   public List<Comment> findVisibleRootCommentsByMovieIdOrderByCreatedAtDesc (Long movieId) {
     return jpaCommentRepository
         .findByMovieIdAndParentCommentIdIsNullAndStatusOrderByCreatedAtDesc(movieId,
