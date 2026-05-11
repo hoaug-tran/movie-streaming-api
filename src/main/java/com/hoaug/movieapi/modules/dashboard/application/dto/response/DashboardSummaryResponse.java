@@ -22,6 +22,8 @@ public class DashboardSummaryResponse {
     private List<AdminSystemSignal> systemSignals;
     private List<AdminRankingCard> rankingCards;
     private List<AdminServerPerformance> serverPerformance;
+    private List<AdminActivity> userActivities;
+    private List<AdminActivity> adminActivities;
 
     @Data
     @Builder
@@ -31,6 +33,8 @@ public class DashboardSummaryResponse {
         private String label;
         private String color;
         private List<Integer> data;
+        private String value;
+        private String unit;
     }
 
     @Data

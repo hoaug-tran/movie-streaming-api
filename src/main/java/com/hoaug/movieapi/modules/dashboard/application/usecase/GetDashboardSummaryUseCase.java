@@ -9,6 +9,9 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.hoaug.movieapi.modules.activitylog.domain.model.ActivityScope;
+import com.hoaug.movieapi.modules.activitylog.infrastructure.persistence.entity.ActivityLogEntity;
+import com.hoaug.movieapi.modules.activitylog.infrastructure.persistence.repository.JpaActivityLogRepository;
 import com.hoaug.movieapi.modules.advertisement.infrastructure.persistence.entity.AdvertisementEntity;
 import com.hoaug.movieapi.modules.advertisement.infrastructure.persistence.repository.JpaAdvertisementRepository;
 import com.hoaug.movieapi.modules.comment.domain.model.CommentStatus;
@@ -44,6 +47,7 @@ public class GetDashboardSummaryUseCase {
   private final JpaUserSubscriptionRepository userSubscriptionRepository;
   private final JpaPaymentTransactionRepository paymentTransactionRepository;
   private final JpaAdvertisementRepository advertisementRepository;
+  private final JpaActivityLogRepository activityLogRepository;
   private final javax.sql.DataSource dataSource;
 
   @Transactional(readOnly = true)
@@ -108,29 +112,34 @@ public class GetDashboardSummaryUseCase {
         .countByStatusAndPaidAtAfter(PaymentStatus.SUCCESS, weekStart);
 
     List<DashboardSummaryResponse.AdminRankingCard> rankingCards = List.of(
-        rankingCard("Top 10 phim bộ xem nhiều nhất", "Ưu tiên theo lượt xem của phim bộ đã xuất bản",
-            "violet",
+        rankingCard("Top 10 phim bộ xem nhiều nhất",
+            "Ưu tiên theo lượt xem của phim bộ đã xuất bản", "violet",
             movieRepository.findTopSeriesMovies(PageRequest.of(0, 10)).stream()
                 .map(movie -> rankingItem(movie.getId(), movie.getSlug(), movie.getTitle(),
-                    compact(movie.getViewCount()), movie.getReleaseYear() + " • " + movie.getCountry(),
+                    compact(movie.getViewCount()),
+                    movie.getReleaseYear() + " • " + movie.getCountry(),
                     compact(movie.getFavoriteCount()) + " yêu thích"))
                 .toList()),
-        rankingCard("Top 10 phim lẻ xem nhiều nhất", "Phim lẻ đang kéo lưu lượng truy cập", "emerald",
+        rankingCard("Top 10 phim lẻ xem nhiều nhất", "Phim lẻ đang kéo lưu lượng truy cập",
+            "emerald",
             movieRepository.findTopSingleMovies(PageRequest.of(0, 10)).stream()
                 .map(movie -> rankingItem(movie.getId(), movie.getSlug(), movie.getTitle(),
-                    compact(movie.getViewCount()), movie.getReleaseYear() + " • " + movie.getCountry(),
+                    compact(movie.getViewCount()),
+                    movie.getReleaseYear() + " • " + movie.getCountry(),
                     compact(movie.getFavoriteCount()) + " yêu thích"))
                 .toList()),
-        rankingCard("Top 10 phim tương tác mạnh nhất", "Tổng hợp lượt xem, yêu thích, review và bình luận",
-            "cyan",
-            movieRepository.findMostInteractedMovies(PageRequest.of(0, 10)).stream()
-                .map(movie -> rankingItem(movie.getId(), movie.getSlug(), movie.getTitle(),
-                    compact(movie.getViewCount()), compact(movie.getFavoriteCount()) + " yêu thích",
-                    movie.getAverageRating().setScale(1, RoundingMode.HALF_UP) + "★ • "
-                        + movie.getTotalReviews() + " đánh giá"))
-                .toList()),
-        rankingCard("Top gói doanh thu nhiều nhất", "Gói thuê bao xếp theo tổng thanh toán thành công",
-            "amber",
+        rankingCard("Top 10 phim tương tác mạnh nhất",
+            "Xếp hạng theo bình luận và đánh giá, không tính lượt xem", "cyan",
+            movieRepository.findMostInteractedMovies(PageRequest.of(0, 10)).stream().map(movie -> {
+              long commentCount = movieRepository.countVisibleCommentsByMovieId(movie.getId());
+              long reviewCount = movie.getTotalReviews() == null ? 0 : movie.getTotalReviews();
+              return rankingItem(movie.getId(), movie.getSlug(), movie.getTitle(),
+                  compact(commentCount + reviewCount), compact(commentCount) + " bình luận",
+                  compact(reviewCount) + " đánh giá • "
+                      + movie.getAverageRating().setScale(1, RoundingMode.HALF_UP) + "★");
+            }).toList()),
+        rankingCard("Top gói doanh thu nhiều nhất",
+            "Gói thuê bao xếp theo tổng thanh toán thành công", "amber",
             userSubscriptionRepository.findTopPlanRevenue(PageRequest.of(0, 10)).stream()
                 .map(plan -> rankingItem(null, null, plan.getPlanName(), money(plan.getRevenue()),
                     plan.getPlanCode(), plan.getSubscriptions() + " lượt đăng ký"))
@@ -145,18 +154,16 @@ public class GetDashboardSummaryUseCase {
         metric("Lượt xem", totalViews, signed(newMovies30d), "amber",
             newMovies30d + " phim mới / 30 ngày"));
 
+    int cpuLoad = getSystemCpuLoad();
+    int ramUsage = getJvmRamUsage();
+    int dbConnections = getActiveDbConnections();
+    int responseTime = (int) com.hoaug.movieapi.common.filter.HttpLoggingFilter.lastResponseTime;
+
     List<DashboardSummaryResponse.AdminServerPerformance> serverPerformance = List.of(
-        DashboardSummaryResponse.AdminServerPerformance.builder().label("API CPU Load (%)")
-            .color("#38bdf8").data(generatePerformanceSeries(getSystemCpuLoad())).build(),
-        DashboardSummaryResponse.AdminServerPerformance.builder().label("API RAM Usage (%)")
-            .color("#8b5cf6").data(generatePerformanceSeries(getJvmRamUsage())).build(),
-        DashboardSummaryResponse.AdminServerPerformance.builder().label("DB Connections")
-            .color("#f59e0b").data(generatePerformanceSeries(getActiveDbConnections())).build(),
-        DashboardSummaryResponse.AdminServerPerformance.builder().label("Request Speed (ms)")
-            .color("#10b981")
-            .data(generatePerformanceSeries(
-                (int) com.hoaug.movieapi.common.filter.HttpLoggingFilter.lastResponseTime))
-            .build());
+        performance("CPU API", "#38bdf8", cpuLoad, "%"),
+        performance("RAM JVM", "#8b5cf6", ramUsage, "%"),
+        performance("Kết nối DB", "#f59e0b", dbConnections, " kết nối"),
+        performance("Phản hồi API", "#10b981", responseTime, "ms"));
 
     return DashboardSummaryResponse.builder().serverPerformance(serverPerformance)
         .metrics(heroMetrics)
@@ -241,27 +248,22 @@ public class GetDashboardSummaryUseCase {
                 "Giao dịch thành công gần đây"),
             signal("Thanh toán chờ", String.valueOf(pendingPayments),
                 pendingPayments > 0 ? "warning" : "success", "Giao dịch chưa hoàn tất"),
-            signal("Hàng đợi kiểm duyệt", String.valueOf(pendingReports),
-                pendingReports > 0 ? "warning" : "success", "Báo cáo đang chờ"),
-            signal("Sức khỏe thư viện", percent(publishedMovies, totalMovies), "success",
-                "Tỷ lệ phim đã xuất bản"),
-            signal("Hoạt động người dùng", percent(onlineUsers24h, totalUsers), "info",
-                "Đăng nhập trong 24h"),
-            signal("Nợ nội dung", String.valueOf(draftMovies + hiddenComments),
+            signal("Kiểm duyệt chờ", String.valueOf(pendingReports),
+                pendingReports > 0 ? "warning" : "success", "Báo cáo cần xử lý"),
+            signal("Tỷ lệ xuất bản", percent(publishedMovies, totalMovies), "success",
+                "Phim đang hiển thị trong thư viện"),
+            signal("Người dùng 24h", percent(onlineUsers24h, totalUsers), "info",
+                "Tài khoản đăng nhập gần đây"),
+            signal("Việc tồn đọng", String.valueOf(draftMovies + hiddenComments),
                 draftMovies + hiddenComments > 0 ? "warning" : "success",
-                "Phim nháp + bình luận ẩn")))
-        .activities(List.of(
-            activity("reports", "Báo cáo mới", newReports24h + " báo cáo trong 24 giờ",
-                newReports24h > 0 ? "warning" : "success", "24h"),
-            activity("comments", "Bình luận mới", newComments24h + " bình luận trong 24 giờ",
-                "info", "24h"),
-            activity("users", "Người dùng quay lại",
-                onlineUsers24h + " người dùng đăng nhập gần đây", "success", "24h"),
-            activity("content", "Nội dung mới", newMovies30d + " phim xuất bản trong 30 ngày",
-                "info", "30 ngày"),
-            activity("subscriptions", "Gói sắp hết hạn",
-                expiringSubscriptions7d + " gói trong 7 ngày",
-                expiringSubscriptions7d > 0 ? "warning" : "success", "7 ngày")))
+                "Phim nháp + bình luận ẩn"),
+            signal("Gói sắp hết hạn", String.valueOf(expiringSubscriptions7d),
+                expiringSubscriptions7d > 0 ? "warning" : "success", "Trong 7 ngày tới"),
+            signal("API phản hồi", responseTime + "ms", responseTime > 800 ? "warning" : "success",
+                "Thời gian phản hồi gần nhất")))
+        .activities(activityFeed(ActivityScope.USER))
+        .userActivities(activityFeed(ActivityScope.USER))
+        .adminActivities(activityFeed(ActivityScope.ADMIN))
         .trendSets(List.of(series(totalUsers, activeUsers, onlineUsers24h, newUsers7d),
             series(totalMovies, publishedMovies, draftMovies, newMovies30d),
             series(totalComments, visibleComments, newComments24h, replyComments),
@@ -323,6 +325,43 @@ public class GetDashboardSummaryUseCase {
       String description, String severity, String time) {
     return DashboardSummaryResponse.AdminActivity.builder().id(id).title(title)
         .description(description).severity(severity).time(time).build();
+  }
+
+  private List<DashboardSummaryResponse.AdminActivity> activityFeed (ActivityScope scope) {
+    return activityLogRepository.findByScopeOrderByCreatedAtDesc(scope, PageRequest.of(0, 8))
+        .stream().map(this::activityFromLog).toList();
+  }
+
+  private DashboardSummaryResponse.AdminActivity activityFromLog (ActivityLogEntity log) {
+    String title = log.getActorName() == null || log.getActorName().isBlank() ? log.getAction()
+        : log.getActorName() + " • " + log.getAction();
+    return activity(String.valueOf(log.getId()), title, log.getDescription(),
+        log.getSeverity().name().toLowerCase(), relativeTime(log.getCreatedAt()));
+  }
+
+  private String relativeTime (LocalDateTime createdAt) {
+    if (createdAt == null) {
+      return "mới";
+    }
+    long minutes = java.time.Duration.between(createdAt, LocalDateTime.now()).toMinutes();
+    if (minutes < 1) {
+      return "vừa xong";
+    }
+    if (minutes < 60) {
+      return minutes + " phút trước";
+    }
+    long hours = minutes / 60;
+    if (hours < 24) {
+      return hours + " giờ trước";
+    }
+    return (hours / 24) + " ngày trước";
+  }
+
+  private DashboardSummaryResponse.AdminServerPerformance performance (String label, String color,
+      int currentValue, String unit) {
+    return DashboardSummaryResponse.AdminServerPerformance.builder().label(label).color(color)
+        .data(generatePerformanceSeries(currentValue)).value(currentValue + unit).unit(unit)
+        .build();
   }
 
   private String compact (long value) {

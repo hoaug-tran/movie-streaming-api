@@ -1,0 +1,21 @@
+CREATE TABLE IF NOT EXISTS activity_logs (
+  id BIGINT AUTO_INCREMENT PRIMARY KEY,
+  scope VARCHAR(20) NOT NULL,
+  actor_id BIGINT NULL,
+  actor_name VARCHAR(255) NULL,
+  action VARCHAR(100) NOT NULL,
+  target_type VARCHAR(100) NULL,
+  target_id VARCHAR(100) NULL,
+  target_label VARCHAR(255) NULL,
+  description VARCHAR(1000) NOT NULL,
+  severity VARCHAR(20) NOT NULL DEFAULT 'INFO',
+  metadata JSON NULL,
+  ip_address VARCHAR(64) NULL,
+  user_agent VARCHAR(500) NULL,
+  created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  INDEX idx_activity_logs_scope_created_at (scope, created_at),
+  INDEX idx_activity_logs_actor_created_at (actor_id, created_at),
+  INDEX idx_activity_logs_target (target_type, target_id),
+  INDEX idx_activity_logs_action_created_at (action, created_at)
+);

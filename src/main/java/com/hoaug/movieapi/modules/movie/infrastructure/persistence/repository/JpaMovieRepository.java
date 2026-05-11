@@ -89,8 +89,11 @@ public interface JpaMovieRepository extends JpaRepository<MovieEntity, Long> {
   @Query("SELECT m FROM MovieEntity m WHERE m.movieStatus = 'PUBLISHED' AND m.movieType = 'SERIES' ORDER BY m.viewCount DESC")
   List<MovieEntity> findTopSeriesMovies (Pageable pageable);
 
-  @Query(value = "SELECT m.* FROM movies m WHERE m.movie_status = 'PUBLISHED' ORDER BY (m.view_count + m.favorite_count + (m.total_reviews * 8) + (SELECT COUNT(*) * 4 FROM comments c WHERE c.movie_id = m.id)) DESC", nativeQuery = true)
+  @Query(value = "SELECT m.* FROM movies m WHERE m.movie_status = 'PUBLISHED' ORDER BY (COALESCE(m.total_reviews, 0) + (SELECT COUNT(*) FROM comments c WHERE c.movie_id = m.id AND c.status = 'VISIBLE')) DESC, COALESCE(m.total_reviews, 0) DESC, (SELECT COUNT(*) FROM comments c WHERE c.movie_id = m.id AND c.status = 'VISIBLE') DESC", nativeQuery = true)
   List<MovieEntity> findMostInteractedMovies (Pageable pageable);
+
+  @Query(value = "SELECT COUNT(*) FROM comments c WHERE c.movie_id = :movieId AND c.status = 'VISIBLE'", nativeQuery = true)
+  long countVisibleCommentsByMovieId (@Param("movieId") Long movieId);
 
   long countByMovieStatus (MovieStatus movieStatus);
 
