@@ -17,11 +17,17 @@ public class HttpLoggingFilter extends OncePerRequestFilter {
 
   private static final Logger logger = LoggerFactory.getLogger(HttpLoggingFilter.class);
 
+  public static volatile long lastResponseTime = 0;
+  public static volatile long totalRequests = 0;
+  public static volatile long activeRequests = 0;
+
   @Override
   protected void doFilterInternal (HttpServletRequest request, HttpServletResponse response,
       FilterChain filterChain) throws ServletException, IOException {
 
     long startTime = System.currentTimeMillis();
+    activeRequests++;
+    totalRequests++;
 
     try {
       logger.info("→ {} {} | IP: {}", request.getMethod(), request.getRequestURI(),
@@ -30,6 +36,7 @@ public class HttpLoggingFilter extends OncePerRequestFilter {
       filterChain.doFilter(request, response);
 
       long duration = System.currentTimeMillis() - startTime;
+      lastResponseTime = duration;
       if (response.getStatus() >= 400) {
         logger.warn("← {} {} | Status: {} | Time: {}ms", request.getMethod(),
             request.getRequestURI(), response.getStatus(), duration);
@@ -39,9 +46,12 @@ public class HttpLoggingFilter extends OncePerRequestFilter {
       }
     } catch (Exception e) {
       long duration = System.currentTimeMillis() - startTime;
+      lastResponseTime = duration;
       logger.error("✗ {} {} | TIME: {}ms | ERROR: {}", request.getMethod(), request.getRequestURI(),
           duration, e.getMessage());
       throw e;
+    } finally {
+      activeRequests--;
     }
   }
 
