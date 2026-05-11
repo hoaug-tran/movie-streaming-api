@@ -4,6 +4,7 @@ import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
+import org.springframework.http.ResponseCookie;
 import org.springframework.stereotype.Component;
 
 import com.hoaug.movieapi.modules.auth.application.dto.response.AuthResponse;
@@ -12,13 +13,11 @@ import com.hoaug.movieapi.modules.auth.domain.repository.RefreshTokenRepository;
 import com.hoaug.movieapi.modules.auth.domain.service.TokenService;
 import com.hoaug.movieapi.modules.user.domain.model.User;
 
-import jakarta.servlet.http.Cookie;
-import jakarta.servlet.http.HttpServletRequest;
 
 @Component
 public class TrustedDeviceUseCase {
   private static final String COOKIE_NAME = "trusted_device";
-  private static final int COOKIE_MAX_AGE = (int) Duration.ofDays(90).toSeconds();
+  private static final Duration COOKIE_MAX_AGE = Duration.ofDays(90);
 
   private final RefreshTokenRepository refreshTokenRepository;
   private final TokenService tokenService;
@@ -29,9 +28,8 @@ public class TrustedDeviceUseCase {
     this.tokenService = tokenService;
   }
 
-  public boolean isTrusted (Long userId, HttpServletRequest httpRequest) {
-    String token = extractDeviceCookie(httpRequest);
-    if (token == null) {
+  public boolean isTrusted (Long userId, String token) {
+    if (token == null || token.isBlank()) {
       return false;
     }
     return refreshTokenRepository.findByToken(token)
@@ -40,7 +38,7 @@ public class TrustedDeviceUseCase {
         .orElse(false);
   }
 
-  public Cookie trust (Long userId) {
+  public ResponseCookie trust (Long userId) {
     String deviceToken = UUID.randomUUID().toString() + UUID.randomUUID().toString();
     LocalDateTime now = LocalDateTime.now();
 
@@ -54,8 +52,7 @@ public class TrustedDeviceUseCase {
     return buildDeviceCookie(deviceToken);
   }
 
-  public AuthResponse completeLogin (User user, boolean rememberMe,
-      HttpServletRequest httpRequest) {
+  public AuthResponse completeLogin (User user) {
     LocalDateTime now = LocalDateTime.now();
 
     String accessToken = tokenService.generateAccessToken(user.getUsername());
@@ -80,24 +77,13 @@ public class TrustedDeviceUseCase {
     return response;
   }
 
-  public Cookie buildDeviceCookie (String deviceToken) {
-    Cookie cookie = new Cookie(COOKIE_NAME, deviceToken);
-    cookie.setHttpOnly(true);
-    cookie.setSecure(false);
-    cookie.setPath("/");
-    cookie.setMaxAge(COOKIE_MAX_AGE);
-    return cookie;
-  }
-
-  private String extractDeviceCookie (HttpServletRequest httpRequest) {
-    if (httpRequest.getCookies() == null) {
-      return null;
-    }
-    for (Cookie cookie : httpRequest.getCookies()) {
-      if (COOKIE_NAME.equals(cookie.getName())) {
-        return cookie.getValue();
-      }
-    }
-    return null;
+  public ResponseCookie buildDeviceCookie (String deviceToken) {
+    return ResponseCookie.from(COOKIE_NAME, deviceToken)
+        .httpOnly(true)
+        .secure(false)
+        .sameSite("Lax")
+        .path("/")
+        .maxAge(COOKIE_MAX_AGE)
+        .build();
   }
 }

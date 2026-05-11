@@ -2,6 +2,7 @@ package com.hoaug.movieapi.modules.auth.application.usecase;
 
 import java.time.LocalDateTime;
 
+import org.springframework.http.ResponseCookie;
 import org.springframework.stereotype.Component;
 
 import com.hoaug.movieapi.common.enums.ErrorCode;
@@ -17,8 +18,6 @@ import com.hoaug.movieapi.modules.auth.domain.repository.RefreshTokenRepository;
 import com.hoaug.movieapi.modules.auth.domain.service.TokenService;
 import com.hoaug.movieapi.modules.user.domain.model.User;
 
-import jakarta.servlet.http.Cookie;
-import jakarta.servlet.http.HttpServletRequest;
 
 @Component
 public class VerifyLoginOtpUseCase {
@@ -28,7 +27,7 @@ public class VerifyLoginOtpUseCase {
   private final TokenService tokenService;
   private final TrustedDeviceUseCase trustedDeviceUseCase;
 
-  public record Result(AuthResponse authResponse, Cookie trustedDeviceCookie) {
+  public record Result(AuthResponse authResponse, ResponseCookie trustedDeviceCookie) {
   }
 
   public VerifyLoginOtpUseCase(AuthOtpService authOtpService,
@@ -41,7 +40,7 @@ public class VerifyLoginOtpUseCase {
     this.trustedDeviceUseCase = trustedDeviceUseCase;
   }
 
-  public Result execute (VerifyOtpRequest request, HttpServletRequest httpRequest) {
+  public Result execute (VerifyOtpRequest request) {
     AuthOtpChallenge challenge = authOtpService.verify(AuthOtpPurpose.LOGIN,
         request.getChallengeToken(), request.getOtp());
 
@@ -60,7 +59,7 @@ public class VerifyLoginOtpUseCase {
     refreshToken.setCreatedAt(now);
     refreshTokenRepository.save(refreshToken);
 
-    Cookie trustedDeviceCookie = request.isRememberMe() ? trustedDeviceUseCase.trust(user.getId()) : null;
+    ResponseCookie trustedDeviceCookie = request.isRememberMe() ? trustedDeviceUseCase.trust(user.getId()) : null;
 
     AuthResponse response = new AuthResponse();
     response.setAccessToken(accessToken);

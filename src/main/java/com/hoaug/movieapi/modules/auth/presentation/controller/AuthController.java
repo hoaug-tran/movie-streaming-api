@@ -92,7 +92,8 @@ public class AuthController {
   @PostMapping("/login")
   public ResponseEntity<OtpChallengeResponse> login (@Valid @RequestBody LoginRequest request,
       HttpServletRequest httpRequest, HttpServletResponse response) {
-    LoginResult result = loginUseCase.execute(request, httpRequest);
+    String trustedDeviceToken = CookieUtil.getCookieValue(httpRequest, "trusted_device");
+    LoginResult result = loginUseCase.execute(request, trustedDeviceToken);
     if (result.isDirectAuth()) {
       CookieUtil.setAuthCookies(response, result.getAuthResponse());
       OtpChallengeResponse bypass = new OtpChallengeResponse();
@@ -106,10 +107,10 @@ public class AuthController {
   @PostMapping("/login/verify-otp")
   public ResponseEntity<AuthResponse> verifyLoginOtp (@Valid @RequestBody VerifyOtpRequest request,
       HttpServletRequest httpRequest, HttpServletResponse response) {
-    VerifyLoginOtpUseCase.Result result = verifyLoginOtpUseCase.execute(request, httpRequest);
+    VerifyLoginOtpUseCase.Result result = verifyLoginOtpUseCase.execute(request);
     CookieUtil.setAuthCookies(response, result.authResponse());
     if (result.trustedDeviceCookie() != null) {
-      response.addCookie(result.trustedDeviceCookie());
+      CookieUtil.addCookie(response, result.trustedDeviceCookie());
     }
     return ResponseUtil.ok(result.authResponse());
   }
@@ -140,16 +141,9 @@ public class AuthController {
       @RequestBody(required = false) RefreshTokenRequest request,
       HttpServletRequest httpRequest, HttpServletResponse response) {
 
-    String tokenToRevoke = null;
-    if (request != null && request.getRefreshToken() != null) {
-      tokenToRevoke = request.getRefreshToken();
-    } else if (httpRequest.getCookies() != null) {
-      for (jakarta.servlet.http.Cookie cookie : httpRequest.getCookies()) {
-        if ("refreshToken".equals(cookie.getName())) {
-          tokenToRevoke = cookie.getValue();
-          break;
-        }
-      }
+    String tokenToRevoke = request != null ? request.getRefreshToken() : null;
+    if (tokenToRevoke == null) {
+      tokenToRevoke = CookieUtil.getCookieValue(httpRequest, "refreshToken");
     }
 
     if (tokenToRevoke != null) {

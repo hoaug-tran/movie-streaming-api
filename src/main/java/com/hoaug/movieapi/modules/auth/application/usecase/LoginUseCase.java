@@ -18,8 +18,6 @@ import com.hoaug.movieapi.modules.auth.domain.repository.AuthUserRepository;
 import com.hoaug.movieapi.modules.user.domain.model.AccountStatus;
 import com.hoaug.movieapi.modules.user.domain.model.User;
 
-import jakarta.servlet.http.HttpServletRequest;
-
 @Component
 public class LoginUseCase {
   private final AuthUserRepository authUserRepository;
@@ -38,7 +36,7 @@ public class LoginUseCase {
     this.trustedDeviceUseCase = trustedDeviceUseCase;
   }
 
-  public LoginResult execute (LoginRequest request, HttpServletRequest httpRequest) {
+  public LoginResult execute (LoginRequest request, String trustedDeviceToken) {
     String userIdentifier = request.getUsernameOrEmail();
 
     if (bruteForceProtection.isLocked(userIdentifier)) {
@@ -62,9 +60,9 @@ public class LoginUseCase {
 
     bruteForceProtection.recordSuccess(userIdentifier);
 
-    if (request.isRememberMe() && trustedDeviceUseCase.isTrusted(user.getId(), httpRequest)) {
-      AuthResponse directAuth = trustedDeviceUseCase.completeLogin(user, request.isRememberMe(),
-          httpRequest);
+    if (request.isRememberMe()
+        && trustedDeviceUseCase.isTrusted(user.getId(), trustedDeviceToken)) {
+      AuthResponse directAuth = trustedDeviceUseCase.completeLogin(user);
       return new LoginResult(directAuth, null);
     }
 
