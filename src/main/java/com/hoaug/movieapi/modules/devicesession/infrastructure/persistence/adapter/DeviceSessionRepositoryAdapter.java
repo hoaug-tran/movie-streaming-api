@@ -49,6 +49,15 @@ public class DeviceSessionRepositoryAdapter implements DeviceSessionRepository {
   }
 
   @Override
+  public Optional<DeviceSession> findActiveByUserIdAndDeviceFingerprint (Long userId,
+      String deviceName, String deviceType, String userAgent) {
+    return jpaDeviceSessionRepository
+        .findFirstByUserIdAndDeviceNameAndDeviceTypeAndUserAgentAndIsRevokedFalseOrderByLastActiveAtDesc(
+            userId, deviceName, deviceType, userAgent)
+        .map(this::toDomain);
+  }
+
+  @Override
   public void deleteExpiredSessions (LocalDateTime dateTime) {
     jpaDeviceSessionRepository.deleteByLastActiveAtBefore(dateTime);
   }

@@ -2,6 +2,7 @@ package com.hoaug.movieapi.modules.devicesession.infrastructure.persistence.repo
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
@@ -14,6 +15,9 @@ public interface JpaDeviceSessionRepository extends JpaRepository<DeviceSessionE
   List<DeviceSessionEntity> findByUserIdAndIsRevokedFalseOrderByLastActiveAtDesc (Long userId);
 
   Long countByUserIdAndIsRevokedFalse (Long userId);
+
+  Optional<DeviceSessionEntity> findFirstByUserIdAndDeviceNameAndDeviceTypeAndUserAgentAndIsRevokedFalseOrderByLastActiveAtDesc (
+      Long userId, String deviceName, String deviceType, String userAgent);
 
   void deleteByLastActiveAtBefore (LocalDateTime dateTime);
 }

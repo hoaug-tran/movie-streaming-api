@@ -38,6 +38,15 @@ public class CreateDeviceSessionUseCase {
         .flatMap(sub -> subscriptionPlanRepository.findById(sub.getPlanId()))
         .map(plan -> plan.getMaxDevices()).orElse(1);
 
+    var existingSession = deviceSessionRepository.findActiveByUserIdAndDeviceFingerprint(
+        userId, request.getDeviceName(), request.getDeviceType(), request.getUserAgent());
+    if (existingSession.isPresent()) {
+      DeviceSession deviceSession = existingSession.get();
+      deviceSession.setIpAddress(request.getIpAddress());
+      deviceSession.setLastActiveAt(LocalDateTime.now());
+      return deviceSessionMapper.toResponse(deviceSessionRepository.save(deviceSession));
+    }
+
     var activeSessions =
         deviceSessionRepository.findByUserIdAndIsRevokedFalseOrderByLastActiveAtDesc(userId);
 

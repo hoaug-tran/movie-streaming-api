@@ -90,16 +90,13 @@ public class AuthController {
   }
 
   @PostMapping("/login")
-  public ResponseEntity<OtpChallengeResponse> login (@Valid @RequestBody LoginRequest request,
+  public ResponseEntity<?> login (@Valid @RequestBody LoginRequest request,
       HttpServletRequest httpRequest, HttpServletResponse response) {
     String trustedDeviceToken = CookieUtil.getCookieValue(httpRequest, "trusted_device");
     LoginResult result = loginUseCase.execute(request, trustedDeviceToken);
     if (result.isDirectAuth()) {
       CookieUtil.setAuthCookies(response, result.getAuthResponse());
-      OtpChallengeResponse bypass = new OtpChallengeResponse();
-      bypass.setOtpRequired(false);
-      bypass.setMessage("Đăng nhập thành công");
-      return ResponseUtil.ok(bypass);
+      return ResponseUtil.ok(result.getAuthResponse());
     }
     return ResponseUtil.ok(result.getOtpChallenge());
   }

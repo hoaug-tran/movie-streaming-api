@@ -18,5 +18,8 @@ public interface DeviceSessionRepository {
 
   Long countByUserIdAndIsRevokedFalse (Long userId);
 
+  Optional<DeviceSession> findActiveByUserIdAndDeviceFingerprint (Long userId, String deviceName,
+      String deviceType, String userAgent);
+
   void deleteExpiredSessions (LocalDateTime dateTime);
 }
