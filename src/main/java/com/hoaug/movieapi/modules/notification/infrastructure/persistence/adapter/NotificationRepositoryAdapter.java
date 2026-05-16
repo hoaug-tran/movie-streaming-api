@@ -20,29 +20,35 @@ public class NotificationRepositoryAdapter implements NotificationRepository {
   }
 
   @Override
-  public Optional<Notification> findById (Long id) {
+  public Optional<Notification> findById(Long id) {
     return jpaNotificationRepository.findById(id).map(this::toDomain);
   }
 
   @Override
-  public Notification save (Notification notification) {
+  public Notification save(Notification notification) {
     NotificationEntity savedEntity = jpaNotificationRepository.save(toEntity(notification));
     return toDomain(savedEntity);
   }
 
   @Override
-  public List<Notification> findByUserIdOrderByCreatedAtDesc (Long userId) {
+  public List<Notification> findAll() {
+    return jpaNotificationRepository.findAllByOrderByCreatedAtDesc().stream()
+        .map(this::toDomain).toList();
+  }
+
+  @Override
+  public List<Notification> findByUserIdOrderByCreatedAtDesc(Long userId) {
     return jpaNotificationRepository.findByUserIdOrderByCreatedAtDesc(userId).stream()
         .map(this::toDomain).toList();
   }
 
   @Override
-  public Long countByUserIdAndIsReadFalse (Long userId) {
+  public Long countByUserIdAndIsReadFalse(Long userId) {
     return jpaNotificationRepository.countByUserIdAndIsReadFalse(userId);
   }
 
   @Override
-  public void markAllAsRead (Long userId) {
+  public void markAllAsRead(Long userId) {
     List<NotificationEntity> notifications = jpaNotificationRepository
         .findByUserIdOrderByCreatedAtDesc(userId);
     notifications.forEach(n -> n.setIsRead(true));
@@ -50,11 +56,24 @@ public class NotificationRepositoryAdapter implements NotificationRepository {
   }
 
   @Override
-  public void deleteById (Long id) {
+  public void deleteById(Long id) {
     jpaNotificationRepository.deleteById(id);
   }
 
-  private Notification toDomain (NotificationEntity entity) {
+  @Override
+  public List<Long> findAllActiveUserIds() {
+    return jpaNotificationRepository.findAllActiveUserIds();
+  }
+
+  @Override
+  public boolean existsByUserIdAndTypeAndCreatedAtAfter(Long userId, String type,
+      java.time.LocalDateTime after) {
+    return jpaNotificationRepository.existsByUserIdAndTypeAndCreatedAtAfter(userId,
+        com.hoaug.movieapi.modules.notification.domain.model.NotificationType.valueOf(type),
+        after);
+  }
+
+  private Notification toDomain(NotificationEntity entity) {
     Notification notification = new Notification();
     notification.setId(entity.getId());
     notification.setUserId(entity.getUserId());
@@ -62,11 +81,13 @@ public class NotificationRepositoryAdapter implements NotificationRepository {
     notification.setContent(entity.getContent());
     notification.setType(entity.getType());
     notification.setIsRead(entity.getIsRead());
+    notification.setActionUrl(entity.getActionUrl());
+    notification.setReferenceId(entity.getReferenceId());
     notification.setCreatedAt(entity.getCreatedAt());
     return notification;
   }
 
-  private NotificationEntity toEntity (Notification notification) {
+  private NotificationEntity toEntity(Notification notification) {
     NotificationEntity entity = new NotificationEntity();
     entity.setId(notification.getId());
     entity.setUserId(notification.getUserId());
@@ -74,6 +95,8 @@ public class NotificationRepositoryAdapter implements NotificationRepository {
     entity.setContent(notification.getContent());
     entity.setType(notification.getType());
     entity.setIsRead(notification.getIsRead());
+    entity.setActionUrl(notification.getActionUrl());
+    entity.setReferenceId(notification.getReferenceId());
     entity.setCreatedAt(notification.getCreatedAt());
     return entity;
   }

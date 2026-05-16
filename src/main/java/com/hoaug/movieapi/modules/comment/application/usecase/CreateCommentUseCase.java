@@ -5,6 +5,8 @@ import java.time.LocalDateTime;
 import org.springframework.stereotype.Component;
 
 import com.hoaug.movieapi.common.enums.ErrorCode;
+import com.hoaug.movieapi.common.event.CommentCreatedEvent;
+import com.hoaug.movieapi.common.event.EventPublisher;
 import com.hoaug.movieapi.common.exception.AppException;
 import com.hoaug.movieapi.modules.comment.application.dto.request.CreateCommentRequest;
 import com.hoaug.movieapi.modules.comment.application.dto.response.CommentResponse;
@@ -13,6 +15,7 @@ import com.hoaug.movieapi.modules.comment.application.validator.CommentSpamValid
 import com.hoaug.movieapi.modules.comment.domain.model.Comment;
 import com.hoaug.movieapi.modules.comment.domain.model.CommentStatus;
 import com.hoaug.movieapi.modules.comment.domain.repository.CommentRepository;
+import com.hoaug.movieapi.modules.movie.domain.model.Movie;
 import com.hoaug.movieapi.modules.movie.domain.repository.EpisodeRepository;
 import com.hoaug.movieapi.modules.movie.domain.repository.MovieRepository;
 
@@ -26,23 +29,25 @@ public class CreateCommentUseCase {
   private final EpisodeRepository episodeRepository;
   private final CommentMapper commentMapper;
   private final CommentSpamValidator spamValidator;
+  private final EventPublisher eventPublisher;
 
   public CreateCommentUseCase(CommentRepository commentRepository, MovieRepository movieRepository,
       EpisodeRepository episodeRepository, CommentMapper commentMapper,
-      CommentSpamValidator spamValidator) {
+      CommentSpamValidator spamValidator, EventPublisher eventPublisher) {
     this.commentRepository = commentRepository;
     this.movieRepository = movieRepository;
     this.episodeRepository = episodeRepository;
     this.commentMapper = commentMapper;
     this.spamValidator = spamValidator;
+    this.eventPublisher = eventPublisher;
   }
 
   @Transactional
-  public CommentResponse execute (Long userId, CreateCommentRequest request) {
+  public CommentResponse execute(Long userId, CreateCommentRequest request) {
     spamValidator.validate(userId, request.getContent());
 
-    var movie = movieRepository.findById(request.getMovieId())
-        .orElseThrow( () -> new AppException(ErrorCode.MOVIE_NOT_FOUND));
+    Movie movie = movieRepository.findById(request.getMovieId())
+        .orElseThrow(() -> new AppException(ErrorCode.MOVIE_NOT_FOUND));
 
     if (Boolean.TRUE.equals(movie.getCommentsLocked())) {
       throw new AppException(ErrorCode.MOVIE_COMMENTS_LOCKED);
@@ -51,19 +56,19 @@ public class CreateCommentUseCase {
     if (request.getEpisodeId() != null) {
       boolean episodeBelongsToMovie = episodeRepository.findPublishedByMovieId(request.getMovieId())
           .stream().anyMatch(episode -> episode.getId().equals(request.getEpisodeId()));
-
       if (!episodeBelongsToMovie) {
         throw new AppException(ErrorCode.EPISODE_NOT_FOUND);
       }
     }
 
+    Long parentCommentUserId = null;
     if (request.getParentCommentId() != null) {
       Comment parentComment = commentRepository.findById(request.getParentCommentId())
-          .orElseThrow( () -> new AppException(ErrorCode.COMMENT_NOT_FOUND));
-
+          .orElseThrow(() -> new AppException(ErrorCode.COMMENT_NOT_FOUND));
       if (!parentComment.getMovieId().equals(request.getMovieId())) {
         throw new AppException(ErrorCode.INVALID_COMMENT_PARENT);
       }
+      parentCommentUserId = parentComment.getUserId();
     }
 
     Comment comment = new Comment();
@@ -82,6 +87,14 @@ public class CreateCommentUseCase {
 
     if (request.getParentCommentId() != null) {
       commentRepository.increaseReplyCount(request.getParentCommentId());
+      eventPublisher.publish(new CommentCreatedEvent(
+          savedComment.getId(),
+          request.getParentCommentId(),
+          parentCommentUserId,
+          movie.getId(),
+          movie.getSlug(),
+          request.getEpisodeId(),
+          userId));
     }
 
     return commentMapper.toResponse(savedComment);

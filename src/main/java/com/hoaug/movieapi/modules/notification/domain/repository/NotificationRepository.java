@@ -1,5 +1,6 @@
 package com.hoaug.movieapi.modules.notification.domain.repository;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -7,15 +8,21 @@ import com.hoaug.movieapi.modules.notification.domain.model.Notification;
 
 public interface NotificationRepository {
 
-  Optional<Notification> findById (Long id);
+  Optional<Notification> findById(Long id);
 
-  Notification save (Notification notification);
+  Notification save(Notification notification);
 
-  List<Notification> findByUserIdOrderByCreatedAtDesc (Long userId);
+  List<Notification> findAll();
 
-  Long countByUserIdAndIsReadFalse (Long userId);
+  List<Notification> findByUserIdOrderByCreatedAtDesc(Long userId);
 
-  void markAllAsRead (Long userId);
+  Long countByUserIdAndIsReadFalse(Long userId);
 
-  void deleteById (Long id);
+  void markAllAsRead(Long userId);
+
+  void deleteById(Long id);
+
+  List<Long> findAllActiveUserIds();
+
+  boolean existsByUserIdAndTypeAndCreatedAtAfter(Long userId, String type, LocalDateTime after);
 }

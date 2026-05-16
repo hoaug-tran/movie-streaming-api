@@ -72,7 +72,7 @@ NEXT_PUBLIC_API_BASE_URL=http://localhost:8080/api/v1
 Không viết trực tiếp dạng sau trong component:
 
 ```typescript
-fetch("http://localhost:8080/api/v1/...")
+fetch("http://localhost:8080/api/v1/...");
 ```
 
 Lý do:
@@ -139,11 +139,11 @@ Lưu trạng thái thuê bao của người dùng:
 
 Các trạng thái chính đang dùng:
 
-| Trạng thái | Ý nghĩa |
-| --- | --- |
-| `PENDING` | Đã tạo phiên thanh toán, chưa xác nhận thanh toán thành công |
-| `ACTIVE` | Gói đang có hiệu lực |
-| `EXPIRED` | Gói đã hết hiệu lực hoặc bị thay thế khi nâng cấp |
+| Trạng thái | Ý nghĩa                                                      |
+| ---------- | ------------------------------------------------------------ |
+| `PENDING`  | Đã tạo phiên thanh toán, chưa xác nhận thanh toán thành công |
+| `ACTIVE`   | Gói đang có hiệu lực                                         |
+| `EXPIRED`  | Gói đã hết hiệu lực hoặc bị thay thế khi nâng cấp            |
 
 ### 3.3. `payment_transactions`
 
@@ -162,11 +162,11 @@ Lưu giao dịch thanh toán:
 
 Các trạng thái chính đang dùng:
 
-| Trạng thái | Ý nghĩa |
-| --- | --- |
-| `PENDING` | Đã tạo payment link, chưa xác nhận thanh toán thành công |
-| `SUCCESS` | Đã xác nhận thanh toán thành công từ PayOS hoặc nguồn tin cậy phía server |
-| `FAILED` | Thanh toán thất bại, bị hủy hoặc được backend đánh dấu thất bại |
+| Trạng thái | Ý nghĩa                                                                   |
+| ---------- | ------------------------------------------------------------------------- |
+| `PENDING`  | Đã tạo payment link, chưa xác nhận thanh toán thành công                  |
+| `SUCCESS`  | Đã xác nhận thanh toán thành công từ PayOS hoặc nguồn tin cậy phía server |
+| `FAILED`   | Thanh toán thất bại, bị hủy hoặc được backend đánh dấu thất bại           |
 
 `payment_transactions.provider_transaction_id` là mã dùng để tra cứu với PayOS. Với PayOS, mã này cần là `orderCode` dạng số.
 
@@ -174,15 +174,15 @@ Các trạng thái chính đang dùng:
 
 Hiện tại không bắt buộc tạo bảng mới vì các nhu cầu cốt lõi đã được đáp ứng:
 
-| Nhu cầu | Bảng/trường đang đáp ứng |
-| --- | --- |
-| Biết user đang có gói nào | `user_subscriptions` |
-| Biết giao dịch đang chờ hay thành công | `payment_transactions.status` |
-| Biết số tiền thực thu | `payment_transactions.amount` |
-| Biết mã PayOS để tra cứu lại | `payment_transactions.provider_transaction_id` |
-| Audit proration | `payment_transactions.provider_response` |
-| Audit thời điểm thanh toán | `payment_transactions.paid_at` |
-| Tự động tìm giao dịch pending cũ | `payment_transactions.created_at` |
+| Nhu cầu                                | Bảng/trường đang đáp ứng                       |
+| -------------------------------------- | ---------------------------------------------- |
+| Biết user đang có gói nào              | `user_subscriptions`                           |
+| Biết giao dịch đang chờ hay thành công | `payment_transactions.status`                  |
+| Biết số tiền thực thu                  | `payment_transactions.amount`                  |
+| Biết mã PayOS để tra cứu lại           | `payment_transactions.provider_transaction_id` |
+| Audit proration                        | `payment_transactions.provider_response`       |
+| Audit thời điểm thanh toán             | `payment_transactions.paid_at`                 |
+| Tự động tìm giao dịch pending cũ       | `payment_transactions.created_at`              |
 
 Chỉ nên cân nhắc bảng mới trong tương lai nếu cần:
 
@@ -478,12 +478,12 @@ Backend thực hiện:
 
 Frontend hiển thị:
 
-| Backend trả về | UI nên hiển thị |
-| --- | --- |
-| `SUCCESS` | Thanh toán thành công, gói đã kích hoạt |
-| `PENDING` | Giao dịch đang chờ xác nhận, có nút kiểm tra lại |
-| `FAILED` | Thanh toán chưa hoàn tất hoặc thất bại, có nút quay lại bảng giá |
-| Lỗi mạng/backend | Không kết luận thất bại, hiển thị hướng dẫn thử lại |
+| Backend trả về   | UI nên hiển thị                                                  |
+| ---------------- | ---------------------------------------------------------------- |
+| `SUCCESS`        | Thanh toán thành công, gói đã kích hoạt                          |
+| `PENDING`        | Giao dịch đang chờ xác nhận, có nút kiểm tra lại                 |
+| `FAILED`         | Thanh toán chưa hoàn tất hoặc thất bại, có nút quay lại bảng giá |
+| Lỗi mạng/backend | Không kết luận thất bại, hiển thị hướng dẫn thử lại              |
 
 ### 9.3. Vì sao trang success không còn hiển thị 0 đồng?
 
@@ -886,9 +886,9 @@ Vì vậy, `payment_transactions.provider_transaction_id` phải lưu đúng gi�
 
 Cần phân biệt:
 
-| Loại mã | Mục đích |
-| --- | --- |
-| `ORDER_1_...` | Mã thân thiện nội bộ nếu cần hiển thị |
+| Loại mã           | Mục đích                                                              |
+| ----------------- | --------------------------------------------------------------------- |
+| `ORDER_1_...`     | Mã thân thiện nội bộ nếu cần hiển thị                                 |
 | `151777628551858` | Mã PayOS numeric dùng để tra cứu và lưu vào `provider_transaction_id` |
 
 Khuyến nghị kỹ thuật:
@@ -907,13 +907,13 @@ Nếu không thống nhất, có thể gặp lỗi `PAYMENT_TRANSACTION_NOT_FOUN
 
 Trang `/subscription/success` nên có các trạng thái UI tiếng Việt:
 
-| Trạng thái | Nội dung chính | Hành động |
-| --- | --- | --- |
-| Loading | `Đang xác minh thanh toán` | Không cho kết luận |
-| Success | `Thanh toán thành công` | Xem gói hiện tại, về trang chủ |
-| Pending | `Giao dịch đang chờ xác nhận` | Kiểm tra lại, về hồ sơ |
-| Failed | `Thanh toán chưa hoàn tất` | Quay lại bảng giá |
-| Error | `Chưa thể xác minh thanh toán` | Thử lại |
+| Trạng thái | Nội dung chính                 | Hành động                      |
+| ---------- | ------------------------------ | ------------------------------ |
+| Loading    | `Đang xác minh thanh toán`     | Không cho kết luận             |
+| Success    | `Thanh toán thành công`        | Xem gói hiện tại, về trang chủ |
+| Pending    | `Giao dịch đang chờ xác nhận`  | Kiểm tra lại, về hồ sơ         |
+| Failed     | `Thanh toán chưa hoàn tất`     | Quay lại bảng giá              |
+| Error      | `Chưa thể xác minh thanh toán` | Thử lại                        |
 
 ### 19.2. Hồ sơ cá nhân hoặc lịch sử thanh toán
 

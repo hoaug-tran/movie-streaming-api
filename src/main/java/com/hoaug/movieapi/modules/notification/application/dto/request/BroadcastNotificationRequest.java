@@ -3,15 +3,9 @@ package com.hoaug.movieapi.modules.notification.application.dto.request;
 import com.hoaug.movieapi.common.validator.ValidSafeString;
 
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.Size;
 
-public class CreateNotificationRequest {
-
-  @NotNull(message = "ID người dùng là bắt buộc")
-  @Positive(message = "ID người dùng phải là số dương")
-  private Long userId;
+public class BroadcastNotificationRequest {
 
   @NotBlank(message = "Tiêu đề thông báo là bắt buộc")
   @Size(min = 1, max = 255, message = "Tiêu đề phải từ 1 đến 255 ký tự")
@@ -30,16 +24,6 @@ public class CreateNotificationRequest {
 
   @Size(max = 500, message = "URL hành động không được vượt quá 500 ký tự")
   private String actionUrl;
-
-  private Long referenceId;
-
-  public Long getUserId() {
-    return userId;
-  }
-
-  public void setUserId(Long userId) {
-    this.userId = userId;
-  }
 
   public String getTitle() {
     return title;
@@ -71,13 +55,5 @@ public class CreateNotificationRequest {
 
   public void setActionUrl(String actionUrl) {
     this.actionUrl = actionUrl;
-  }
-
-  public Long getReferenceId() {
-    return referenceId;
-  }
-
-  public void setReferenceId(Long referenceId) {
-    this.referenceId = referenceId;
   }
 }

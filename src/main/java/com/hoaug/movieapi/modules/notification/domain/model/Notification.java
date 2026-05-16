@@ -10,61 +10,79 @@ public class Notification {
   private String content;
   private NotificationType type;
   private Boolean isRead;
+  private String actionUrl;
+  private Long referenceId;
   private LocalDateTime createdAt;
 
-  public Long getId () {
+  public Long getId() {
     return id;
   }
 
-  public void setId (Long id) {
+  public void setId(Long id) {
     this.id = id;
   }
 
-  public Long getUserId () {
+  public Long getUserId() {
     return userId;
   }
 
-  public void setUserId (Long userId) {
+  public void setUserId(Long userId) {
     this.userId = userId;
   }
 
-  public String getTitle () {
+  public String getTitle() {
     return title;
   }
 
-  public void setTitle (String title) {
+  public void setTitle(String title) {
     this.title = title;
   }
 
-  public String getContent () {
+  public String getContent() {
     return content;
   }
 
-  public void setContent (String content) {
+  public void setContent(String content) {
     this.content = content;
   }
 
-  public NotificationType getType () {
+  public NotificationType getType() {
     return type;
   }
 
-  public void setType (NotificationType type) {
+  public void setType(NotificationType type) {
     this.type = type;
   }
 
-  public Boolean getIsRead () {
+  public Boolean getIsRead() {
     return isRead;
   }
 
-  public void setIsRead (Boolean read) {
+  public void setIsRead(Boolean read) {
     isRead = read;
   }
 
-  public LocalDateTime getCreatedAt () {
+  public String getActionUrl() {
+    return actionUrl;
+  }
+
+  public void setActionUrl(String actionUrl) {
+    this.actionUrl = actionUrl;
+  }
+
+  public Long getReferenceId() {
+    return referenceId;
+  }
+
+  public void setReferenceId(Long referenceId) {
+    this.referenceId = referenceId;
+  }
+
+  public LocalDateTime getCreatedAt() {
     return createdAt;
   }
 
-  public void setCreatedAt (LocalDateTime createdAt) {
+  public void setCreatedAt(LocalDateTime createdAt) {
     this.createdAt = createdAt;
   }
 }
