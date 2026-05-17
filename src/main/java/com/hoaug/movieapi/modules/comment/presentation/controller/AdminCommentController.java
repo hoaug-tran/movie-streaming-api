@@ -30,7 +30,6 @@ import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("${api.prefix:/api/v1}/admin/comments")
-@PreAuthorize("hasRole('ADMIN')")
 public class AdminCommentController {
 
   private final CommentRepository commentRepository;
@@ -51,28 +50,33 @@ public class AdminCommentController {
   }
 
   @GetMapping("")
+  @PreAuthorize("hasAnyRole('ADMIN','MODERATOR')")
   public ResponseEntity<List<CommentResponse>> getAllComments () {
     return ResponseUtil.ok(commentRepository.findAll().stream().map(commentMapper::toResponse).toList());
   }
 
   @GetMapping("/movie/{movieId}")
+  @PreAuthorize("hasAnyRole('ADMIN','MODERATOR')")
   public ResponseEntity<List<CommentResponse>> getMovieComments (@PathVariable Long movieId) {
     return ResponseUtil.ok(getMovieCommentsUseCase.execute(movieId, null));
   }
 
   @PostMapping("")
+  @PreAuthorize("hasRole('ADMIN')")
   public ResponseEntity<CommentResponse> createComment (
       @Valid @RequestBody AdminCommentRequest request) {
     return ResponseUtil.created(adminCreateCommentUseCase.execute(request));
   }
 
   @PutMapping("/{id}")
+  @PreAuthorize("hasRole('ADMIN')")
   public ResponseEntity<CommentResponse> updateComment (@PathVariable Long id,
       @Valid @RequestBody AdminCommentRequest request) {
     return ResponseUtil.ok(adminUpdateCommentUseCase.execute(id, request));
   }
 
   @PutMapping("/{id}/status")
+  @PreAuthorize("hasAnyRole('ADMIN','MODERATOR')")
   public ResponseEntity<CommentResponse> updateCommentStatus (@PathVariable Long id,
       @RequestParam CommentStatus status) {
     var comment = commentRepository.findById(id)
@@ -83,6 +87,7 @@ public class AdminCommentController {
   }
 
   @DeleteMapping("/{id}")
+  @PreAuthorize("hasAnyRole('ADMIN','MODERATOR')")
   public ResponseEntity<Void> deleteComment (@PathVariable Long id) {
     var comment = commentRepository.findById(id)
         .orElseThrow( () -> new AppException(ErrorCode.COMMENT_NOT_FOUND));

@@ -70,6 +70,8 @@ public class MovieMapper {
     response.setCreatedAt(movie.getCreatedAt());
     response.setUpdatedAt(movie.getUpdatedAt());
     response.setPublishedAt(movie.getPublishedAt());
+    response.setCommentsLocked(Boolean.TRUE.equals(movie.getCommentsLocked()));
+    response.setReviewsLocked(Boolean.TRUE.equals(movie.getReviewsLocked()));
     response.setCategories(categories);
     return response;
   }

@@ -13,7 +13,7 @@ public class CreateEpisodeRequest {
   @NotNull
   private Integer episodeNumber;
 
-  // Optional — set by upload flow; defaults to "pending" if omitted
+  // Optional - set by upload flow; defaults to "pending" if omitted
   private String videoUrl;
 
   private String thumbnailUrl;
@@ -27,24 +27,59 @@ public class CreateEpisodeRequest {
   @NotNull
   private EpisodeStatus status;
 
-  public String getTitle () { return title; }
-  public void setTitle (String title) { this.title = title; }
+  public String getTitle () {
+    return title;
+  }
 
-  public Integer getEpisodeNumber () { return episodeNumber; }
-  public void setEpisodeNumber (Integer episodeNumber) { this.episodeNumber = episodeNumber; }
+  public void setTitle (String title) {
+    this.title = title;
+  }
 
-  public String getVideoUrl () { return videoUrl; }
-  public void setVideoUrl (String videoUrl) { this.videoUrl = videoUrl; }
+  public Integer getEpisodeNumber () {
+    return episodeNumber;
+  }
 
-  public String getThumbnailUrl () { return thumbnailUrl; }
-  public void setThumbnailUrl (String thumbnailUrl) { this.thumbnailUrl = thumbnailUrl; }
+  public void setEpisodeNumber (Integer episodeNumber) {
+    this.episodeNumber = episodeNumber;
+  }
 
-  public Integer getDurationSeconds () { return durationSeconds; }
-  public void setDurationSeconds (Integer durationSeconds) { this.durationSeconds = durationSeconds; }
+  public String getVideoUrl () {
+    return videoUrl;
+  }
 
-  public Boolean getIsFreePreview () { return isFreePreview; }
-  public void setIsFreePreview (Boolean freePreview) { isFreePreview = freePreview; }
+  public void setVideoUrl (String videoUrl) {
+    this.videoUrl = videoUrl;
+  }
 
-  public EpisodeStatus getStatus () { return status; }
-  public void setStatus (EpisodeStatus status) { this.status = status; }
+  public String getThumbnailUrl () {
+    return thumbnailUrl;
+  }
+
+  public void setThumbnailUrl (String thumbnailUrl) {
+    this.thumbnailUrl = thumbnailUrl;
+  }
+
+  public Integer getDurationSeconds () {
+    return durationSeconds;
+  }
+
+  public void setDurationSeconds (Integer durationSeconds) {
+    this.durationSeconds = durationSeconds;
+  }
+
+  public Boolean getIsFreePreview () {
+    return isFreePreview;
+  }
+
+  public void setIsFreePreview (Boolean freePreview) {
+    isFreePreview = freePreview;
+  }
+
+  public EpisodeStatus getStatus () {
+    return status;
+  }
+
+  public void setStatus (EpisodeStatus status) {
+    this.status = status;
+  }
 }

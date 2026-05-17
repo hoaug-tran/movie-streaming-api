@@ -29,7 +29,7 @@ public class HlsTranscodeService {
 
   @PreDestroy
   public void onShutdown () {
-    log.info("[FFmpeg] Shutting down — killing {} active process(es)", activeProcesses.size());
+    log.info("[FFmpeg] Shutting down - killing {} active process(es)", activeProcesses.size());
     for (Process p : activeProcesses) {
       if (p.isAlive()) {
         p.destroyForcibly();
@@ -84,7 +84,7 @@ public class HlsTranscodeService {
     int targetHeight = QUALITY_SETTINGS.get(quality)[0];
     int sourceHeight = probeVideoHeight(request.sourcePath());
     if (sourceHeight > 0 && sourceHeight < targetHeight) {
-      log.info("[Transcode] Skipping {} — source height {}px < target {}px", quality, sourceHeight,
+      log.info("[Transcode] Skipping {} - source height {}px < target {}px", quality, sourceHeight,
           targetHeight);
       throw new AppException(ErrorCode.BAD_REQUEST);
     }

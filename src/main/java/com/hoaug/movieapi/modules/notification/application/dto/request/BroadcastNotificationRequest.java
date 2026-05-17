@@ -25,6 +25,9 @@ public class BroadcastNotificationRequest {
   @Size(max = 500, message = "URL hành động không được vượt quá 500 ký tự")
   private String actionUrl;
 
+  private boolean sendInApp = true;
+  private boolean sendEmail = false;
+
   public String getTitle() {
     return title;
   }
@@ -55,5 +58,21 @@ public class BroadcastNotificationRequest {
 
   public void setActionUrl(String actionUrl) {
     this.actionUrl = actionUrl;
+  }
+
+  public boolean isSendInApp() {
+    return sendInApp;
+  }
+
+  public void setSendInApp(boolean sendInApp) {
+    this.sendInApp = sendInApp;
+  }
+
+  public boolean isSendEmail() {
+    return sendEmail;
+  }
+
+  public void setSendEmail(boolean sendEmail) {
+    this.sendEmail = sendEmail;
   }
 }

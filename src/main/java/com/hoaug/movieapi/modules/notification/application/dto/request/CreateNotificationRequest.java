@@ -32,6 +32,8 @@ public class CreateNotificationRequest {
   private String actionUrl;
 
   private Long referenceId;
+  private boolean sendInApp = true;
+  private boolean sendEmail = false;
 
   public Long getUserId() {
     return userId;
@@ -79,5 +81,21 @@ public class CreateNotificationRequest {
 
   public void setReferenceId(Long referenceId) {
     this.referenceId = referenceId;
+  }
+
+  public boolean isSendInApp() {
+    return sendInApp;
+  }
+
+  public void setSendInApp(boolean sendInApp) {
+    this.sendInApp = sendInApp;
+  }
+
+  public boolean isSendEmail() {
+    return sendEmail;
+  }
+
+  public void setSendEmail(boolean sendEmail) {
+    this.sendEmail = sendEmail;
   }
 }

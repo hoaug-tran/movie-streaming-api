@@ -14,6 +14,7 @@ public class CategoryMapper {
     response.setName(category.getName());
     response.setSlug(category.getSlug());
     response.setDescription(category.getDescription());
+    response.setCreatedAt(category.getCreatedAt());
     return response;
   }
 }

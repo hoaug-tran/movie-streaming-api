@@ -12,6 +12,12 @@ import org.springframework.data.jpa.repository.Query;
 import com.hoaug.movieapi.modules.review.infrastructure.persistence.entity.ReviewEntity;
 
 public interface JpaReviewRepository extends JpaRepository<ReviewEntity, Long> {
+
+  @Query("""
+      select r from ReviewEntity r
+      order by r.createdAt desc
+      """)
+  List<ReviewEntity> findAllOrderByCreatedAtDesc ();
   Optional<ReviewEntity> findByUserIdAndMovieId (Long userId, Long movieId);
 
   List<ReviewEntity> findByMovieIdOrderByCreatedAtDesc (Long movieId);

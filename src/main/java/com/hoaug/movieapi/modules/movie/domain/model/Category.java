@@ -1,10 +1,13 @@
 package com.hoaug.movieapi.modules.movie.domain.model;
 
+import java.time.LocalDateTime;
+
 public class Category {
   private Long id;
   private String name;
   private String slug;
   private String description;
+  private LocalDateTime createdAt;
 
   public Long getId () {
     return id;
@@ -36,6 +39,13 @@ public class Category {
 
   public void setDescription (String description) {
     this.description = description;
+  }
+  public LocalDateTime getCreatedAt() {
+    return createdAt;
+  }
+
+  public void setCreatedAt(LocalDateTime createdAt) {
+    this.createdAt = createdAt;
   }
 
 }

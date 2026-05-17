@@ -1,10 +1,13 @@
 package com.hoaug.movieapi.modules.movie.application.dto.response;
 
+import java.time.LocalDateTime;
+
 public class CategoryResponse {
   private Long id;
   private String name;
   private String slug;
   private String description;
+  private LocalDateTime createdAt;
 
   public Long getId () {
     return id;
@@ -36,5 +39,13 @@ public class CategoryResponse {
 
   public void setDescription (String description) {
     this.description = description;
+  }
+
+  public java.time.LocalDateTime getCreatedAt() {
+    return createdAt;
+  }
+
+  public void setCreatedAt(java.time.LocalDateTime createdAt) {
+    this.createdAt = createdAt;
   }
 }

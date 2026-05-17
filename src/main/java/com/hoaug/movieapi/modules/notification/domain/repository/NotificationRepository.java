@@ -24,5 +24,8 @@ public interface NotificationRepository {
 
   List<Long> findAllActiveUserIds();
 
+  // Returns [id, email, fullName] for each active user with email
+  List<Object[]> findAllActiveUsersWithEmail();
+
   boolean existsByUserIdAndTypeAndCreatedAtAfter(Long userId, String type, LocalDateTime after);
 }

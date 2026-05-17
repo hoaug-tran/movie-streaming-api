@@ -66,6 +66,11 @@ public class NotificationRepositoryAdapter implements NotificationRepository {
   }
 
   @Override
+  public List<Object[]> findAllActiveUsersWithEmail() {
+    return jpaNotificationRepository.findAllActiveUsersWithEmail();
+  }
+
+  @Override
   public boolean existsByUserIdAndTypeAndCreatedAtAfter(Long userId, String type,
       java.time.LocalDateTime after) {
     return jpaNotificationRepository.existsByUserIdAndTypeAndCreatedAtAfter(userId,

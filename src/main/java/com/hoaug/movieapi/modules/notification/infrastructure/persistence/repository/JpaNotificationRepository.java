@@ -22,4 +22,7 @@ public interface JpaNotificationRepository extends JpaRepository<NotificationEnt
 
   @Query("SELECT DISTINCT u.id FROM UserEntity u WHERE u.accountStatus = 'ACTIVE'")
   List<Long> findAllActiveUserIds();
+
+  @Query("SELECT u.id, u.email, u.fullName FROM UserEntity u WHERE u.accountStatus = 'ACTIVE' AND u.email IS NOT NULL")
+  List<Object[]> findAllActiveUsersWithEmail();
 }

@@ -9,6 +9,8 @@ import org.springframework.data.domain.Pageable;
 import com.hoaug.movieapi.modules.review.domain.model.Review;
 
 public interface ReviewRepository {
+  List<Review> findAll ();
+
   Optional<Review> findById (Long id);
 
   Optional<Review> findByUserIdAndMovieId (Long userId, Long movieId);

@@ -28,6 +28,8 @@ public class MovieSummaryResponse {
   private LocalDateTime createdAt;
   private LocalDateTime updatedAt;
   private LocalDateTime publishedAt;
+  private Boolean commentsLocked;
+  private Boolean reviewsLocked;
   private List<CategoryResponse> categories;
 
   public Long getId () {
@@ -220,5 +222,21 @@ public class MovieSummaryResponse {
 
   public void setCategories (List<CategoryResponse> categories) {
     this.categories = categories;
+  }
+
+  public Boolean getCommentsLocked () {
+    return commentsLocked;
+  }
+
+  public void setCommentsLocked (Boolean commentsLocked) {
+    this.commentsLocked = commentsLocked;
+  }
+
+  public Boolean getReviewsLocked () {
+    return reviewsLocked;
+  }
+
+  public void setReviewsLocked (Boolean reviewsLocked) {
+    this.reviewsLocked = reviewsLocked;
   }
 }

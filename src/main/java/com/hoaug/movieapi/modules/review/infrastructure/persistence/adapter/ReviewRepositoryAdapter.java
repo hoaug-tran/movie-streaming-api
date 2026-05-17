@@ -24,6 +24,11 @@ public class ReviewRepositoryAdapter implements ReviewRepository {
   }
 
   @Override
+  public List<Review> findAll () {
+    return repo.findAllOrderByCreatedAtDesc().stream().map(this::toDomain).toList();
+  }
+
+  @Override
   public Optional<Review> findById (Long id) {
     return repo.findById(id).map(this::toDomain);
   }

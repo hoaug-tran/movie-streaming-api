@@ -27,6 +27,7 @@ public class CategoryRepositoryAdapter implements CategoryRepository {
       category.setName(entity.getName());
       category.setSlug(entity.getSlug());
       category.setDescription(entity.getDescription());
+      category.setCreatedAt(entity.getCreatedAt());
       return category;
     }).toList();
   }
@@ -39,6 +40,7 @@ public class CategoryRepositoryAdapter implements CategoryRepository {
       category.setName(entity.getName());
       category.setSlug(entity.getSlug());
       category.setDescription(entity.getDescription());
+      category.setCreatedAt(entity.getCreatedAt());
       return category;
     });
   }
@@ -58,6 +60,7 @@ public class CategoryRepositoryAdapter implements CategoryRepository {
     result.setName(savedEntity.getName());
     result.setSlug(savedEntity.getSlug());
     result.setDescription(savedEntity.getDescription());
+    result.setCreatedAt(savedEntity.getCreatedAt());
     return result;
   }
 
