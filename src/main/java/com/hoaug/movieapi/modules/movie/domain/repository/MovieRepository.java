@@ -45,4 +45,6 @@ public interface MovieRepository {
   List<Movie> findAnimeMovies (int limit);
 
   List<Movie> findMostCommented (int limit);
+
+  void incrementViewCount (Long movieId);
 }

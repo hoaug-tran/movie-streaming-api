@@ -2,6 +2,7 @@ package com.hoaug.movieapi.modules.movie.presentation.controller;
 
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -18,6 +19,7 @@ import com.hoaug.movieapi.modules.movie.application.dto.request.CreateMovieStudi
 import com.hoaug.movieapi.modules.movie.application.dto.request.CreateMovieTagRequest;
 import com.hoaug.movieapi.modules.movie.application.dto.request.CreatePersonRequest;
 import com.hoaug.movieapi.modules.movie.application.dto.request.CreateStudioRequest;
+import com.hoaug.movieapi.modules.movie.application.dto.request.UpdateEpisodeRequest;
 import com.hoaug.movieapi.modules.movie.application.dto.request.UpdateMovieRequest;
 import com.hoaug.movieapi.modules.movie.application.dto.request.UpdateMovieInteractionLocksRequest;
 import com.hoaug.movieapi.modules.movie.application.dto.request.UpdateMovieStatusRequest;
@@ -43,8 +45,12 @@ import com.hoaug.movieapi.modules.movie.application.usecase.DeleteMoviePersonUse
 import com.hoaug.movieapi.modules.movie.application.usecase.DeleteMovieStudioUseCase;
 import com.hoaug.movieapi.modules.movie.application.usecase.DeleteMovieTagUseCase;
 import com.hoaug.movieapi.modules.movie.application.usecase.DeleteMovieUseCase;
+import com.hoaug.movieapi.modules.movie.application.usecase.UpdateEpisodeUseCase;
+import com.hoaug.movieapi.modules.movie.application.usecase.UpdateMoviePersonUseCase;
 import com.hoaug.movieapi.modules.movie.application.usecase.UpdateMovieStatusUseCase;
+import com.hoaug.movieapi.modules.movie.application.usecase.UpdateMovieStudioUseCase;
 import com.hoaug.movieapi.modules.movie.application.usecase.UpdateMovieUseCase;
+import com.hoaug.movieapi.modules.movie.application.usecase.GetMovieByIdAdminUseCase;
 import com.hoaug.movieapi.modules.movie.application.usecase.UpdateMovieInteractionLocksUseCase;
 
 import jakarta.validation.Valid;
@@ -54,11 +60,13 @@ import jakarta.validation.Valid;
 @PreAuthorize("hasRole('ADMIN')")
 public class AdminMovieController {
 
+  private final GetMovieByIdAdminUseCase getMovieByIdAdminUseCase;
   private final CreateMovieUseCase createMovieUseCase;
   private final UpdateMovieUseCase updateMovieUseCase;
   private final UpdateMovieStatusUseCase updateMovieStatusUseCase;
   private final UpdateMovieInteractionLocksUseCase updateMovieInteractionLocksUseCase;
   private final DeleteMovieUseCase deleteMovieUseCase;
+  private final UpdateEpisodeUseCase updateEpisodeUseCase;
   private final CreateEpisodeUseCase createEpisodeUseCase;
   private final DeleteEpisodeUseCase deleteEpisodeUseCase;
   private final CreatePersonUseCase createPersonUseCase;
@@ -68,28 +76,36 @@ public class AdminMovieController {
   private final CreateMovieTagUseCase createMovieTagUseCase;
   private final DeleteMovieTagUseCase deleteMovieTagUseCase;
   private final CreateMoviePersonUseCase createMoviePersonUseCase;
+  private final UpdateMoviePersonUseCase updateMoviePersonUseCase;
   private final DeleteMoviePersonUseCase deleteMoviePersonUseCase;
   private final CreateMovieStudioUseCase createMovieStudioUseCase;
+  private final UpdateMovieStudioUseCase updateMovieStudioUseCase;
   private final DeleteMovieStudioUseCase deleteMovieStudioUseCase;
 
-  public AdminMovieController(CreateMovieUseCase createMovieUseCase,
+  public AdminMovieController(GetMovieByIdAdminUseCase getMovieByIdAdminUseCase,
+      CreateMovieUseCase createMovieUseCase,
       UpdateMovieUseCase updateMovieUseCase, UpdateMovieStatusUseCase updateMovieStatusUseCase,
       UpdateMovieInteractionLocksUseCase updateMovieInteractionLocksUseCase,
-      DeleteMovieUseCase deleteMovieUseCase, CreateEpisodeUseCase createEpisodeUseCase,
+      DeleteMovieUseCase deleteMovieUseCase, UpdateEpisodeUseCase updateEpisodeUseCase,
+      CreateEpisodeUseCase createEpisodeUseCase,
       DeleteEpisodeUseCase deleteEpisodeUseCase, CreatePersonUseCase createPersonUseCase,
       CreateStudioUseCase createStudioUseCase,
       CreateMovieCategoryUseCase createMovieCategoryUseCase,
       DeleteMovieCategoryUseCase deleteMovieCategoryUseCase,
       CreateMovieTagUseCase createMovieTagUseCase, DeleteMovieTagUseCase deleteMovieTagUseCase,
       CreateMoviePersonUseCase createMoviePersonUseCase,
+      UpdateMoviePersonUseCase updateMoviePersonUseCase,
       DeleteMoviePersonUseCase deleteMoviePersonUseCase,
       CreateMovieStudioUseCase createMovieStudioUseCase,
+      UpdateMovieStudioUseCase updateMovieStudioUseCase,
       DeleteMovieStudioUseCase deleteMovieStudioUseCase) {
+    this.getMovieByIdAdminUseCase = getMovieByIdAdminUseCase;
     this.createMovieUseCase = createMovieUseCase;
     this.updateMovieUseCase = updateMovieUseCase;
     this.updateMovieStatusUseCase = updateMovieStatusUseCase;
     this.updateMovieInteractionLocksUseCase = updateMovieInteractionLocksUseCase;
     this.deleteMovieUseCase = deleteMovieUseCase;
+    this.updateEpisodeUseCase = updateEpisodeUseCase;
     this.createEpisodeUseCase = createEpisodeUseCase;
     this.deleteEpisodeUseCase = deleteEpisodeUseCase;
     this.createPersonUseCase = createPersonUseCase;
@@ -99,9 +115,16 @@ public class AdminMovieController {
     this.createMovieTagUseCase = createMovieTagUseCase;
     this.deleteMovieTagUseCase = deleteMovieTagUseCase;
     this.createMoviePersonUseCase = createMoviePersonUseCase;
+    this.updateMoviePersonUseCase = updateMoviePersonUseCase;
     this.deleteMoviePersonUseCase = deleteMoviePersonUseCase;
     this.createMovieStudioUseCase = createMovieStudioUseCase;
+    this.updateMovieStudioUseCase = updateMovieStudioUseCase;
     this.deleteMovieStudioUseCase = deleteMovieStudioUseCase;
+  }
+
+  @GetMapping("/{id}")
+  public MovieDetailResponse getMovie (@PathVariable Long id) {
+    return getMovieByIdAdminUseCase.execute(id);
   }
 
   @PostMapping
@@ -136,6 +159,12 @@ public class AdminMovieController {
   @DeleteMapping("/{id}/episodes/{episodeId}")
   public void deleteEpisode (@PathVariable Long id, @PathVariable Long episodeId) {
     deleteEpisodeUseCase.execute(id, episodeId);
+  }
+
+  @PutMapping("/{id}/episodes/{episodeId}")
+  public EpisodeResponse updateEpisode (@PathVariable Long id, @PathVariable Long episodeId,
+      @Valid @RequestBody UpdateEpisodeRequest request) {
+    return updateEpisodeUseCase.execute(id, episodeId, request);
   }
 
   @PostMapping("/{id}/episodes")
@@ -187,6 +216,12 @@ public class AdminMovieController {
     deleteMoviePersonUseCase.execute(id);
   }
 
+  @PutMapping("/movie-persons/{id}")
+  public MoviePersonResponse updateMoviePerson (@PathVariable Long id,
+      @Valid @RequestBody CreateMoviePersonRequest request) {
+    return updateMoviePersonUseCase.execute(id, request);
+  }
+
   @PostMapping("/{id}/studios")
   public MovieStudioResponse addMovieStudio (@PathVariable Long id,
       @Valid @RequestBody CreateMovieStudioRequest request) {
@@ -196,5 +231,11 @@ public class AdminMovieController {
   @DeleteMapping("/movie-studios/{id}")
   public void removeMovieStudio (@PathVariable Long id) {
     deleteMovieStudioUseCase.execute(id);
+  }
+
+  @PutMapping("/movie-studios/{id}")
+  public MovieStudioResponse updateMovieStudio (@PathVariable Long id,
+      @Valid @RequestBody CreateMovieStudioRequest request) {
+    return updateMovieStudioUseCase.execute(id, request);
   }
 }

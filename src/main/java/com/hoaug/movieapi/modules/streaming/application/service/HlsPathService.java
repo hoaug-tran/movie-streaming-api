@@ -14,8 +14,8 @@ public class HlsPathService {
     this.properties = properties;
   }
 
-  public Path episodeOutputDirectory (Long episodeId) {
-    return Path.of(properties.getHlsDirectory(), "series", "episodes", String.valueOf(episodeId))
+  public Path episodeOutputDirectory (Long episodeId, String quality) {
+    return Path.of(properties.getHlsDirectory(), "series", "episodes", String.valueOf(episodeId), quality)
         .toAbsolutePath()
         .normalize();
   }
@@ -26,8 +26,8 @@ public class HlsPathService {
         .normalize();
   }
 
-  public Path episodeKeyPath (Long episodeId) {
-    return Path.of(properties.getKeysDirectory(), "series", "episodes", String.valueOf(episodeId), "video.key")
+  public Path episodeKeyPath (Long episodeId, String quality) {
+    return Path.of(properties.getKeysDirectory(), "series", "episodes", String.valueOf(episodeId), quality, "video.key")
         .toAbsolutePath()
         .normalize();
   }

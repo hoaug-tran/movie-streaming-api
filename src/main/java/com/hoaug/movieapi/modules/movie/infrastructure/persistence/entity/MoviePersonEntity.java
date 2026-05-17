@@ -8,11 +8,9 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.Table;
-import jakarta.persistence.UniqueConstraint;
 
 @Entity
-@Table(name = "movie_persons", uniqueConstraints = {
-    @UniqueConstraint(columnNames = { "movie_id", "person_id", "role", "character_name" }) })
+@Table(name = "movie_persons")
 public class MoviePersonEntity extends BaseEntity {
 
   @Column(name = "movie_id", nullable = false)
@@ -22,7 +20,7 @@ public class MoviePersonEntity extends BaseEntity {
   private Long personId;
 
   @Enumerated(EnumType.STRING)
-  @Column(nullable = false, length = 20)
+  @Column(nullable = false, length = 30)
   private MoviePersonRole role;
 
   @Column(name = "character_name", length = 150)

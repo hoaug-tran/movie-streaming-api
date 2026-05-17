@@ -12,16 +12,32 @@ public class StreamUrlService {
     this.properties = properties;
   }
 
-  public String episodePlaylistUrl (Long episodeId) {
-    return joinBaseUrl("/stream/series/episodes/" + episodeId + "/master.m3u8");
+  public String episodePlaylistUrl (Long episodeId, String quality) {
+    return joinBaseUrl("/stream/series/episodes/" + episodeId + "/" + quality + "/master.m3u8");
+  }
+
+  public String episodeMp4Url (Long episodeId) {
+    return joinBaseUrl("/data/series/episodes/" + episodeId + "/source.mp4");
+  }
+
+  public String movieMp4Url (Long movieId) {
+    return joinBaseUrl("/data/movies/" + movieId + "/source.mp4");
+  }
+
+  public String imageUrl (String filename) {
+    return joinBaseUrl("/images/" + filename);
+  }
+
+  public String othersVideoUrl (String filename) {
+    return joinBaseUrl("/data/others/" + filename);
   }
 
   public String advertisementPlaylistUrl (Long advertisementId) {
     return joinBaseUrl("/stream/ads/advertisements/" + advertisementId + "/master.m3u8");
   }
 
-  public String episodeKeyUrl (Long episodeId) {
-    return joinApiUrl("/stream/keys/series/episodes/" + episodeId);
+  public String episodeKeyUrl (Long episodeId, String quality) {
+    return joinApiUrl("/stream/keys/series/episodes/" + episodeId + "/" + quality);
   }
 
   public String advertisementKeyUrl (Long advertisementId) {

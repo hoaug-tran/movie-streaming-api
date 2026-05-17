@@ -146,6 +146,7 @@ public class MovieDetailResponse {
     this.movieType = movieType;
   }
 
+  @com.fasterxml.jackson.annotation.JsonProperty("isPremiumOnly")
   public Boolean getIsPremiumOnly () {
     return isPremiumOnly;
   }

@@ -2,6 +2,9 @@ package com.hoaug.movieapi.modules.user.application.mapper;
 
 import org.springframework.stereotype.Component;
 
+import com.hoaug.movieapi.modules.subscription.domain.model.SubscriptionStatus;
+import com.hoaug.movieapi.modules.subscription.domain.repository.SubscriptionPlanRepository;
+import com.hoaug.movieapi.modules.subscription.domain.repository.UserSubscriptionRepository;
 import com.hoaug.movieapi.modules.user.application.dto.response.UserDetailResponse;
 import com.hoaug.movieapi.modules.user.application.dto.response.UserProfileResponse;
 import com.hoaug.movieapi.modules.user.application.dto.response.UserSummaryResponse;
@@ -11,9 +14,15 @@ import com.hoaug.movieapi.shared.media.MediaUrlResolver;
 @Component
 public class UserMapper {
     private final MediaUrlResolver mediaUrlResolver;
+    private final UserSubscriptionRepository userSubscriptionRepository;
+    private final SubscriptionPlanRepository subscriptionPlanRepository;
 
-    public UserMapper(MediaUrlResolver mediaUrlResolver) {
+    public UserMapper(MediaUrlResolver mediaUrlResolver,
+        UserSubscriptionRepository userSubscriptionRepository,
+        SubscriptionPlanRepository subscriptionPlanRepository) {
         this.mediaUrlResolver = mediaUrlResolver;
+        this.userSubscriptionRepository = userSubscriptionRepository;
+        this.subscriptionPlanRepository = subscriptionPlanRepository;
     }
 
     public UserProfileResponse toProfileResponse(User user) {
@@ -61,6 +70,13 @@ public class UserMapper {
         response.setCreatedAt(user.getCreatedAt());
         response.setUpdatedAt(user.getUpdatedAt());
         response.setLastLoginAt(user.getLastLoginAt());
+
+        userSubscriptionRepository
+            .findFirstByUserIdAndStatusOrderByEndAtDesc(user.getId(), SubscriptionStatus.ACTIVE)
+            .ifPresent(sub -> subscriptionPlanRepository.findById(sub.getPlanId()).ifPresent(plan -> {
+                response.setCurrentPlanCode(plan.getCode());
+                response.setCurrentPlanName(plan.getName());
+            }));
 
         return response;
     }

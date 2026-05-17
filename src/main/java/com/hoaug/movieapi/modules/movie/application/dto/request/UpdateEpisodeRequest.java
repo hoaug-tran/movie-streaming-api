@@ -5,16 +5,13 @@ import com.hoaug.movieapi.modules.movie.domain.model.EpisodeStatus;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
-public class CreateEpisodeRequest {
+public class UpdateEpisodeRequest {
 
   @NotBlank
   private String title;
 
   @NotNull
   private Integer episodeNumber;
-
-  // Optional — set by upload flow; defaults to "pending" if omitted
-  private String videoUrl;
 
   private String thumbnailUrl;
 
@@ -33,9 +30,6 @@ public class CreateEpisodeRequest {
   public Integer getEpisodeNumber () { return episodeNumber; }
   public void setEpisodeNumber (Integer episodeNumber) { this.episodeNumber = episodeNumber; }
 
-  public String getVideoUrl () { return videoUrl; }
-  public void setVideoUrl (String videoUrl) { this.videoUrl = videoUrl; }
-
   public String getThumbnailUrl () { return thumbnailUrl; }
   public void setThumbnailUrl (String thumbnailUrl) { this.thumbnailUrl = thumbnailUrl; }
 
@@ -43,7 +37,7 @@ public class CreateEpisodeRequest {
   public void setDurationSeconds (Integer durationSeconds) { this.durationSeconds = durationSeconds; }
 
   public Boolean getIsFreePreview () { return isFreePreview; }
-  public void setIsFreePreview (Boolean freePreview) { isFreePreview = freePreview; }
+  public void setIsFreePreview (Boolean isFreePreview) { this.isFreePreview = isFreePreview; }
 
   public EpisodeStatus getStatus () { return status; }
   public void setStatus (EpisodeStatus status) { this.status = status; }

@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -17,6 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.hoaug.movieapi.common.response.ResponseUtil;
+import com.hoaug.movieapi.modules.user.application.dto.request.AdminCreateUserRequest;
 import com.hoaug.movieapi.modules.user.application.dto.request.AdminUpdateUserRequest;
 import com.hoaug.movieapi.modules.user.application.dto.request.ChangePasswordRequest;
 import com.hoaug.movieapi.modules.user.application.dto.request.StartEmailChangeRequest;
@@ -27,7 +29,7 @@ import com.hoaug.movieapi.modules.user.application.dto.request.VerifyEmailChange
 import com.hoaug.movieapi.modules.user.application.dto.response.EmailChangeResponse;
 import com.hoaug.movieapi.modules.user.application.dto.response.UserDetailResponse;
 import com.hoaug.movieapi.modules.user.application.dto.response.UserProfileResponse;
-import com.hoaug.movieapi.modules.user.application.dto.response.UserSummaryResponse;
+import com.hoaug.movieapi.modules.user.application.usecase.AdminCreateUserUseCase;
 import com.hoaug.movieapi.modules.user.application.usecase.AdminUpdateUserUseCase;
 import com.hoaug.movieapi.modules.user.application.usecase.ChangeMyPasswordUseCase;
 import com.hoaug.movieapi.modules.user.application.usecase.DeleteUserUseCase;
@@ -55,6 +57,7 @@ public class UserController {
   private final UpdateUserStatusUseCase updateUserStatusUseCase;
   private final UpdateUserRoleUseCase updateUserRoleUseCase;
   private final DeleteUserUseCase deleteUserUseCase;
+  private final AdminCreateUserUseCase adminCreateUserUseCase;
   private final AdminUpdateUserUseCase adminUpdateUserUseCase;
   private final StartEmailChangeUseCase startEmailChangeUseCase;
   private final VerifyCurrentEmailChangeUseCase verifyCurrentEmailChangeUseCase;
@@ -66,6 +69,7 @@ public class UserController {
       ChangeMyPasswordUseCase changeMyPasswordUseCase, GetUsersUseCase getUsersUseCase,
       GetUserByIdUseCase getUserByIdUseCase, UpdateUserStatusUseCase updateUserStatusUseCase,
       UpdateUserRoleUseCase updateUserRoleUseCase, DeleteUserUseCase deleteUserUseCase,
+      AdminCreateUserUseCase adminCreateUserUseCase,
       AdminUpdateUserUseCase adminUpdateUserUseCase,
       StartEmailChangeUseCase startEmailChangeUseCase,
       VerifyCurrentEmailChangeUseCase verifyCurrentEmailChangeUseCase,
@@ -79,6 +83,7 @@ public class UserController {
     this.updateUserStatusUseCase = updateUserStatusUseCase;
     this.updateUserRoleUseCase = updateUserRoleUseCase;
     this.deleteUserUseCase = deleteUserUseCase;
+    this.adminCreateUserUseCase = adminCreateUserUseCase;
     this.adminUpdateUserUseCase = adminUpdateUserUseCase;
     this.startEmailChangeUseCase = startEmailChangeUseCase;
     this.verifyCurrentEmailChangeUseCase = verifyCurrentEmailChangeUseCase;
@@ -130,8 +135,15 @@ public class UserController {
   }
 
   @PreAuthorize("hasRole('ADMIN')")
+  @PostMapping("/admin/create")
+  public ResponseEntity<UserDetailResponse> createUser(
+      @Valid @RequestBody AdminCreateUserRequest request) {
+    return ResponseUtil.created(adminCreateUserUseCase.execute(request));
+  }
+
+  @PreAuthorize("hasRole('ADMIN')")
   @GetMapping("/")
-  public ResponseEntity<List<UserSummaryResponse>> getUsers () {
+  public ResponseEntity<List<UserDetailResponse>> getUsers () {
     return ResponseUtil.ok(getUsersUseCase.execute());
   }
 

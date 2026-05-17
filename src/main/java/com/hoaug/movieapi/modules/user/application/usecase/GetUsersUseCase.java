@@ -4,7 +4,7 @@ import java.util.List;
 
 import org.springframework.stereotype.Component;
 
-import com.hoaug.movieapi.modules.user.application.dto.response.UserSummaryResponse;
+import com.hoaug.movieapi.modules.user.application.dto.response.UserDetailResponse;
 import com.hoaug.movieapi.modules.user.application.mapper.UserMapper;
 import com.hoaug.movieapi.modules.user.domain.repository.UserRepository;
 
@@ -19,9 +19,8 @@ public class GetUsersUseCase {
         this.userMapper = userMapper;
     }
 
-    public List<UserSummaryResponse> execute() {
-
-        return userRepository.findAll().stream().map(userMapper::toSummaryResponse).toList();
+    public List<UserDetailResponse> execute() {
+        return userRepository.findAll().stream().map(userMapper::toDetailResponse).toList();
     }
 
 }

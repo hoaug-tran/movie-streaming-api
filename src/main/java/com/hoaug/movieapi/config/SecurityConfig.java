@@ -39,8 +39,8 @@ public class SecurityConfig {
 
   @Bean
   public SecurityFilterChain filterChain (HttpSecurity http) throws Exception {
-    http.cors(cors -> {
-    }).csrf(csrf -> csrf.disable())
+    http.cors(cors -> cors.configurationSource(corsConfigurationSource()))
+        .csrf(csrf -> csrf.disable())
         .sessionManagement(
             session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
         .authorizeHttpRequests(auth -> auth
@@ -78,6 +78,7 @@ public class SecurityConfig {
             .requestMatchers("/api/v1/device-sessions/**").authenticated()
             .requestMatchers("/api/v1/recommendations/**").authenticated()
             .requestMatchers(HttpMethod.GET, "/api/v1/stream/keys/**").permitAll()
+            .requestMatchers("/api/v1/stream/sessions/**").authenticated()
             .requestMatchers("/api/v1/search-histories/**").authenticated()
 
             // Default deny

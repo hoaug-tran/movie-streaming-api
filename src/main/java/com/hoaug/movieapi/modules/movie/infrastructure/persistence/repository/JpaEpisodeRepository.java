@@ -10,4 +10,6 @@ import com.hoaug.movieapi.modules.movie.infrastructure.persistence.entity.Episod
 public interface JpaEpisodeRepository extends JpaRepository<EpisodeEntity, Long> {
   List<EpisodeEntity> findByMovieIdAndStatusOrderByEpisodeNumberAsc (Long movieId,
       EpisodeStatus status);
+
+  List<EpisodeEntity> findByMovieIdOrderByEpisodeNumberAsc (Long movieId);
 }

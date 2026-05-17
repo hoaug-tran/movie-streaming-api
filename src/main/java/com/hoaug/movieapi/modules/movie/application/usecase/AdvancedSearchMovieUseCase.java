@@ -21,7 +21,8 @@ public class AdvancedSearchMovieUseCase {
   private final JpaMovieRepository jpaMovieRepository;
   private final GetMovieCategoriesUseCase getMovieCategoriesUseCase;
 
-  public AdvancedSearchMovieUseCase(JpaMovieRepository jpaMovieRepository, GetMovieCategoriesUseCase getMovieCategoriesUseCase) {
+  public AdvancedSearchMovieUseCase(JpaMovieRepository jpaMovieRepository,
+      GetMovieCategoriesUseCase getMovieCategoriesUseCase) {
     this.jpaMovieRepository = jpaMovieRepository;
     this.getMovieCategoriesUseCase = getMovieCategoriesUseCase;
   }
@@ -71,7 +72,8 @@ public class AdvancedSearchMovieUseCase {
     res.setTrailerUrl(movie.getTrailerUrl());
     res.setMovieType(movie.getMovieType() != null ? movie.getMovieType().name() : null);
     res.setReleaseYear(movie.getReleaseYear());
-    res.setAverageRating(movie.getAverageRating() != null ? movie.getAverageRating().doubleValue() : 0.0);
+    res.setAverageRating(
+        movie.getAverageRating() != null ? movie.getAverageRating().doubleValue() : 0.0);
     res.setViewCount(movie.getViewCount());
     res.setFavoriteCount(movie.getFavoriteCount());
     res.setCategories(getMovieCategoriesUseCase.execute(movie.getId()));

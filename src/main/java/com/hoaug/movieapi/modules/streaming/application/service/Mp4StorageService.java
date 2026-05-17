@@ -1,7 +1,6 @@
 package com.hoaug.movieapi.modules.streaming.application.service;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
@@ -18,8 +17,36 @@ import com.hoaug.movieapi.modules.streaming.application.config.MediaStoragePrope
 
 @Component
 public class Mp4StorageService {
-  private static final Set<String> ALLOWED_CONTENT_TYPES = Set.of("video/mp4", "application/mp4");
-  private static final byte[] MP4_SIGNATURE = new byte[] { 0x66, 0x74, 0x79, 0x70 };
+
+  private static final Set<String> ALLOWED_CONTENT_TYPES = Set.of(
+      "video/mp4", "application/mp4",
+      "video/x-matroska", "video/mkv",
+      "video/avi", "video/x-msvideo", "video/x-avi",
+      "video/quicktime",
+      "video/webm",
+      "video/x-ms-wmv", "video/wmv",
+      "video/mpeg", "video/mpg", "video/x-mpeg",
+      "video/x-flv", "video/flv",
+      "video/3gpp", "video/3gpp2",
+      "video/ogg",
+      "video/x-ms-asf",
+      "application/octet-stream" // some browsers send this for mkv/avi
+  );
+
+  private static final Set<String> ALLOWED_EXTENSIONS = Set.of(
+      ".mp4", ".m4v",
+      ".mkv",
+      ".avi",
+      ".mov",
+      ".webm",
+      ".wmv",
+      ".mpg", ".mpeg",
+      ".flv",
+      ".3gp", ".3g2",
+      ".ogv",
+      ".ts", ".m2ts"
+  );
+
   private final MediaStorageProperties properties;
 
   public Mp4StorageService(MediaStorageProperties properties) {
@@ -30,15 +57,22 @@ public class Mp4StorageService {
     return store(file, Path.of(properties.getSeriesDataDirectory()), "episodes", episodeId);
   }
 
+  public Path storeMovieSource (Long movieId, MultipartFile file) {
+    return store(file, Path.of(properties.getMoviesDataDirectory()), null, movieId);
+  }
+
   public Path storeAdvertisementSource (Long advertisementId, MultipartFile file) {
     return store(file, Path.of(properties.getAdsDataDirectory()), "advertisements", advertisementId);
   }
 
   private Path store (MultipartFile file, Path rootDirectory, String typeDirectory, Long id) {
     validate(file);
+    String ext = resolveExtension(file);
     Path root = rootDirectory.toAbsolutePath().normalize();
-    Path destinationDirectory = root.resolve(typeDirectory).resolve(String.valueOf(id)).normalize();
-    Path destination = destinationDirectory.resolve("source.mp4").normalize();
+    Path destinationDirectory = typeDirectory != null
+        ? root.resolve(typeDirectory).resolve(String.valueOf(id)).normalize()
+        : root.resolve(String.valueOf(id)).normalize();
+    Path destination = destinationDirectory.resolve("source" + ext).normalize();
 
     if (!destination.startsWith(root)) {
       throw new AppException(ErrorCode.BAD_REQUEST);
@@ -58,33 +92,24 @@ public class Mp4StorageService {
       throw new AppException(ErrorCode.BAD_REQUEST);
     }
 
+    String ext = resolveExtension(file);
+    if (!ALLOWED_EXTENSIONS.contains(ext)) {
+      throw new AppException(ErrorCode.BAD_REQUEST);
+    }
+
     String contentType = file.getContentType();
-    if (contentType == null || !ALLOWED_CONTENT_TYPES.contains(contentType.toLowerCase(Locale.ROOT))) {
-      throw new AppException(ErrorCode.BAD_REQUEST);
-    }
-
-    String originalFilename = StringUtils.cleanPath(file.getOriginalFilename());
-    if (!StringUtils.hasText(originalFilename) || !originalFilename.toLowerCase(Locale.ROOT).endsWith(".mp4")) {
-      throw new AppException(ErrorCode.BAD_REQUEST);
-    }
-
-    byte[] header = new byte[12];
-    try (InputStream inputStream = file.getInputStream()) {
-      int bytesRead = inputStream.read(header);
-      if (bytesRead < 12 || !matchesMp4Signature(header)) {
-        throw new AppException(ErrorCode.BAD_REQUEST);
-      }
-    } catch (IOException exception) {
+    if (contentType != null
+        && !contentType.startsWith("video/")
+        && !ALLOWED_CONTENT_TYPES.contains(contentType.toLowerCase(Locale.ROOT))) {
       throw new AppException(ErrorCode.BAD_REQUEST);
     }
   }
 
-  private boolean matchesMp4Signature (byte[] header) {
-    for (int index = 0; index < MP4_SIGNATURE.length; index++) {
-      if (header[index + 4] != MP4_SIGNATURE[index]) {
-        return false;
-      }
-    }
-    return true;
+  private String resolveExtension (MultipartFile file) {
+    String originalFilename = StringUtils.cleanPath(
+        file.getOriginalFilename() != null ? file.getOriginalFilename() : "");
+    int dotIndex = originalFilename.lastIndexOf('.');
+    if (dotIndex < 0) return ".mp4";
+    return originalFilename.substring(dotIndex).toLowerCase(Locale.ROOT);
   }
 }

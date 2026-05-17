@@ -60,10 +60,12 @@ public class UpsertWatchHistoryUseCase {
         .findByUserIdAndEpisodeId(userId, request.getEpisodeId()).orElseGet(WatchHistory::new);
 
     LocalDateTime now = LocalDateTime.now();
+    boolean isNew = watchHistory.getId() == null;
 
-    if (watchHistory.getId() == null) {
+    if (isNew) {
       watchHistory.setUserId(userId);
       watchHistory.setCreatedAt(now);
+      movieRepository.incrementViewCount(request.getMovieId());
     }
 
     watchHistory.setMovieId(request.getMovieId());

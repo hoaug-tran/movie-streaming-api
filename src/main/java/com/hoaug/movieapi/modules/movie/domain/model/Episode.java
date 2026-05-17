@@ -8,6 +8,7 @@ public class Episode {
   private String title;
   private Integer episodeNumber;
   private String videoUrl;
+  private String availableQualities;
   private String thumbnailUrl;
   private Integer durationSeconds;
   private Boolean isFreePreview;
@@ -53,6 +54,14 @@ public class Episode {
 
   public void setVideoUrl (String videoUrl) {
     this.videoUrl = videoUrl;
+  }
+
+  public String getAvailableQualities () {
+    return availableQualities;
+  }
+
+  public void setAvailableQualities (String availableQualities) {
+    this.availableQualities = availableQualities;
   }
 
   public String getThumbnailUrl () {

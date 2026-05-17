@@ -12,21 +12,21 @@ import com.hoaug.movieapi.modules.streaming.application.service.HlsPathService;
 
 @Component
 public class GetEpisodeHlsKeyUseCase {
+
   private final JpaEpisodeRepository episodeRepository;
   private final HlsPathService hlsPathService;
 
-  public GetEpisodeHlsKeyUseCase(JpaEpisodeRepository episodeRepository,
+  public GetEpisodeHlsKeyUseCase (JpaEpisodeRepository episodeRepository,
       HlsPathService hlsPathService) {
     this.episodeRepository = episodeRepository;
     this.hlsPathService = hlsPathService;
   }
 
-  public byte[] execute (Long episodeId) {
+  public byte[] execute (Long episodeId, String quality) {
     episodeRepository.findById(episodeId)
         .orElseThrow(() -> new AppException(ErrorCode.EPISODE_NOT_FOUND));
-
     try {
-      return Files.readAllBytes(hlsPathService.episodeKeyPath(episodeId));
+      return Files.readAllBytes(hlsPathService.episodeKeyPath(episodeId, quality));
     } catch (IOException exception) {
       throw new AppException(ErrorCode.FORBIDDEN);
     }

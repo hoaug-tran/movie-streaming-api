@@ -126,10 +126,8 @@ public class MovieRepositoryAdapter implements MovieRepository {
 
   @Override
   public List<Movie> findWeeklyNew (int limit) {
-    java.time.LocalDateTime since = java.time.LocalDateTime.now().minusDays(7);
-    return jpaMovieRepository
-        .findWeeklyNew(since, org.springframework.data.domain.PageRequest.of(0, limit)).stream()
-        .map(this::toDomain).toList();
+    return jpaMovieRepository.findWeeklyNew(org.springframework.data.domain.PageRequest.of(0, limit))
+        .stream().map(this::toDomain).toList();
   }
 
   @Override
@@ -146,7 +144,8 @@ public class MovieRepositoryAdapter implements MovieRepository {
 
   @Override
   public List<Movie> findUpcoming (int limit) {
-    return jpaMovieRepository.findUpcoming(org.springframework.data.domain.PageRequest.of(0, limit))
+    int currentYear = java.time.LocalDate.now().getYear();
+    return jpaMovieRepository.findUpcoming(currentYear, org.springframework.data.domain.PageRequest.of(0, limit))
         .stream().map(this::toDomain).toList();
   }
 
@@ -198,5 +197,10 @@ public class MovieRepositoryAdapter implements MovieRepository {
   public List<Movie> findMostCommented (int limit) {
     return jpaMovieRepository.findMostCommented(org.springframework.data.domain.PageRequest.of(0, limit))
         .stream().map(this::toDomain).toList();
+  }
+
+  @Override
+  public void incrementViewCount (Long movieId) {
+    jpaMovieRepository.incrementViewCount(movieId);
   }
 }

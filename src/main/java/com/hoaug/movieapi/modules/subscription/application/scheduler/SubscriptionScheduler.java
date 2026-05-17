@@ -5,8 +5,6 @@ import java.time.LocalDateTime;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
-import com.hoaug.movieapi.modules.notification.application.dto.request.CreateNotificationRequest;
-import com.hoaug.movieapi.modules.notification.application.usecase.CreateNotificationUseCase;
 import com.hoaug.movieapi.modules.subscription.domain.model.SubscriptionStatus;
 import com.hoaug.movieapi.modules.subscription.domain.repository.UserSubscriptionRepository;
 import com.hoaug.movieapi.modules.user.domain.model.User;
@@ -16,16 +14,13 @@ import com.hoaug.movieapi.modules.user.domain.repository.UserRepository;
 public class SubscriptionScheduler {
   private final UserSubscriptionRepository userSubscriptionRepository;
   private final UserRepository userRepository;
-  private final CreateNotificationUseCase createNotificationUseCase;
 
   public SubscriptionScheduler(UserSubscriptionRepository userSubscriptionRepository,
-      UserRepository userRepository, CreateNotificationUseCase createNotificationUseCase) {
+      UserRepository userRepository) {
     this.userSubscriptionRepository = userSubscriptionRepository;
     this.userRepository = userRepository;
-    this.createNotificationUseCase = createNotificationUseCase;
   }
 
-  // 1 giờ
   @Scheduled(fixedRate = 3600000)
   public void expireSubscriptions () {
     var expiredSubscriptions = userSubscriptionRepository
@@ -38,27 +33,6 @@ public class SubscriptionScheduler {
     });
   }
 
-  // 24h
-  @Scheduled(fixedRate = 86400000)
-  public void sendExpiringSubscriptionNotifications () {
-    LocalDateTime tomorrow = LocalDateTime.now().plusDays(1);
-    LocalDateTime nextWeek = LocalDateTime.now().plusDays(7);
-
-    var expiringSubscriptions = userSubscriptionRepository
-        .findByStatusAndEndAtBetween(SubscriptionStatus.ACTIVE, tomorrow, nextWeek);
-
-    expiringSubscriptions.forEach(sub -> {
-      CreateNotificationRequest req = new CreateNotificationRequest();
-      req.setUserId(sub.getUserId());
-      req.setTitle("Gói thuê bao của bạn sẽ sớm kết thúc");
-      req.setContent("Gói thuê bao của bạn sẽ kết thúc vào " + sub.getEndAt()
-          + ". Hãy gia hạn để tiếp tục hưởng ưu đại nhé.");
-      req.setType("PREMIUM_EXPIRING");
-      createNotificationUseCase.execute(req);
-    });
-  }
-
-  // 24h
   @Scheduled(fixedRate = 86400000)
   public void deactivatePremiumUsers () {
     var expiredSubscriptions = userSubscriptionRepository

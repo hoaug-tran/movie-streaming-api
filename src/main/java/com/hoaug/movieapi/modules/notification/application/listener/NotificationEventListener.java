@@ -56,8 +56,13 @@ public class NotificationEventListener {
     if (event.getParentCommentUserId() == null) return;
     if (event.getParentCommentUserId().equals(event.getAuthorUserId())) return;
 
-    String actionUrl = buildWatchUrl(event.getMovieSlug(), event.getEpisodeId(),
-        event.getParentCommentId());
+    boolean alreadyNotified = notificationRepository.existsByUserIdAndTypeAndCreatedAtAfter(
+        event.getParentCommentUserId(),
+        NotificationType.COMMENT_REPLY.name(),
+        LocalDateTime.now().minusMinutes(30));
+    if (alreadyNotified) return;
+
+    String actionUrl = buildMovieCommentUrl(event.getMovieSlug(), event.getParentCommentId());
 
     Notification notification = new Notification();
     notification.setUserId(event.getParentCommentUserId());
@@ -86,7 +91,7 @@ public class NotificationEventListener {
     String movieSlug = event.getMovieSlug() != null ? event.getMovieSlug()
         : movieRepository.findById(event.getMovieId()).map(m -> m.getSlug()).orElse(null);
 
-    String actionUrl = buildWatchUrl(movieSlug, null, event.getCommentId());
+    String actionUrl = buildMovieCommentUrl(movieSlug, event.getCommentId());
 
     Notification notification = new Notification();
     notification.setUserId(event.getCommentOwnerId());
@@ -115,7 +120,7 @@ public class NotificationEventListener {
     String movieSlug = movieRepository.findById(event.getMovieId())
         .map(m -> m.getSlug()).orElse(null);
 
-    String actionUrl = movieSlug != null ? "/movies/" + movieSlug : null;
+    String actionUrl = movieSlug != null ? "/movies/" + movieSlug + "#reviews" : null;
 
     Notification notification = new Notification();
     notification.setUserId(event.getReviewOwnerId());
@@ -129,16 +134,16 @@ public class NotificationEventListener {
     notificationRepository.save(notification);
   }
 
-  private String buildWatchUrl(String movieSlug, Long episodeId, Long commentId) {
+  /**
+   * Builds a movie detail page URL with optional comment anchor.
+   * e.g. /movies/dune-part-two?comment=25
+   * Never sends user to the watch/player page for social interactions.
+   */
+  private String buildMovieCommentUrl(String movieSlug, Long commentId) {
     if (movieSlug == null) return null;
-    StringBuilder url = new StringBuilder("/watch/").append(movieSlug);
-    boolean hasParam = false;
-    if (episodeId != null) {
-      url.append("?episode=").append(episodeId);
-      hasParam = true;
-    }
+    StringBuilder url = new StringBuilder("/movies/").append(movieSlug);
     if (commentId != null) {
-      url.append(hasParam ? "&" : "?").append("comment=").append(commentId);
+      url.append("?comment=").append(commentId);
     }
     return url.toString();
   }

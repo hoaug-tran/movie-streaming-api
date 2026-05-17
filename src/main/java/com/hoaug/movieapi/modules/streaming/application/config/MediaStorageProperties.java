@@ -11,6 +11,7 @@ public class MediaStorageProperties {
   private String seriesDataDirectory = "F:/movie-storage/data/series";
   private String adsDataDirectory = "F:/movie-storage/data/ads";
   private String othersDataDirectory = "F:/movie-storage/data/others";
+  private String imagesDirectory = "F:/movie-storage/images";
   private String hlsDirectory = "F:/movie-storage/hls";
   private String keysDirectory = "F:/movie-storage/keys";
   private long maxUploadBytes = 5368709120L;
@@ -26,6 +27,8 @@ public class MediaStorageProperties {
   public void setAdsDataDirectory (String adsDataDirectory) { this.adsDataDirectory = adsDataDirectory; }
   public String getOthersDataDirectory () { return othersDataDirectory; }
   public void setOthersDataDirectory (String othersDataDirectory) { this.othersDataDirectory = othersDataDirectory; }
+  public String getImagesDirectory () { return imagesDirectory; }
+  public void setImagesDirectory (String imagesDirectory) { this.imagesDirectory = imagesDirectory; }
   public String getHlsDirectory () { return hlsDirectory; }
   public void setHlsDirectory (String hlsDirectory) { this.hlsDirectory = hlsDirectory; }
   public String getKeysDirectory () { return keysDirectory; }

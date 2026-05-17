@@ -6,6 +6,7 @@ import com.hoaug.movieapi.common.model.BaseEntity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
 
 @Entity
@@ -35,6 +36,12 @@ public class DeviceSessionEntity extends BaseEntity {
 
   @Column(name = "is_revoked", nullable = false)
   private Boolean isRevoked;
+
+  @Column(name = "is_streaming", nullable = false)
+  private Boolean isStreaming = false;
+
+  @Column(name = "stream_expires_at")
+  private LocalDateTime streamExpiresAt;
 
   public Long getUserId () {
     return userId;
@@ -88,11 +95,33 @@ public class DeviceSessionEntity extends BaseEntity {
     return createdAt;
   }
 
+  @PrePersist
+  protected void prePersist () {
+    if (createdAt == null) createdAt = LocalDateTime.now();
+    if (lastActiveAt == null) lastActiveAt = LocalDateTime.now();
+  }
+
   public Boolean getIsRevoked () {
     return isRevoked;
   }
 
   public void setIsRevoked (Boolean revoked) {
     isRevoked = revoked;
+  }
+
+  public Boolean getIsStreaming () {
+    return isStreaming;
+  }
+
+  public void setIsStreaming (Boolean streaming) {
+    isStreaming = streaming;
+  }
+
+  public LocalDateTime getStreamExpiresAt () {
+    return streamExpiresAt;
+  }
+
+  public void setStreamExpiresAt (LocalDateTime streamExpiresAt) {
+    this.streamExpiresAt = streamExpiresAt;
   }
 }

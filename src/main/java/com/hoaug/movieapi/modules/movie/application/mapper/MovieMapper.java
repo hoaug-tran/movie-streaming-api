@@ -32,7 +32,9 @@ public class MovieMapper {
     res.setDescription(movie.getDescription());
     res.setPosterUrl(mediaUrlResolver.resolve(movie.getPosterUrl()));
     res.setBannerUrl(mediaUrlResolver.resolve(movie.getBannerUrl()));
+    res.setTrailerUrl(mediaUrlResolver.resolve(movie.getTrailerUrl()));
     res.setReleaseYear(movie.getReleaseYear());
+    res.setMovieType(movie.getMovieType() != null ? movie.getMovieType().name() : null);
     res.setAverageRating(movie.getAverageRating() != null ? movie.getAverageRating().doubleValue() : null);
     res.setViewCount(movie.getViewCount());
     res.setFavoriteCount(movie.getFavoriteCount());
@@ -117,6 +119,8 @@ public class MovieMapper {
     response.setDurationSeconds(episode.getDurationSeconds());
     response.setIsFreePreview(episode.getIsFreePreview());
     response.setStatus(episode.getStatus());
+    String q = episode.getAvailableQualities();
+    response.setAvailableQualities(q != null && !q.isBlank() ? List.of(q.split(",")) : List.of());
     return response;
   }
 }

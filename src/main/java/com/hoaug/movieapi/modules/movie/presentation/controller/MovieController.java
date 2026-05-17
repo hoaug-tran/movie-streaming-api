@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.hoaug.movieapi.common.response.ResponseUtil;
+import com.hoaug.movieapi.modules.movie.domain.repository.MovieRepository;
 import com.hoaug.movieapi.modules.movie.application.dto.request.SearchMovieRequest;
 import com.hoaug.movieapi.modules.movie.application.dto.response.CategoryResponse;
 import com.hoaug.movieapi.modules.movie.application.dto.response.EpisodeResponse;
@@ -62,6 +63,7 @@ public class MovieController {
   private final SearchMovieUseCase searchMovieUseCase;
   private final AdvancedSearchMovieUseCase advancedSearchMovieUseCase;
   private final GetMovieDetailAggregateUseCase getMovieDetailAggregateUseCase;
+  private final MovieRepository movieRepository;
 
   public MovieController(GetMoviesUseCase getMoviesUseCase, GetMovieByIdUseCase getMovieByIdUseCase,
       GetMovieBySlugUseCase getMovieBySlugUseCase,
@@ -73,7 +75,8 @@ public class MovieController {
       GetPersonByIdUseCase getPersonByIdUseCase, GetStudiosUseCase getStudiosUseCase,
       GetStudioByIdUseCase getStudioByIdUseCase, SearchMovieUseCase searchMovieUseCase,
       AdvancedSearchMovieUseCase advancedSearchMovieUseCase,
-      GetMovieDetailAggregateUseCase getMovieDetailAggregateUseCase) {
+      GetMovieDetailAggregateUseCase getMovieDetailAggregateUseCase,
+      MovieRepository movieRepository) {
     this.getMoviesUseCase = getMoviesUseCase;
     this.getMovieByIdUseCase = getMovieByIdUseCase;
     this.getMovieBySlugUseCase = getMovieBySlugUseCase;
@@ -90,6 +93,7 @@ public class MovieController {
     this.searchMovieUseCase = searchMovieUseCase;
     this.advancedSearchMovieUseCase = advancedSearchMovieUseCase;
     this.getMovieDetailAggregateUseCase = getMovieDetailAggregateUseCase;
+    this.movieRepository = movieRepository;
   }
 
   @GetMapping
@@ -180,5 +184,12 @@ public class MovieController {
   public ResponseEntity<StudioResponse> getStudioById (
       @PathVariable @Positive(message = "Studio ID must be positive") Long id) {
     return ResponseUtil.ok(getStudioByIdUseCase.execute(id));
+  }
+
+  @PostMapping("/{id:[0-9]+}/view")
+  public ResponseEntity<Void> incrementView (
+      @PathVariable @Positive(message = "Movie ID must be positive") Long id) {
+    movieRepository.incrementViewCount(id);
+    return ResponseEntity.noContent().build();
   }
 }

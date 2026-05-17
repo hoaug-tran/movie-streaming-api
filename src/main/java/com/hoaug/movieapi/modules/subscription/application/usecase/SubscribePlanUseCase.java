@@ -50,4 +50,27 @@ public class SubscribePlanUseCase {
 
     return subscriptionMapper.toResponse(userSubscriptionRepository.save(subscription));
   }
+
+  public UserSubscriptionResponse executeForUser(Long userId, SubscribePlanRequest request) {
+    SubscriptionPlan plan = subscriptionPlanRepository.findById(request.getPlanId())
+        .orElseThrow(() -> new AppException(ErrorCode.SUBSCRIPTION_PLAN_NOT_FOUND));
+
+    if (!Boolean.TRUE.equals(plan.getIsActive())) {
+      throw new AppException(ErrorCode.SUBSCRIPTION_PLAN_INACTIVE);
+    }
+
+    LocalDateTime now = LocalDateTime.now();
+
+    UserSubscription subscription = new UserSubscription();
+    subscription.setUserId(userId);
+    subscription.setPlanId(plan.getId());
+    subscription.setStartAt(now);
+    subscription.setEndAt(now.plusDays(plan.getDurationDays()));
+    subscription.setStatus(SubscriptionStatus.ACTIVE);
+    subscription.setAutoRenew(request.getAutoRenew() != null ? request.getAutoRenew() : false);
+    subscription.setCreatedAt(now);
+    subscription.setUpdatedAt(now);
+
+    return subscriptionMapper.toResponse(userSubscriptionRepository.save(subscription));
+  }
 }

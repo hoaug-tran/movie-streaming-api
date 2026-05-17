@@ -1,5 +1,7 @@
 package com.hoaug.movieapi.modules.movie.application.dto.response;
 
+import java.util.List;
+
 import com.hoaug.movieapi.modules.movie.domain.model.EpisodeStatus;
 
 public class EpisodeResponse {
@@ -11,6 +13,7 @@ public class EpisodeResponse {
   private Integer durationSeconds;
   private Boolean isFreePreview;
   private EpisodeStatus status;
+  private List<String> availableQualities;
 
   public Long getId () {
     return id;
@@ -74,5 +77,13 @@ public class EpisodeResponse {
 
   public void setStatus (EpisodeStatus status) {
     this.status = status;
+  }
+
+  public List<String> getAvailableQualities () {
+    return availableQualities;
+  }
+
+  public void setAvailableQualities (List<String> availableQualities) {
+    this.availableQualities = availableQualities;
   }
 }

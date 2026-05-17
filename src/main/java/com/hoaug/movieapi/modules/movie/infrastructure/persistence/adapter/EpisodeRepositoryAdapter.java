@@ -28,6 +28,13 @@ public class EpisodeRepositoryAdapter implements EpisodeRepository {
   }
 
   @Override
+  public List<Episode> findAllByMovieId (Long movieId) {
+    return jpaEpisodeRepository
+        .findByMovieIdOrderByEpisodeNumberAsc(movieId).stream()
+        .map(this::toDomain).toList();
+  }
+
+  @Override
   public Optional<Episode> findById (Long id) {
     return jpaEpisodeRepository.findById(id).map(this::toDomain);
   }
@@ -49,6 +56,7 @@ public class EpisodeRepositoryAdapter implements EpisodeRepository {
     episode.setDurationSeconds(entity.getDurationSeconds());
     episode.setIsFreePreview(entity.getIsFreePreview());
     episode.setStatus(entity.getStatus());
+    episode.setAvailableQualities(entity.getAvailableQualities());
     episode.setCreatedAt(entity.getCreatedAt());
     episode.setUpdatedAt(entity.getUpdatedAt());
     return episode;
@@ -65,6 +73,7 @@ public class EpisodeRepositoryAdapter implements EpisodeRepository {
     entity.setDurationSeconds(episode.getDurationSeconds());
     entity.setIsFreePreview(episode.getIsFreePreview());
     entity.setStatus(episode.getStatus());
+    entity.setAvailableQualities(episode.getAvailableQualities());
     entity.setCreatedAt(episode.getCreatedAt());
     entity.setUpdatedAt(episode.getUpdatedAt());
     return entity;

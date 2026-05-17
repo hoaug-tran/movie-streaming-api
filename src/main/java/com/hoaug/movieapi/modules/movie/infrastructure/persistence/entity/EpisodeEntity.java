@@ -25,6 +25,9 @@ public class EpisodeEntity extends BaseEntity {
   @Column(name = "video_url", nullable = false, length = 500)
   private String videoUrl;
 
+  @Column(name = "available_qualities", length = 100)
+  private String availableQualities;
+
   @Column(name = "thumbnail_url", length = 500)
   private String thumbnailUrl;
 
@@ -68,6 +71,14 @@ public class EpisodeEntity extends BaseEntity {
 
   public void setVideoUrl (String videoUrl) {
     this.videoUrl = videoUrl;
+  }
+
+  public String getAvailableQualities () {
+    return availableQualities;
+  }
+
+  public void setAvailableQualities (String availableQualities) {
+    this.availableQualities = availableQualities;
   }
 
   public String getThumbnailUrl () {

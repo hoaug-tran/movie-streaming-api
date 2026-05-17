@@ -121,6 +121,14 @@ public class SubscriptionController {
     return ResponseUtil.ok(getActiveSubscriptionPlansUseCase.execute());
   }
 
+  @PreAuthorize("hasRole('ADMIN')")
+  @PostMapping("/admin/assign/{userId}")
+  public ResponseEntity<UserSubscriptionResponse> adminAssignSubscription(
+      @PathVariable Long userId,
+      @Valid @RequestBody SubscribePlanRequest request) {
+    return ResponseEntity.ok(subscribePlanUseCase.executeForUser(userId, request));
+  }
+
   @PostMapping("/subscribe")
   public ResponseEntity<UserSubscriptionResponse> subscribe (Authentication authentication,
       @Valid @RequestBody SubscribePlanRequest request) {

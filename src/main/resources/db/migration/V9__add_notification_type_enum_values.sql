@@ -1,0 +1,13 @@
+ALTER TABLE `notifications`
+  MODIFY COLUMN `type` ENUM(
+    'NEW_EPISODE',
+    'PAYMENT_FAILED',
+    'PAYMENT_SUCCESS',
+    'PREMIUM_EXPIRING',
+    'SUBSCRIPTION_EXPIRED',
+    'COMMENT_REPLY',
+    'COMMENT_LIKE',
+    'REVIEW_LIKE',
+    'HOT_MOVIES',
+    'SYSTEM'
+  ) COLLATE utf8mb4_unicode_ci NOT NULL;
