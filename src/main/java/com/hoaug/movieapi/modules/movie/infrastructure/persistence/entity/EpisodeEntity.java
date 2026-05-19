@@ -41,6 +41,9 @@ public class EpisodeEntity extends BaseEntity {
   @Column(nullable = false, length = 20)
   private EpisodeStatus status;
 
+  @Column(name = "transcode_version", length = 16)
+  private String transcodeVersion;
+
   public Long getMovieId () {
     return movieId;
   }
@@ -111,5 +114,13 @@ public class EpisodeEntity extends BaseEntity {
 
   public void setStatus (EpisodeStatus status) {
     this.status = status;
+  }
+
+  public String getTranscodeVersion () {
+    return transcodeVersion;
+  }
+
+  public void setTranscodeVersion (String transcodeVersion) {
+    this.transcodeVersion = transcodeVersion;
   }
 }
