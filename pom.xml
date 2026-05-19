@@ -128,15 +128,8 @@
       <version>4.11.0</version>
     </dependency>
 
-    <!-- Jackson for JSON processing -->
-    <dependency>
-      <groupId>com.fasterxml.jackson.core</groupId>
-      <artifactId>jackson-databind</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>com.fasterxml.jackson.datatype</groupId>
-      <artifactId>jackson-datatype-jsr310</artifactId>
-    </dependency>
+    <!-- Jackson 3 (tools.jackson.*) is provided transitively by spring-boot-starter-jackson -->
+    <!-- JavaTime support is built-in for Jackson 3, no jsr310 module needed -->
 
     <!-- Spring Boot Test -->
     <dependency>
@@ -182,6 +175,18 @@
       <groupId>org.springdoc</groupId>
       <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
       <version>2.5.0</version>
+    </dependency>
+
+    <!-- Web Push (VAPID) -->
+    <dependency>
+      <groupId>nl.martijndwars</groupId>
+      <artifactId>web-push</artifactId>
+      <version>5.1.1</version>
+    </dependency>
+    <dependency>
+      <groupId>org.bouncycastle</groupId>
+      <artifactId>bcprov-jdk18on</artifactId>
+      <version>1.78.1</version>
     </dependency>
   </dependencies>
 

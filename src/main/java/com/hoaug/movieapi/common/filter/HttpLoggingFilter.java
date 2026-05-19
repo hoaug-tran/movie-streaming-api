@@ -4,6 +4,8 @@ import java.io.IOException;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.core.Ordered;
+import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
@@ -13,6 +15,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
 @Component
+@Order(Ordered.HIGHEST_PRECEDENCE)
 public class HttpLoggingFilter extends OncePerRequestFilter {
 
   private static final Logger logger = LoggerFactory.getLogger(HttpLoggingFilter.class);
@@ -20,6 +23,14 @@ public class HttpLoggingFilter extends OncePerRequestFilter {
   public static volatile long lastResponseTime = 0;
   public static volatile long totalRequests = 0;
   public static volatile long activeRequests = 0;
+
+  @Override
+  protected boolean shouldNotFilter (HttpServletRequest request) {
+    String uri = request.getRequestURI();
+    return uri.equals("/error")
+        || uri.startsWith("/actuator")
+        || uri.startsWith("/favicon");
+  }
 
   @Override
   protected void doFilterInternal (HttpServletRequest request, HttpServletResponse response,
