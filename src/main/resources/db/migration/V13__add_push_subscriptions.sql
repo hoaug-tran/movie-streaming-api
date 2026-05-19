@@ -1,0 +1,11 @@
+CREATE TABLE IF NOT EXISTS push_subscriptions (
+  id          BIGINT AUTO_INCREMENT PRIMARY KEY,
+  user_id     BIGINT UNSIGNED NOT NULL,
+  endpoint    TEXT         NOT NULL,
+  p256dh      VARCHAR(255) DEFAULT NULL,
+  auth        VARCHAR(255) DEFAULT NULL,
+  created_at  DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  updated_at  DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  CONSTRAINT fk_push_sub_user FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE,
+  UNIQUE KEY uq_push_endpoint (user_id, endpoint(255))
+);

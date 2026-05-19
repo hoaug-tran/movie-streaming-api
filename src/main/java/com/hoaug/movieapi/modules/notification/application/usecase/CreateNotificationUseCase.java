@@ -10,6 +10,7 @@ import com.hoaug.movieapi.modules.email.application.EmailService;
 import com.hoaug.movieapi.modules.notification.application.dto.request.CreateNotificationRequest;
 import com.hoaug.movieapi.modules.notification.application.dto.response.NotificationResponse;
 import com.hoaug.movieapi.modules.notification.application.mapper.NotificationMapper;
+import com.hoaug.movieapi.modules.notification.application.service.WebPushService;
 import com.hoaug.movieapi.modules.notification.domain.model.Notification;
 import com.hoaug.movieapi.modules.notification.domain.model.NotificationType;
 import com.hoaug.movieapi.modules.notification.domain.repository.NotificationRepository;
@@ -25,15 +26,18 @@ public class CreateNotificationUseCase {
   private final NotificationMapper notificationMapper;
   private final EmailService emailService;
   private final UserRepository userRepository;
+  private final WebPushService webPushService;
 
   public CreateNotificationUseCase(NotificationRepository notificationRepository,
       NotificationMapper notificationMapper,
       EmailService emailService,
-      UserRepository userRepository) {
+      UserRepository userRepository,
+      WebPushService webPushService) {
     this.notificationRepository = notificationRepository;
     this.notificationMapper = notificationMapper;
     this.emailService = emailService;
     this.userRepository = userRepository;
+    this.webPushService = webPushService;
   }
 
   public NotificationResponse execute(CreateNotificationRequest request) {
@@ -67,6 +71,12 @@ public class CreateNotificationUseCase {
       } catch (Exception e) {
         log.warn("Failed to send email notification to userId={}: {}", request.getUserId(), e.getMessage());
       }
+    }
+
+    try {
+      webPushService.sendToUser(request.getUserId(), request.getTitle(), request.getContent(), request.getActionUrl());
+    } catch (Exception e) {
+      log.warn("Failed to send web push to userId={}: {}", request.getUserId(), e.getMessage());
     }
 
     // If only email was sent (no in-app), create a minimal notification record for tracking

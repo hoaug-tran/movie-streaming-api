@@ -9,6 +9,7 @@ import org.springframework.stereotype.Component;
 
 import com.hoaug.movieapi.modules.email.application.EmailService;
 import com.hoaug.movieapi.modules.notification.application.dto.request.BroadcastNotificationRequest;
+import com.hoaug.movieapi.modules.notification.application.service.WebPushService;
 import com.hoaug.movieapi.modules.notification.domain.model.Notification;
 import com.hoaug.movieapi.modules.notification.domain.model.NotificationType;
 import com.hoaug.movieapi.modules.notification.domain.repository.NotificationRepository;
@@ -20,11 +21,14 @@ public class BroadcastNotificationUseCase {
 
   private final NotificationRepository notificationRepository;
   private final EmailService emailService;
+  private final WebPushService webPushService;
 
   public BroadcastNotificationUseCase(NotificationRepository notificationRepository,
-      EmailService emailService) {
+      EmailService emailService,
+      WebPushService webPushService) {
     this.notificationRepository = notificationRepository;
     this.emailService = emailService;
+    this.webPushService = webPushService;
   }
 
   public int execute(BroadcastNotificationRequest request) {
@@ -67,7 +71,12 @@ public class BroadcastNotificationUseCase {
       }
     }
 
-    // Return total affected: in-app user count or email count, whichever is larger
+    try {
+      webPushService.sendToAll(request.getTitle(), request.getContent(), request.getActionUrl());
+    } catch (Exception e) {
+      log.warn("Failed to send broadcast web push: {}", e.getMessage());
+    }
+
     if (sendInApp && sendEmail) {
       return Math.max(notificationRepository.findAllActiveUserIds().size(), emailCount);
     } else if (sendEmail) {
