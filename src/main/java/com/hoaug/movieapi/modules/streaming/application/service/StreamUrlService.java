@@ -40,6 +40,10 @@ public class StreamUrlService {
     return joinApiUrl("/stream/keys/series/episodes/" + episodeId + "/" + quality);
   }
 
+  public String episodeSegmentUrl (Long episodeId, String quality, String segmentFilename) {
+    return joinBaseUrl("/stream/series/episodes/" + episodeId + "/" + quality + "/" + segmentFilename);
+  }
+
   public String advertisementKeyUrl (Long advertisementId) {
     return joinApiUrl("/stream/keys/ads/advertisements/" + advertisementId);
   }

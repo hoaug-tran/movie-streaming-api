@@ -65,6 +65,45 @@ public class Mp4StorageService {
     return store(file, Path.of(properties.getAdsDataDirectory()), "advertisements", advertisementId);
   }
 
+  public Path resolveEpisodeDestination (Long episodeId, String originalFileName) {
+    return resolveDestination(Path.of(properties.getSeriesDataDirectory()), "episodes", episodeId,
+        originalFileName);
+  }
+
+  public Path resolveMovieDestination (Long movieId, String originalFileName) {
+    return resolveDestination(Path.of(properties.getMoviesDataDirectory()), null, movieId,
+        originalFileName);
+  }
+
+  public Path resolveAdvertisementDestination (Long advertisementId, String originalFileName) {
+    return resolveDestination(Path.of(properties.getAdsDataDirectory()), "advertisements",
+        advertisementId, originalFileName);
+  }
+
+  private Path resolveDestination (Path rootDirectory, String typeDirectory, Long id,
+      String originalFileName) {
+    String ext = extensionOf(originalFileName);
+    if (!ALLOWED_EXTENSIONS.contains(ext)) {
+      throw new AppException(ErrorCode.BAD_REQUEST);
+    }
+    Path root = rootDirectory.toAbsolutePath().normalize();
+    Path destinationDirectory = typeDirectory != null
+        ? root.resolve(typeDirectory).resolve(String.valueOf(id)).normalize()
+        : root.resolve(String.valueOf(id)).normalize();
+    Path destination = destinationDirectory.resolve("source" + ext).normalize();
+    if (!destination.startsWith(root)) {
+      throw new AppException(ErrorCode.BAD_REQUEST);
+    }
+    return destination;
+  }
+
+  private String extensionOf (String originalFileName) {
+    String name = originalFileName != null ? originalFileName : "";
+    int dot = name.lastIndexOf('.');
+    if (dot < 0) return ".mp4";
+    return name.substring(dot).toLowerCase(Locale.ROOT);
+  }
+
   private Path store (MultipartFile file, Path rootDirectory, String typeDirectory, Long id) {
     validate(file);
     String ext = resolveExtension(file);
