@@ -88,6 +88,15 @@ public class MovieRecommendationController {
     return ResponseUtil.ok(generateRecommendationsUseCase.execute(request));
   }
 
+  @PostMapping("/me/refresh")
+  public ResponseEntity<List<MovieRecommendationResponse>> refreshMyRecommendations (
+      Authentication authentication) {
+    GenerateRecommendationsRequest request = new GenerateRecommendationsRequest();
+    request.setUserId(getCurrentUserId(authentication));
+    request.setLimit(12);
+    return ResponseUtil.ok(generateRecommendationsUseCase.execute(request));
+  }
+
   private Long getCurrentUserId (Authentication authentication) {
     User user = authUserRepository.findByUsername(authentication.getName())
         .orElseThrow( () -> new AppException(ErrorCode.USER_NOT_FOUND));
