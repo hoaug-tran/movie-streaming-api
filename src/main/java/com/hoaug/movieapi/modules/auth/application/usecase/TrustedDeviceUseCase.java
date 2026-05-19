@@ -7,6 +7,7 @@ import java.util.UUID;
 import org.springframework.http.ResponseCookie;
 import org.springframework.stereotype.Component;
 
+import com.hoaug.movieapi.common.util.CookieUtil;
 import com.hoaug.movieapi.modules.auth.application.dto.response.AuthResponse;
 import com.hoaug.movieapi.modules.auth.domain.model.RefreshToken;
 import com.hoaug.movieapi.modules.auth.domain.repository.RefreshTokenRepository;
@@ -21,11 +22,13 @@ public class TrustedDeviceUseCase {
 
   private final RefreshTokenRepository refreshTokenRepository;
   private final TokenService tokenService;
+  private final CookieUtil cookieUtil;
 
   public TrustedDeviceUseCase(RefreshTokenRepository refreshTokenRepository,
-      TokenService tokenService) {
+      TokenService tokenService, CookieUtil cookieUtil) {
     this.refreshTokenRepository = refreshTokenRepository;
     this.tokenService = tokenService;
+    this.cookieUtil = cookieUtil;
   }
 
   public boolean isTrusted (Long userId, String token) {
@@ -78,12 +81,6 @@ public class TrustedDeviceUseCase {
   }
 
   public ResponseCookie buildDeviceCookie (String deviceToken) {
-    return ResponseCookie.from(COOKIE_NAME, deviceToken)
-        .httpOnly(true)
-        .secure(false)
-        .sameSite("Lax")
-        .path("/")
-        .maxAge(COOKIE_MAX_AGE)
-        .build();
+    return cookieUtil.buildCookie(COOKIE_NAME, deviceToken, COOKIE_MAX_AGE);
   }
 }

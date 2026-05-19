@@ -25,11 +25,13 @@ import com.hoaug.movieapi.modules.auth.application.usecase.ExchangeOAuthTokenUse
 public class OAuthController {
   private final ExchangeOAuthTokenUseCase exchangeOAuthTokenUseCase;
   private final GoogleOAuthClient googleOAuthClient;
+  private final CookieUtil cookieUtil;
 
   public OAuthController(ExchangeOAuthTokenUseCase exchangeOAuthTokenUseCase,
-      GoogleOAuthClient googleOAuthClient) {
+      GoogleOAuthClient googleOAuthClient, CookieUtil cookieUtil) {
     this.exchangeOAuthTokenUseCase = exchangeOAuthTokenUseCase;
     this.googleOAuthClient = googleOAuthClient;
+    this.cookieUtil = cookieUtil;
   }
 
   @PostMapping("/callback/google")
@@ -48,7 +50,7 @@ public class OAuthController {
         googleUserInfo.getRefreshToken(), googleUserInfo.getTokenExpiry(),
         googleUserInfo.getIdToken());
 
-    CookieUtil.setAuthCookies(response, authResponse);
+    cookieUtil.setAuthCookies(response, authResponse);
 
     return ResponseUtil.ok(authResponse);
   }

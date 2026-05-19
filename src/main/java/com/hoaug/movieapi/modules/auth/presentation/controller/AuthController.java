@@ -55,6 +55,7 @@ public class AuthController {
   private final ResetPasswordUseCase resetPasswordUseCase;
   private final ChangePasswordUseCase changePasswordUseCase;
   private final StartChangePasswordUseCase startChangePasswordUseCase;
+  private final CookieUtil cookieUtil;
 
   public AuthController(RegisterUseCase registerUseCase, LoginUseCase loginUseCase,
       VerifyLoginOtpUseCase verifyLoginOtpUseCase,
@@ -62,7 +63,7 @@ public class AuthController {
       GetCurrentUserUseCase getCurrentUserUseCase, RefreshTokenUseCase refreshTokenUseCase,
       LogoutUseCase logoutUseCase, ForgotPasswordUseCase forgotPasswordUseCase,
       ResetPasswordUseCase resetPasswordUseCase, ChangePasswordUseCase changePasswordUseCase,
-      StartChangePasswordUseCase startChangePasswordUseCase) {
+      StartChangePasswordUseCase startChangePasswordUseCase, CookieUtil cookieUtil) {
     this.registerUseCase = registerUseCase;
     this.loginUseCase = loginUseCase;
     this.verifyLoginOtpUseCase = verifyLoginOtpUseCase;
@@ -74,6 +75,7 @@ public class AuthController {
     this.resetPasswordUseCase = resetPasswordUseCase;
     this.changePasswordUseCase = changePasswordUseCase;
     this.startChangePasswordUseCase = startChangePasswordUseCase;
+    this.cookieUtil = cookieUtil;
   }
 
   @PostMapping("/register")
@@ -85,7 +87,7 @@ public class AuthController {
   public ResponseEntity<AuthResponse> verifyRegisterOtp (@Valid @RequestBody VerifyOtpRequest request,
       HttpServletResponse response) {
     AuthResponse authResponse = verifyRegisterOtpUseCase.execute(request);
-    CookieUtil.setAuthCookies(response, authResponse);
+    cookieUtil.setAuthCookies(response, authResponse);
     return ResponseUtil.ok(authResponse);
   }
 
@@ -95,7 +97,7 @@ public class AuthController {
     String trustedDeviceToken = CookieUtil.getCookieValue(httpRequest, "trusted_device");
     LoginResult result = loginUseCase.execute(request, trustedDeviceToken);
     if (result.isDirectAuth()) {
-      CookieUtil.setAuthCookies(response, result.getAuthResponse());
+      cookieUtil.setAuthCookies(response, result.getAuthResponse());
       return ResponseUtil.ok(result.getAuthResponse());
     }
     return ResponseUtil.ok(result.getOtpChallenge());
@@ -105,7 +107,7 @@ public class AuthController {
   public ResponseEntity<AuthResponse> verifyLoginOtp (@Valid @RequestBody VerifyOtpRequest request,
       HttpServletRequest httpRequest, HttpServletResponse response) {
     VerifyLoginOtpUseCase.Result result = verifyLoginOtpUseCase.execute(request);
-    CookieUtil.setAuthCookies(response, result.authResponse());
+    cookieUtil.setAuthCookies(response, result.authResponse());
     if (result.trustedDeviceCookie() != null) {
       CookieUtil.addCookie(response, result.trustedDeviceCookie());
     }
@@ -128,7 +130,7 @@ public class AuthController {
     AuthResponse authTokens = new AuthResponse();
     authTokens.setAccessToken(refreshTokenResponse.getAccessToken());
     authTokens.setRefreshToken(refreshTokenResponse.getRefreshToken());
-    CookieUtil.setAuthCookies(response, authTokens);
+    cookieUtil.setAuthCookies(response, authTokens);
 
     return ResponseUtil.ok(refreshTokenResponse);
   }
@@ -147,7 +149,7 @@ public class AuthController {
       logoutUseCase.execute(tokenToRevoke);
     }
 
-    CookieUtil.clearAuthCookies(response);
+    cookieUtil.clearAuthCookies(response);
     return ResponseUtil.ok(new MessageResponse("Đăng xuất thành công"));
   }
 

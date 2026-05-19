@@ -7,7 +7,7 @@ import java.util.Optional;
 
 import org.springframework.stereotype.Component;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.databind.ObjectMapper;
 import com.hoaug.movieapi.common.enums.ErrorCode;
 import com.hoaug.movieapi.common.exception.AppException;
 import com.hoaug.movieapi.modules.auth.domain.model.OAuthCredential;
@@ -113,7 +113,7 @@ public class OAuthCredentialRepositoryAdapter implements OAuthCredentialReposito
     if (entity.getProfileData() != null && !entity.getProfileData().isEmpty()) {
       try {
         Map<String, Object> profileData = objectMapper.readValue(entity.getProfileData(),
-            new com.fasterxml.jackson.core.type.TypeReference<Map<String, Object>>() {
+            new tools.jackson.core.type.TypeReference<Map<String, Object>>() {
             });
         credential.setProfileData(profileData);
       } catch (Exception e) {

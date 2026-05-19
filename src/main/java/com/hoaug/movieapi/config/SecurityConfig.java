@@ -47,6 +47,7 @@ public class SecurityConfig {
             // Public endpoints - no auth needed
             .requestMatchers("/api/v1/auth/me").authenticated().requestMatchers("/api/v1/auth/**")
             .permitAll().requestMatchers(HttpMethod.GET, "/api/v1/movies/**").permitAll()
+            .requestMatchers(HttpMethod.POST, "/api/v1/movies/*/view").permitAll()
             .requestMatchers(HttpMethod.POST, "/api/v1/movies/search", "/api/v1/movies/search/advanced").permitAll()
             .requestMatchers(HttpMethod.GET, "/api/v1/movies/categories").permitAll()
             .requestMatchers("/api/v1/subscription-plans/**").permitAll()
@@ -59,7 +60,10 @@ public class SecurityConfig {
             .requestMatchers(HttpMethod.GET, "/api/v1/search-histories/search").permitAll()
             .requestMatchers("/api/v1/discovery/**").permitAll()
             .requestMatchers("/actuator/health").permitAll()
+            .requestMatchers(HttpMethod.GET, "/api/v1/system/status").permitAll()
+            .requestMatchers(HttpMethod.POST, "/api/v1/support/contact").permitAll()
             .requestMatchers(HttpMethod.GET, "/avatar/**").permitAll()
+            .requestMatchers("/api/v1/chat/**").permitAll()
             .requestMatchers("/swagger-ui/**", "/v3/api-docs/**", "/swagger-resources/**")
             .permitAll()
 
@@ -71,7 +75,9 @@ public class SecurityConfig {
             .requestMatchers("/api/v1/watch-histories/**").authenticated()
             .requestMatchers("/api/v1/watchlists/**").authenticated()
             .requestMatchers("/api/v1/favorites/**").authenticated()
+            .requestMatchers(HttpMethod.GET, "/api/v1/comments/movie/**").permitAll()
             .requestMatchers("/api/v1/comments/**").authenticated()
+            .requestMatchers(HttpMethod.GET, "/api/v1/reviews/movie/**").permitAll()
             .requestMatchers("/api/v1/reviews/**").authenticated()
             .requestMatchers("/api/v1/payments/**").authenticated()
             .requestMatchers("/api/v1/subscriptions/**").authenticated()
@@ -79,7 +85,10 @@ public class SecurityConfig {
             .requestMatchers("/api/v1/device-sessions/**").authenticated()
             .requestMatchers("/api/v1/recommendations/**").authenticated()
             .requestMatchers(HttpMethod.GET, "/api/v1/stream/keys/**").permitAll()
+            .requestMatchers(HttpMethod.GET, "/api/v1/stream/offline/key/**").permitAll()
+            .requestMatchers(HttpMethod.GET, "/api/v1/stream/offline/**").authenticated()
             .requestMatchers("/api/v1/stream/sessions/**").authenticated()
+            .requestMatchers("/api/v1/push/**").authenticated()
             .requestMatchers("/api/v1/search-histories/**").authenticated()
 
             // Default deny
