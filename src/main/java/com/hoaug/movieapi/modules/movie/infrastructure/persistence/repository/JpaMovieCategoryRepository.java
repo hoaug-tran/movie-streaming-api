@@ -11,5 +11,9 @@ public interface JpaMovieCategoryRepository
     extends JpaRepository<MovieCategoryEntity, MovieCategoryId> {
   List<MovieCategoryEntity> findByMovieId (Long movieId);
 
+  List<MovieCategoryEntity> findByMovieIdIn (java.util.Collection<Long> movieIds);
+
+  List<MovieCategoryEntity> findByCategoryIdIn (java.util.Collection<Long> categoryIds);
+
   void deleteByMovieIdAndCategoryId (Long movieId, Long categoryId);
 }

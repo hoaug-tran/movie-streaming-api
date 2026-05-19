@@ -118,4 +118,20 @@ public interface JpaMovieRepository extends JpaRepository<MovieEntity, Long> {
 
   @Query("SELECT COALESCE(AVG(m.averageRating), 0) FROM MovieEntity m")
   java.math.BigDecimal averageRatingAcrossCatalog ();
+
+  @Query("SELECT m FROM MovieEntity m WHERE m.movieStatus = 'PUBLISHED' " +
+         "AND (:keyword IS NULL OR LOWER(m.title) LIKE LOWER(CONCAT('%', :keyword, '%'))) " +
+         "AND (:categoryId IS NULL OR EXISTS (SELECT 1 FROM MovieCategoryEntity mc WHERE mc.movieId = m.id AND mc.categoryId = :categoryId)) " +
+         "AND (:movieType IS NULL OR CAST(m.movieType AS string) = :movieType) " +
+         "AND (:fromYear IS NULL OR m.releaseYear >= :fromYear) " +
+         "AND (:toYear IS NULL OR m.releaseYear <= :toYear) " +
+         "AND (:minRating IS NULL OR m.averageRating >= :minRating)")
+  Page<MovieEntity> searchAdvanced(
+      @Param("keyword") String keyword,
+      @Param("categoryId") Long categoryId,
+      @Param("movieType") String movieType,
+      @Param("fromYear") Integer fromYear,
+      @Param("toYear") Integer toYear,
+      @Param("minRating") java.math.BigDecimal minRating,
+      Pageable pageable);
 }

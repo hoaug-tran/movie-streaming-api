@@ -1,5 +1,6 @@
 package com.hoaug.movieapi.modules.movie.application.usecase;
 
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Component;
 
 import com.hoaug.movieapi.common.enums.ErrorCode;
@@ -34,6 +35,7 @@ public class GetMovieBySlugUseCase {
     this.getMovieStudiosUseCase = getMovieStudiosUseCase;
   }
 
+  @Cacheable(cacheNames = "movieDetailBySlug", key = "#slug", unless = "#result == null")
   public MovieDetailResponse execute (String slug) {
     Movie movie = movieRepository.findPublishedBySlug(slug)
         .orElseThrow( () -> new AppException(ErrorCode.MOVIE_NOT_FOUND));

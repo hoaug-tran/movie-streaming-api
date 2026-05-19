@@ -2,7 +2,10 @@ package com.hoaug.movieapi.modules.movie.presentation.controller;
 
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -11,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.hoaug.movieapi.common.response.ResponseUtil;
+import com.hoaug.movieapi.modules.auth.domain.repository.AuthUserRepository;
 import com.hoaug.movieapi.modules.movie.domain.repository.MovieRepository;
 import com.hoaug.movieapi.modules.movie.application.dto.request.SearchMovieRequest;
 import com.hoaug.movieapi.modules.movie.application.dto.response.CategoryResponse;
@@ -40,12 +44,16 @@ import com.hoaug.movieapi.modules.movie.application.usecase.GetPersonsUseCase;
 import com.hoaug.movieapi.modules.movie.application.usecase.GetStudioByIdUseCase;
 import com.hoaug.movieapi.modules.movie.application.usecase.GetStudiosUseCase;
 import com.hoaug.movieapi.modules.movie.application.usecase.SearchMovieUseCase;
+import com.hoaug.movieapi.modules.searchhistory.application.usecase.CreateSearchHistoryUseCase;
+import com.hoaug.movieapi.modules.user.domain.model.User;
 
 import jakarta.validation.constraints.Positive;
 
 @RestController
 @RequestMapping("${api.prefix:/api/v1}/movies")
 public class MovieController {
+
+  private static final Logger log = LoggerFactory.getLogger(MovieController.class);
 
   private final GetMoviesUseCase getMoviesUseCase;
   private final GetMovieByIdUseCase getMovieByIdUseCase;
@@ -64,6 +72,8 @@ public class MovieController {
   private final AdvancedSearchMovieUseCase advancedSearchMovieUseCase;
   private final GetMovieDetailAggregateUseCase getMovieDetailAggregateUseCase;
   private final MovieRepository movieRepository;
+  private final CreateSearchHistoryUseCase createSearchHistoryUseCase;
+  private final AuthUserRepository authUserRepository;
 
   public MovieController(GetMoviesUseCase getMoviesUseCase, GetMovieByIdUseCase getMovieByIdUseCase,
       GetMovieBySlugUseCase getMovieBySlugUseCase,
@@ -76,7 +86,9 @@ public class MovieController {
       GetStudioByIdUseCase getStudioByIdUseCase, SearchMovieUseCase searchMovieUseCase,
       AdvancedSearchMovieUseCase advancedSearchMovieUseCase,
       GetMovieDetailAggregateUseCase getMovieDetailAggregateUseCase,
-      MovieRepository movieRepository) {
+      MovieRepository movieRepository,
+      CreateSearchHistoryUseCase createSearchHistoryUseCase,
+      AuthUserRepository authUserRepository) {
     this.getMoviesUseCase = getMoviesUseCase;
     this.getMovieByIdUseCase = getMovieByIdUseCase;
     this.getMovieBySlugUseCase = getMovieBySlugUseCase;
@@ -94,6 +106,8 @@ public class MovieController {
     this.advancedSearchMovieUseCase = advancedSearchMovieUseCase;
     this.getMovieDetailAggregateUseCase = getMovieDetailAggregateUseCase;
     this.movieRepository = movieRepository;
+    this.createSearchHistoryUseCase = createSearchHistoryUseCase;
+    this.authUserRepository = authUserRepository;
   }
 
   @GetMapping
@@ -107,14 +121,39 @@ public class MovieController {
   }
 
   @PostMapping("/search")
-  public ResponseEntity<SearchMovieResponse> search (@RequestBody SearchMovieRequest request) {
-    return ResponseUtil.ok(searchMovieUseCase.execute(request));
+  public ResponseEntity<SearchMovieResponse> search (@RequestBody SearchMovieRequest request,
+      Authentication authentication) {
+    SearchMovieResponse response = searchMovieUseCase.execute(request);
+    recordSearchKeyword(authentication, request);
+    return ResponseUtil.ok(response);
   }
 
   @PostMapping("/search/advanced")
   public ResponseEntity<SearchMovieResponse> advancedSearch (
-      @RequestBody SearchMovieRequest request) {
-    return ResponseUtil.ok(advancedSearchMovieUseCase.execute(request));
+      @RequestBody SearchMovieRequest request, Authentication authentication) {
+    SearchMovieResponse response = advancedSearchMovieUseCase.execute(request);
+    recordSearchKeyword(authentication, request);
+    return ResponseUtil.ok(response);
+  }
+
+  private void recordSearchKeyword (Authentication authentication, SearchMovieRequest request) {
+    if (authentication == null || !authentication.isAuthenticated() || request == null) {
+      return;
+    }
+    String keyword = request.getKeyword();
+    if (keyword == null || keyword.trim().isEmpty()) {
+      return;
+    }
+    try {
+      String username = authentication.getName();
+      if (username == null || username.isBlank() || "anonymousUser".equalsIgnoreCase(username)) {
+        return;
+      }
+      authUserRepository.findByUsername(username).map(User::getId)
+          .ifPresent(userId -> createSearchHistoryUseCase.recordKeyword(userId, keyword));
+    } catch (Exception ex) {
+      log.warn("Failed to persist search history for keyword='{}': {}", keyword, ex.getMessage());
+    }
   }
 
   @GetMapping("/{id:[0-9]+}")

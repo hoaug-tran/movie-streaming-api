@@ -3,7 +3,8 @@ package com.hoaug.movieapi.support;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.json.JsonMapper;
 
 /**
  * Base service/usecase test class providing common setup for all service layer tests. Uses Mockito
@@ -12,7 +13,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 @ExtendWith(MockitoExtension.class)
 public abstract class AbstractServiceTest {
 
-  protected ObjectMapper objectMapper = new ObjectMapper();
+  protected ObjectMapper objectMapper = JsonMapper.builder().build();
 
   /**
    * Converts an object to JSON string.

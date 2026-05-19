@@ -26,7 +26,7 @@ public class EmailService {
   private final JavaMailSender mailSender;
   private final EmailTemplateProvider emailTemplateProvider;
 
-  @Value("${mail.from.email:noreply@giophim.com}")
+  @Value("${mail.from.email:noreply@giophim.libsys.me}")
   private String fromEmail;
 
   @Value("${mail.from.name:Gio Phim}")

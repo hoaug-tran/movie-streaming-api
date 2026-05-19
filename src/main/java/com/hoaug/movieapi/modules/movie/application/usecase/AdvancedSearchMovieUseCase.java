@@ -12,7 +12,6 @@ import org.springframework.stereotype.Component;
 import com.hoaug.movieapi.modules.movie.application.dto.request.SearchMovieRequest;
 import com.hoaug.movieapi.modules.movie.application.dto.response.MovieBasicResponse;
 import com.hoaug.movieapi.modules.movie.application.dto.response.SearchMovieResponse;
-import com.hoaug.movieapi.modules.movie.domain.model.MovieStatus;
 import com.hoaug.movieapi.modules.movie.infrastructure.persistence.entity.MovieEntity;
 import com.hoaug.movieapi.modules.movie.infrastructure.persistence.repository.JpaMovieRepository;
 
@@ -27,35 +26,29 @@ public class AdvancedSearchMovieUseCase {
     this.getMovieCategoriesUseCase = getMovieCategoriesUseCase;
   }
 
-  @Cacheable(cacheNames = "searchResults", key = "#request.keyword + ':' + #request.page + ':' + #request.size + ':' + #request.fromYear + ':' + #request.toYear + ':' + #request.minRating + ':' + #request.sortBy + ':' + #request.sortDirection")
+  @Cacheable(cacheNames = "searchResults", key = "#request.keyword + ':' + #request.categoryId + ':' + #request.movieType + ':' + #request.page + ':' + #request.size + ':' + #request.fromYear + ':' + #request.toYear + ':' + #request.minRating + ':' + #request.sortBy + ':' + #request.sortDirection")
   public SearchMovieResponse execute (SearchMovieRequest request) {
-    Sort.Direction direction = "DESC".equalsIgnoreCase(request.getSortDirection())
-        ? Sort.Direction.DESC
-        : Sort.Direction.ASC;
-    Sort sort = Sort.by(direction, request.getSortBy() != null ? request.getSortBy() : "createdAt");
+    Sort.Direction direction = "ASC".equalsIgnoreCase(request.getSortDirection())
+        ? Sort.Direction.ASC
+        : Sort.Direction.DESC;
+    Sort sort = Sort.by(direction, request.getSortBy() != null && !request.getSortBy().isEmpty() ? request.getSortBy() : "createdAt");
     Pageable pageable = PageRequest.of(request.getPage() != null ? request.getPage() : 0,
         request.getSize() != null ? request.getSize() : 20, sort);
 
-    Page<MovieEntity> page = jpaMovieRepository.findByMovieStatus(MovieStatus.PUBLISHED, pageable);
+    String keyword = request.getKeyword() != null && !request.getKeyword().isEmpty() ? request.getKeyword() : null;
+    java.math.BigDecimal minRating = request.getMinRating() != null ? BigDecimal.valueOf(request.getMinRating()) : null;
 
-    if (request.getKeyword() != null && !request.getKeyword().isEmpty()) {
-      page = jpaMovieRepository.findByMovieStatusAndTitleContaining(MovieStatus.PUBLISHED,
-          request.getKeyword(), pageable);
-    }
+    Page<MovieEntity> page = jpaMovieRepository.searchAdvanced(
+        keyword,
+        request.getCategoryId(),
+        request.getMovieType(),
+        request.getFromYear(),
+        request.getToYear(),
+        minRating,
+        pageable
+    );
 
-    var content = page.getContent().stream().filter(movie -> {
-      if (request.getFromYear() != null && movie.getReleaseYear() < request.getFromYear()) {
-        return false;
-      }
-      if (request.getToYear() != null && movie.getReleaseYear() > request.getToYear()) {
-        return false;
-      }
-      if (request.getMinRating() != null
-          && movie.getAverageRating().compareTo(BigDecimal.valueOf(request.getMinRating())) < 0) {
-        return false;
-      }
-      return true;
-    }).map(this::toBasicResponse).toList();
+    var content = page.getContent().stream().map(this::toBasicResponse).toList();
 
     return new SearchMovieResponse(content, page.getTotalPages(), page.getTotalElements(),
         page.getNumber(), page.getSize());

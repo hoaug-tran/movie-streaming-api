@@ -18,8 +18,10 @@ public class DeleteMovieUseCase {
   }
 
   @Caching(evict = {
-      @CacheEvict(cacheNames = "movies", key = "'all_published_movies'"),
-      @CacheEvict(cacheNames = "movieDetail", key = "#movieId")
+      @CacheEvict(cacheNames = "movies", allEntries = true),
+      @CacheEvict(cacheNames = "movieDetail", key = "#movieId"),
+      @CacheEvict(cacheNames = "movieDetailBySlug", allEntries = true),
+      @CacheEvict(cacheNames = "searchResults", allEntries = true)
   })
   public void execute (Long movieId) {
     movieRepository.findById(movieId)

@@ -2,6 +2,7 @@ package com.hoaug.movieapi.modules.watchhistory.application.usecase;
 
 import java.time.LocalDateTime;
 
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Component;
 
 import com.hoaug.movieapi.common.enums.ErrorCode;
@@ -76,7 +77,21 @@ public class UpsertWatchHistoryUseCase {
     watchHistory.setLastWatchedAt(now);
     watchHistory.setUpdatedAt(now);
 
-    WatchHistory saved = watchHistoryRepository.save(watchHistory);
+    WatchHistory saved;
+    try {
+      saved = watchHistoryRepository.save(watchHistory);
+    } catch (DataIntegrityViolationException ex) {
+      WatchHistory existing = watchHistoryRepository
+          .findByUserIdAndEpisodeId(userId, request.getEpisodeId())
+          .orElseThrow(() -> ex);
+      existing.setMovieId(request.getMovieId());
+      existing.setWatchedDurationSeconds(watchedDurationSeconds);
+      existing.setStoppedAtSecond(stoppedAtSecond);
+      existing.setIsCompleted(isCompleted);
+      existing.setLastWatchedAt(now);
+      existing.setUpdatedAt(now);
+      saved = watchHistoryRepository.save(existing);
+    }
     return watchHistoryMapper.toResponse(saved);
   }
 

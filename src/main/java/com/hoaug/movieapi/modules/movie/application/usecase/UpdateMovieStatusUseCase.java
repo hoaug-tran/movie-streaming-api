@@ -42,11 +42,10 @@ public class UpdateMovieStatusUseCase {
   }
 
   @Caching(evict = {
-      @CacheEvict(cacheNames = "movies", key = "'all_published_movies'"),
+      @CacheEvict(cacheNames = "movies", allEntries = true),
       @CacheEvict(cacheNames = "movieDetail", key = "#movieId"),
-      @CacheEvict(cacheNames = "movies", key = "'weekly:10'"),
-      @CacheEvict(cacheNames = "movies", key = "'weekly:20'"),
-      @CacheEvict(cacheNames = "movies", key = "'weekly:50'")
+      @CacheEvict(cacheNames = "movieDetailBySlug", allEntries = true),
+      @CacheEvict(cacheNames = "searchResults", allEntries = true)
   })
   public MovieDetailResponse execute (Long movieId, UpdateMovieStatusRequest request) {
     Movie movie = movieRepository.findById(movieId)
