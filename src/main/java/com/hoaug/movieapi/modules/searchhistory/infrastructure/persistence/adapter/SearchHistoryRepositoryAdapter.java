@@ -3,7 +3,9 @@ package com.hoaug.movieapi.modules.searchhistory.infrastructure.persistence.adap
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.hoaug.movieapi.modules.searchhistory.domain.model.SearchHistory;
 import com.hoaug.movieapi.modules.searchhistory.domain.repository.SearchHistoryRepository;
@@ -37,13 +39,54 @@ public class SearchHistoryRepositoryAdapter implements SearchHistoryRepository {
   }
 
   @Override
+  public List<SearchHistory> findRecentByUserId (Long userId, int limit) {
+    int safeLimit = limit <= 0 ? 10 : limit;
+    return jpaSearchHistoryRepository
+        .findByUserIdOrderBySearchedAtDesc(userId, PageRequest.of(0, safeLimit)).stream()
+        .map(this::toDomain).toList();
+  }
+
+  @Override
+  public Optional<SearchHistory> findByUserIdAndKeyword (Long userId, String keyword) {
+    if (keyword == null) {
+      return Optional.empty();
+    }
+    return jpaSearchHistoryRepository.findFirstByUserIdAndKeywordIgnoreCase(userId, keyword)
+        .map(this::toDomain);
+  }
+
+  @Override
+  public long countByUserId (Long userId) {
+    return jpaSearchHistoryRepository.countByUserId(userId);
+  }
+
+  @Override
   public void delete (SearchHistory searchHistory) {
     jpaSearchHistoryRepository.delete(toEntity(searchHistory));
   }
 
   @Override
+  @Transactional
   public void deleteAllByUserId (Long userId) {
     jpaSearchHistoryRepository.deleteAllByUserId(userId);
+  }
+
+  @Override
+  @Transactional
+  public void trimUserHistoryToLimit (Long userId, int keepCount) {
+    if (keepCount <= 0) {
+      return;
+    }
+    long total = jpaSearchHistoryRepository.countByUserId(userId);
+    if (total <= keepCount) {
+      return;
+    }
+    int excess = (int) (total - keepCount);
+    List<SearchHistoryEntity> oldest = jpaSearchHistoryRepository
+        .findByUserIdOrderBySearchedAtAscIdAsc(userId, PageRequest.of(0, excess));
+    if (!oldest.isEmpty()) {
+      jpaSearchHistoryRepository.deleteAll(oldest);
+    }
   }
 
   private SearchHistory toDomain (SearchHistoryEntity entity) {

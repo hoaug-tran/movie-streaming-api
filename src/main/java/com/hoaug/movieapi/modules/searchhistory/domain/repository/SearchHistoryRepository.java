@@ -13,7 +13,15 @@ public interface SearchHistoryRepository {
 
   List<SearchHistory> findByUserIdOrderBySearchedAtDesc (Long userId);
 
+  List<SearchHistory> findRecentByUserId (Long userId, int limit);
+
+  Optional<SearchHistory> findByUserIdAndKeyword (Long userId, String keyword);
+
+  long countByUserId (Long userId);
+
   void delete (SearchHistory searchHistory);
 
   void deleteAllByUserId (Long userId);
+
+  void trimUserHistoryToLimit (Long userId, int keepCount);
 }

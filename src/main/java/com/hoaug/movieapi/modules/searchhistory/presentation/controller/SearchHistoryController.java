@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.hoaug.movieapi.common.enums.ErrorCode;
@@ -21,6 +22,7 @@ import com.hoaug.movieapi.modules.searchhistory.application.dto.response.SearchH
 import com.hoaug.movieapi.modules.searchhistory.application.usecase.ClearMySearchHistoriesUseCase;
 import com.hoaug.movieapi.modules.searchhistory.application.usecase.CreateSearchHistoryUseCase;
 import com.hoaug.movieapi.modules.searchhistory.application.usecase.DeleteSearchHistoryUseCase;
+import com.hoaug.movieapi.modules.searchhistory.application.usecase.GetMyRecentSearchHistoriesUseCase;
 import com.hoaug.movieapi.modules.searchhistory.application.usecase.GetMySearchHistoriesUseCase;
 import com.hoaug.movieapi.modules.user.domain.model.User;
 
@@ -32,17 +34,20 @@ public class SearchHistoryController {
 
   private final CreateSearchHistoryUseCase createSearchHistoryUseCase;
   private final GetMySearchHistoriesUseCase getMySearchHistoriesUseCase;
+  private final GetMyRecentSearchHistoriesUseCase getMyRecentSearchHistoriesUseCase;
   private final DeleteSearchHistoryUseCase deleteSearchHistoryUseCase;
   private final ClearMySearchHistoriesUseCase clearMySearchHistoriesUseCase;
   private final AuthUserRepository authUserRepository;
 
   public SearchHistoryController(CreateSearchHistoryUseCase createSearchHistoryUseCase,
       GetMySearchHistoriesUseCase getMySearchHistoriesUseCase,
+      GetMyRecentSearchHistoriesUseCase getMyRecentSearchHistoriesUseCase,
       DeleteSearchHistoryUseCase deleteSearchHistoryUseCase,
       ClearMySearchHistoriesUseCase clearMySearchHistoriesUseCase,
       AuthUserRepository authUserRepository) {
     this.createSearchHistoryUseCase = createSearchHistoryUseCase;
     this.getMySearchHistoriesUseCase = getMySearchHistoriesUseCase;
+    this.getMyRecentSearchHistoriesUseCase = getMyRecentSearchHistoriesUseCase;
     this.deleteSearchHistoryUseCase = deleteSearchHistoryUseCase;
     this.clearMySearchHistoriesUseCase = clearMySearchHistoriesUseCase;
     this.authUserRepository = authUserRepository;
@@ -61,6 +66,13 @@ public class SearchHistoryController {
     return ResponseUtil.ok(getMySearchHistoriesUseCase.execute(getCurrentUserId(authentication)));
   }
 
+  @GetMapping("/me/recent")
+  public ResponseEntity<List<SearchHistoryResponse>> getMyRecentSearchHistories (
+      Authentication authentication, @RequestParam(name = "limit", required = false) Integer limit) {
+    return ResponseUtil.ok(
+        getMyRecentSearchHistoriesUseCase.execute(getCurrentUserId(authentication), limit));
+  }
+
   @DeleteMapping("/{searchHistoryId}")
   public ResponseEntity<Void> delete (Authentication authentication,
       @PathVariable Long searchHistoryId) {
@@ -75,6 +87,9 @@ public class SearchHistoryController {
   }
 
   private Long getCurrentUserId (Authentication authentication) {
+    if (authentication == null || authentication.getName() == null) {
+      throw new AppException(ErrorCode.UNAUTHORIZED);
+    }
     User user = authUserRepository.findByUsername(authentication.getName())
         .orElseThrow( () -> new AppException(ErrorCode.USER_NOT_FOUND));
     return user.getId();
