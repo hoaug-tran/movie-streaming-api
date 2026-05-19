@@ -2,6 +2,7 @@ package com.hoaug.movieapi.modules.subscription.application.usecase;
 
 import java.util.List;
 
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Component;
 
 import com.hoaug.movieapi.modules.subscription.application.dto.response.SubscriptionPlanResponse;
@@ -20,6 +21,7 @@ public class GetActiveSubscriptionPlansUseCase {
     this.subscriptionMapper = subscriptionMapper;
   }
 
+  @Cacheable(cacheNames = "subscriptionPlans", key = "'active-plans'", unless = "#result == null || #result.isEmpty()")
   public List<SubscriptionPlanResponse> execute () {
     return subscriptionPlanRepository.findByIsActiveTrueOrderByPriceAsc().stream()
         .map(subscriptionMapper::toResponse).toList();
