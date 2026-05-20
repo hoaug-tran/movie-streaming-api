@@ -22,20 +22,22 @@ public class ReviewSpamValidator {
 
   public void validate (Long userId, Long movieId, String content, Integer rating) {
     if (content == null || content.trim().length() < 10) {
-      throw new AppException(ErrorCode.VALIDATION_ERROR);
+      throw new AppException(ErrorCode.REVIEW_CONTENT_TOO_SHORT);
     }
 
-    if (rating == null || rating < 1 || rating > 10) {
-      throw new AppException(ErrorCode.VALIDATION_ERROR);
+    if (rating == null || rating < 1 || rating > 5) {
+      throw new AppException(ErrorCode.REVIEW_RATING_INVALID);
     }
 
     if (hasRepeatingCharacters(content)) {
-      throw new AppException(ErrorCode.VALIDATION_ERROR);
+      throw new AppException(ErrorCode.REVIEW_CONTENT_SPAM);
     }
 
-    if (reviewRepository.findByUserIdAndMovieId(userId, movieId).isPresent()) {
-      throw new AppException(ErrorCode.VALIDATION_ERROR);
-    }
+    // KHÔNG còn block khi đã tồn tại review của user/movie:
+    // - Endpoint `POST /api/v1/reviews` là cơ chế UPSERT (insert or update),
+    //   user được phép sửa review của mình thoải mái. Trước đây check này đã
+    //   chặn vĩnh viễn user đã từng review một phim không thể chỉnh sửa nữa,
+    //   khiến frontend bị lỗi 400 VALIDATION_ERROR mà không hiểu nguyên nhân.
 
     checkRateLimit(userId);
   }

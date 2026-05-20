@@ -27,6 +27,7 @@ import com.hoaug.movieapi.modules.notification.application.usecase.AdminDeleteNo
 import com.hoaug.movieapi.modules.notification.application.usecase.BroadcastNotificationUseCase;
 import com.hoaug.movieapi.modules.notification.application.usecase.CreateNotificationUseCase;
 import com.hoaug.movieapi.modules.notification.application.usecase.DeleteNotificationUseCase;
+import com.hoaug.movieapi.modules.notification.application.usecase.DeleteAllMyNotificationsUseCase;
 import com.hoaug.movieapi.modules.notification.application.usecase.GetAllNotificationsUseCase;
 import com.hoaug.movieapi.modules.notification.application.usecase.GetMyNotificationsUseCase;
 import com.hoaug.movieapi.modules.notification.application.usecase.GetUnreadNotificationsCountUseCase;
@@ -46,6 +47,7 @@ public class NotificationController {
   private final MarkNotificationAsReadUseCase markNotificationAsReadUseCase;
   private final MarkAllNotificationsAsReadUseCase markAllNotificationsAsReadUseCase;
   private final DeleteNotificationUseCase deleteNotificationUseCase;
+  private final DeleteAllMyNotificationsUseCase deleteAllMyNotificationsUseCase;
   private final GetUnreadNotificationsCountUseCase getUnreadNotificationsCountUseCase;
   private final GetAllNotificationsUseCase getAllNotificationsUseCase;
   private final UpdateNotificationUseCase updateNotificationUseCase;
@@ -58,6 +60,7 @@ public class NotificationController {
       MarkNotificationAsReadUseCase markNotificationAsReadUseCase,
       MarkAllNotificationsAsReadUseCase markAllNotificationsAsReadUseCase,
       DeleteNotificationUseCase deleteNotificationUseCase,
+      DeleteAllMyNotificationsUseCase deleteAllMyNotificationsUseCase,
       GetUnreadNotificationsCountUseCase getUnreadNotificationsCountUseCase,
       GetAllNotificationsUseCase getAllNotificationsUseCase,
       UpdateNotificationUseCase updateNotificationUseCase,
@@ -69,6 +72,7 @@ public class NotificationController {
     this.markNotificationAsReadUseCase = markNotificationAsReadUseCase;
     this.markAllNotificationsAsReadUseCase = markAllNotificationsAsReadUseCase;
     this.deleteNotificationUseCase = deleteNotificationUseCase;
+    this.deleteAllMyNotificationsUseCase = deleteAllMyNotificationsUseCase;
     this.getUnreadNotificationsCountUseCase = getUnreadNotificationsCountUseCase;
     this.getAllNotificationsUseCase = getAllNotificationsUseCase;
     this.updateNotificationUseCase = updateNotificationUseCase;
@@ -136,6 +140,12 @@ public class NotificationController {
   public ResponseEntity<Void> delete(Authentication authentication,
       @PathVariable Long notificationId) {
     deleteNotificationUseCase.execute(getCurrentUserId(authentication), notificationId);
+    return ResponseUtil.noContent();
+  }
+
+  @DeleteMapping("/me")
+  public ResponseEntity<Void> deleteAllMine(Authentication authentication) {
+    deleteAllMyNotificationsUseCase.execute(getCurrentUserId(authentication));
     return ResponseUtil.noContent();
   }
 

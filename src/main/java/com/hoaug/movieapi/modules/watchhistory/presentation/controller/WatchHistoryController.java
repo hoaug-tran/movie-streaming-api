@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -19,6 +20,8 @@ import com.hoaug.movieapi.modules.user.domain.model.User;
 import com.hoaug.movieapi.modules.watchhistory.application.dto.request.UpsertWatchHistoryRequest;
 import com.hoaug.movieapi.modules.watchhistory.application.dto.response.ContinueWatchingResponse;
 import com.hoaug.movieapi.modules.watchhistory.application.dto.response.WatchHistoryResponse;
+import com.hoaug.movieapi.modules.watchhistory.application.usecase.ClearMyWatchHistoryUseCase;
+import com.hoaug.movieapi.modules.watchhistory.application.usecase.DeleteWatchHistoryUseCase;
 import com.hoaug.movieapi.modules.watchhistory.application.usecase.GetContinueWatchingUseCase;
 import com.hoaug.movieapi.modules.watchhistory.application.usecase.GetMyMovieWatchHistoryUseCase;
 import com.hoaug.movieapi.modules.watchhistory.application.usecase.GetMyWatchHistoriesUseCase;
@@ -39,17 +42,23 @@ public class WatchHistoryController {
   private final GetMyWatchHistoriesUseCase getMyWatchHistoriesUseCase;
   private final GetContinueWatchingUseCase getContinueWatchingUseCase;
   private final GetMyMovieWatchHistoryUseCase getMyMovieWatchHistoryUseCase;
+  private final DeleteWatchHistoryUseCase deleteWatchHistoryUseCase;
+  private final ClearMyWatchHistoryUseCase clearMyWatchHistoryUseCase;
   private final AuthUserRepository authUserRepository;
 
   public WatchHistoryController(UpsertWatchHistoryUseCase upsertWatchHistoryUseCase,
       GetMyWatchHistoriesUseCase getMyWatchHistoriesUseCase,
       GetContinueWatchingUseCase getContinueWatchingUseCase,
       GetMyMovieWatchHistoryUseCase getMyMovieWatchHistoryUseCase,
+      DeleteWatchHistoryUseCase deleteWatchHistoryUseCase,
+      ClearMyWatchHistoryUseCase clearMyWatchHistoryUseCase,
       AuthUserRepository authUserRepository) {
     this.upsertWatchHistoryUseCase = upsertWatchHistoryUseCase;
     this.getMyWatchHistoriesUseCase = getMyWatchHistoriesUseCase;
     this.getContinueWatchingUseCase = getContinueWatchingUseCase;
     this.getMyMovieWatchHistoryUseCase = getMyMovieWatchHistoryUseCase;
+    this.deleteWatchHistoryUseCase = deleteWatchHistoryUseCase;
+    this.clearMyWatchHistoryUseCase = clearMyWatchHistoryUseCase;
     this.authUserRepository = authUserRepository;
   }
 
@@ -82,6 +91,21 @@ public class WatchHistoryController {
     Long userId = getCurrentUserId(authentication);
     List<WatchHistoryResponse> histories = getMyMovieWatchHistoryUseCase.execute(userId, movieId);
     return ResponseUtil.ok(histories);
+  }
+
+  @DeleteMapping("/me")
+  public ResponseEntity<Void> clearMyWatchHistory (Authentication authentication) {
+    Long userId = getCurrentUserId(authentication);
+    clearMyWatchHistoryUseCase.execute(userId);
+    return ResponseUtil.noContent();
+  }
+
+  @DeleteMapping("/{id}")
+  public ResponseEntity<Void> deleteWatchHistory (Authentication authentication,
+      @PathVariable Long id) {
+    Long userId = getCurrentUserId(authentication);
+    deleteWatchHistoryUseCase.execute(userId, id);
+    return ResponseUtil.noContent();
   }
 
   private Long getCurrentUserId (Authentication authentication) {

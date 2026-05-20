@@ -45,6 +45,11 @@ public class EpisodeRepositoryAdapter implements EpisodeRepository {
     return toDomain(savedEntity);
   }
 
+  @Override
+  public List<Episode> findAll () {
+    return jpaEpisodeRepository.findAll().stream().map(this::toDomain).toList();
+  }
+
   private Episode toDomain (EpisodeEntity entity) {
     Episode episode = new Episode();
     episode.setId(entity.getId());

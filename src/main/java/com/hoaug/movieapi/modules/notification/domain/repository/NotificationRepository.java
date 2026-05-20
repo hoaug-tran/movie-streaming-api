@@ -22,6 +22,8 @@ public interface NotificationRepository {
 
   void deleteById(Long id);
 
+  void deleteAllByUserId(Long userId);
+
   List<Long> findAllActiveUserIds();
 
   // Returns [id, email, fullName] for each active user with email

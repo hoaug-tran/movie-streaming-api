@@ -63,7 +63,8 @@ public class SecurityConfig {
             .requestMatchers(HttpMethod.GET, "/api/v1/system/status").permitAll()
             .requestMatchers(HttpMethod.POST, "/api/v1/support/contact").permitAll()
             .requestMatchers(HttpMethod.GET, "/avatar/**").permitAll()
-            .requestMatchers("/api/v1/chat/**").permitAll()
+            .requestMatchers(HttpMethod.GET, "/api/v1/assistant/health").hasRole("ADMIN")
+            .requestMatchers("/api/v1/assistant/**").permitAll()
             .requestMatchers("/swagger-ui/**", "/v3/api-docs/**", "/swagger-resources/**")
             .permitAll()
 

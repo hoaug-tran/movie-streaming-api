@@ -30,7 +30,7 @@ public class UpdateEpisodeUseCase {
   }
 
   @Caching(evict = {
-      @CacheEvict(cacheNames = "movieDetail", key = "#movieId"),
+      @CacheEvict(cacheNames = "movieDetail", allEntries = true),
       @CacheEvict(cacheNames = "movieDetailBySlug", allEntries = true)
   })
   public EpisodeResponse execute (Long movieId, Long episodeId, UpdateEpisodeRequest request) {
@@ -39,6 +39,14 @@ public class UpdateEpisodeUseCase {
 
     Episode episode = episodeRepository.findById(episodeId)
         .orElseThrow(() -> new AppException(ErrorCode.EPISODE_NOT_FOUND));
+
+    // Reassign to a different parent movie if requested.
+    Long targetMovieId = request.getMovieId();
+    if (targetMovieId != null && !targetMovieId.equals(episode.getMovieId())) {
+      movieRepository.findById(targetMovieId)
+          .orElseThrow(() -> new AppException(ErrorCode.MOVIE_NOT_FOUND));
+      episode.setMovieId(targetMovieId);
+    }
 
     episode.setTitle(request.getTitle());
     episode.setEpisodeNumber(request.getEpisodeNumber());

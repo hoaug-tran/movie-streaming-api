@@ -69,11 +69,9 @@ public class ChunkedUploadService {
     }
 
     Session s = new Session();
-    s.uploadId = uploadId;
     s.directory = dir;
     s.fileName = sanitizeFileName(fileName);
     s.totalChunks = totalChunks;
-    s.fileSize = fileSize;
     s.createdAt = Instant.now().toEpochMilli();
     sessions.put(uploadId, s);
 
@@ -188,11 +186,9 @@ public class ChunkedUploadService {
   }
 
   private static class Session {
-    String uploadId;
     Path directory;
     String fileName;
     int totalChunks;
-    long fileSize;
     long createdAt;
     final Map<Integer, Boolean> received = new ConcurrentHashMap<>();
   }

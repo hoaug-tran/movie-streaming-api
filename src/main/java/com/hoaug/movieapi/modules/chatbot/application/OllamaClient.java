@@ -7,7 +7,6 @@ import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 
 import org.slf4j.Logger;
@@ -40,10 +39,10 @@ public class OllamaClient {
     this.properties = properties;
     this.objectMapper = objectMapper;
     this.httpClient = new OkHttpClient.Builder()
-        .connectTimeout(Duration.ofSeconds(10))
+        .connectTimeout(Duration.ofSeconds(5))
         .readTimeout(Duration.ofSeconds(properties.getOllamaTimeoutSeconds()))
-        .writeTimeout(Duration.ofSeconds(30))
-        .callTimeout(0, TimeUnit.MILLISECONDS)
+        .writeTimeout(Duration.ofSeconds(15))
+        .callTimeout(Duration.ofSeconds(properties.getOllamaTimeoutSeconds() + 10L))
         .build();
   }
 
@@ -54,10 +53,13 @@ public class OllamaClient {
         "model", properties.getOllamaModel(),
         "messages", ollamaMessages,
         "stream", true,
+        "keep_alive", "30m",
         "options", Map.of(
             "temperature", 0.6,
-            "num_predict", 512,
-            "top_p", 0.9
+            "num_predict", 2048,
+            "num_ctx", 8192,
+            "top_p", 0.9,
+            "repeat_penalty", 1.1
         )
     );
 
@@ -91,8 +93,8 @@ public class OllamaClient {
             JsonNode messageNode = node.get("message");
             if (messageNode != null) {
               JsonNode contentNode = messageNode.get("content");
-              if (contentNode != null && contentNode.isTextual()) {
-                String token = contentNode.asText();
+              if (contentNode != null && contentNode.isString()) {
+                String token = contentNode.stringValue();
                 if (!token.isEmpty()) {
                   onDelta.accept(token);
                 }

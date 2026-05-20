@@ -20,9 +20,9 @@ public class UpsertReviewRequest {
   @Max(value = 5, message = "Rating must be at most 5")
   private Integer rating;
 
-  @NotBlank(message = "Review content is required")
-  @Size(min = 1, max = 5000, message = "Review content must be between 1 and 5000 characters")
-  @ValidSafeString(minLength = 1, maxLength = 5000)
+  @NotBlank(message = "Nội dung đánh giá không được để trống")
+  @Size(min = 10, max = 5000, message = "Nội dung đánh giá phải có từ 10 đến 5000 ký tự")
+  @ValidSafeString(minLength = 10, maxLength = 5000)
   private String content;
 
   public Long getMovieId () {

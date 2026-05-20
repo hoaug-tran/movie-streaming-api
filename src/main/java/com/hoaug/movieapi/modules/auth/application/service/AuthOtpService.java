@@ -121,12 +121,6 @@ public class AuthOtpService {
 
   private void sendOtpEmail (String email, String fullName, AuthOtpPurpose purpose, String otp,
       long ttl) {
-    String subject = switch (purpose) {
-    case LOGIN -> "Mã OTP đăng nhập Gió phim";
-    case REGISTER -> "Mã OTP đăng ký Gió Phim";
-    case PASSWORD_RESET -> "Mã OTP đặt lại mật khẩu Gió Phim";
-    case PASSWORD_CHANGE -> "Mã OTP đổi mật khẩu Gió Phim";
-    };
     String message = "Mã OTP của bạn là " + otp + ". Mã có hiệu lực trong " + ttl
         + " phút. Không chia sẻ mã này với bất kỳ ai.";
     try {

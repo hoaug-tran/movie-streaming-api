@@ -12,8 +12,6 @@ import org.springframework.transaction.annotation.Transactional;
 import com.hoaug.movieapi.modules.activitylog.domain.model.ActivityScope;
 import com.hoaug.movieapi.modules.activitylog.infrastructure.persistence.entity.ActivityLogEntity;
 import com.hoaug.movieapi.modules.activitylog.infrastructure.persistence.repository.JpaActivityLogRepository;
-import com.hoaug.movieapi.modules.advertisement.infrastructure.persistence.entity.AdvertisementEntity;
-import com.hoaug.movieapi.modules.advertisement.infrastructure.persistence.repository.JpaAdvertisementRepository;
 import com.hoaug.movieapi.modules.comment.domain.model.CommentStatus;
 import com.hoaug.movieapi.modules.comment.infrastructure.persistence.repository.JpaCommentRepository;
 import com.hoaug.movieapi.modules.dashboard.application.dto.response.DashboardSummaryResponse;
@@ -46,7 +44,6 @@ public class GetDashboardSummaryUseCase {
   private final JpaReviewRepository reviewRepository;
   private final JpaUserSubscriptionRepository userSubscriptionRepository;
   private final JpaPaymentTransactionRepository paymentTransactionRepository;
-  private final JpaAdvertisementRepository advertisementRepository;
   private final JpaActivityLogRepository activityLogRepository;
   private final javax.sql.DataSource dataSource;
 
@@ -77,8 +74,6 @@ public class GetDashboardSummaryUseCase {
     long totalEpisodes = episodeRepository.count();
     long totalViews = movieRepository.sumViewCount();
     long totalFavorites = movieRepository.sumFavoriteCount();
-    BigDecimal averageRating = movieRepository.averageRatingAcrossCatalog().setScale(2,
-        RoundingMode.HALF_UP);
 
     long totalComments = commentRepository.count();
     long visibleComments = commentRepository.countByStatus(CommentStatus.VISIBLE);
@@ -403,17 +398,6 @@ public class GetDashboardSummaryUseCase {
           .stripTrailingZeros().toPlainString() + " nghìn ₫";
     }
     return normalized.toPlainString() + "₫";
-  }
-
-  private String translateAdType (AdvertisementEntity advertisement) {
-    if (advertisement.getAdType() == null)
-      return "Quảng cáo";
-    return switch (advertisement.getAdType().name()) {
-    case "BANNER" -> "Banner";
-    case "VIDEO" -> "Video";
-    case "POPUP" -> "Cửa sổ nổi";
-    default -> "Quảng cáo";
-    };
   }
 
   private List<Integer> series (long... values) {

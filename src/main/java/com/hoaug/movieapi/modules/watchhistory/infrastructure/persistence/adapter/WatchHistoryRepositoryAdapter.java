@@ -26,6 +26,11 @@ public class WatchHistoryRepositoryAdapter implements WatchHistoryRepository {
   }
 
   @Override
+  public Optional<WatchHistory> findById (Long id) {
+    return jpaWatchHistoryRepository.findById(id).map(this::toDomain);
+  }
+
+  @Override
   public List<WatchHistory> findByUserIdOrderByLastWatchedAtDesc (Long userId) {
     return jpaWatchHistoryRepository.findByUserIdOrderByLastWatchedAtDesc(userId).stream()
         .map(this::toDomain).toList();
@@ -48,6 +53,16 @@ public class WatchHistoryRepositoryAdapter implements WatchHistoryRepository {
   public WatchHistory save (WatchHistory watchHistory) {
     WatchHistoryEntity savedEntity = jpaWatchHistoryRepository.save(toEntity(watchHistory));
     return toDomain(savedEntity);
+  }
+
+  @Override
+  public void deleteById (Long id) {
+    jpaWatchHistoryRepository.deleteById(id);
+  }
+
+  @Override
+  public void deleteByUserId (Long userId) {
+    jpaWatchHistoryRepository.deleteByUserId(userId);
   }
 
   private WatchHistory toDomain (WatchHistoryEntity entity) {

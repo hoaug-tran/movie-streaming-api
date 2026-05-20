@@ -10,6 +10,8 @@ public interface EpisodeRepository {
 
   List<Episode> findAllByMovieId (Long movieId);
 
+  List<Episode> findAll ();
+
   Optional<Episode> findById (Long id);
 
   Episode save (Episode episode);

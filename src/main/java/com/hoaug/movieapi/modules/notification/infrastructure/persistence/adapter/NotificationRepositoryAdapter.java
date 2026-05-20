@@ -61,6 +61,11 @@ public class NotificationRepositoryAdapter implements NotificationRepository {
   }
 
   @Override
+  public void deleteAllByUserId(Long userId) {
+    jpaNotificationRepository.deleteAllByUserId(userId);
+  }
+
+  @Override
   public List<Long> findAllActiveUserIds() {
     return jpaNotificationRepository.findAllActiveUserIds();
   }

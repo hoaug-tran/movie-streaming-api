@@ -4,7 +4,9 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.hoaug.movieapi.modules.notification.domain.model.NotificationType;
 import com.hoaug.movieapi.modules.notification.infrastructure.persistence.entity.NotificationEntity;
@@ -25,4 +27,8 @@ public interface JpaNotificationRepository extends JpaRepository<NotificationEnt
 
   @Query("SELECT u.id, u.email, u.fullName FROM UserEntity u WHERE u.accountStatus = 'ACTIVE' AND u.email IS NOT NULL")
   List<Object[]> findAllActiveUsersWithEmail();
+
+  @Modifying
+  @Transactional
+  void deleteAllByUserId(Long userId);
 }

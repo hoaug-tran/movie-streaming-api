@@ -15,7 +15,7 @@ public class ChatbotProperties {
   public ChatbotProperties(
       @Value("${ollama.base-url:http://localhost:11434}") String ollamaBaseUrl,
       @Value("${ollama.model:qcwind/qwen3-8b-instruct-Q4-K-M:latest}") String ollamaModel,
-      @Value("${ollama.timeout-seconds:120}") int ollamaTimeoutSeconds,
+      @Value("${ollama.timeout-seconds:60}") int ollamaTimeoutSeconds,
       @Value("${chatbot.max-history-messages:10}") int maxHistoryMessages,
       @Value("${chatbot.rate-limit-per-hour:30}") int rateLimitPerHour) {
     this.ollamaBaseUrl = ollamaBaseUrl;
