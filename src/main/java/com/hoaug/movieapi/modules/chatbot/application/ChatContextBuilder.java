@@ -10,7 +10,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import com.hoaug.movieapi.modules.favorite.application.dto.response.FavoriteListResponse;
-import com.hoaug.movieapi.modules.favorite.application.dto.response.FavoriteResponse;
 import com.hoaug.movieapi.modules.favorite.application.usecase.GetMyFavoritesUseCase;
 import com.hoaug.movieapi.modules.movie.application.dto.response.MovieListResponse;
 import com.hoaug.movieapi.modules.movie.application.dto.response.MovieSummaryResponse;
@@ -24,7 +23,6 @@ import com.hoaug.movieapi.modules.subscription.application.usecase.GetActiveSubs
 import com.hoaug.movieapi.modules.watchhistory.application.dto.response.ContinueWatchingResponse;
 import com.hoaug.movieapi.modules.watchhistory.application.usecase.GetContinueWatchingUseCase;
 import com.hoaug.movieapi.modules.watchlist.application.dto.response.WatchlistListResponse;
-import com.hoaug.movieapi.modules.watchlist.application.dto.response.WatchlistResponse;
 import com.hoaug.movieapi.modules.watchlist.application.usecase.GetMyWatchlistUseCase;
 
 @Component

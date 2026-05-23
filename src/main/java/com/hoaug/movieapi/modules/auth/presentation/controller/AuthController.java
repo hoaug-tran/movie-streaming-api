@@ -124,8 +124,14 @@ public class AuthController {
 
   @PostMapping("/refresh")
   public ResponseEntity<RefreshTokenResponse> refresh (
-      @Valid @RequestBody RefreshTokenRequest request, HttpServletResponse response) {
-    RefreshTokenResponse refreshTokenResponse = refreshTokenUseCase.execute(request);
+      @Valid @RequestBody(required = false) RefreshTokenRequest request, HttpServletRequest httpRequest,
+      HttpServletResponse response) {
+    String refreshToken = request != null ? request.getRefreshToken() : null;
+    if (refreshToken == null || refreshToken.isBlank()) {
+      refreshToken = CookieUtil.getCookieValue(httpRequest, "refreshToken");
+    }
+
+    RefreshTokenResponse refreshTokenResponse = refreshTokenUseCase.execute(refreshToken);
 
     AuthResponse authTokens = new AuthResponse();
     authTokens.setAccessToken(refreshTokenResponse.getAccessToken());

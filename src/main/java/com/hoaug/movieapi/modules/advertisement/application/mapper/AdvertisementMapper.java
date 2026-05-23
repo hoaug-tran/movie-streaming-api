@@ -1,5 +1,7 @@
 package com.hoaug.movieapi.modules.advertisement.application.mapper;
 
+import java.time.LocalDateTime;
+
 import org.springframework.stereotype.Component;
 
 import com.hoaug.movieapi.modules.advertisement.application.dto.response.AdvertisementResponse;
@@ -31,6 +33,7 @@ public class AdvertisementMapper {
     response.setStartAt(advertisement.getStartAt());
     response.setEndAt(advertisement.getEndAt());
     response.setCreatedAt(advertisement.getCreatedAt());
+    applyDeliveryStatus(response, advertisement);
     return response;
   }
 
@@ -45,5 +48,34 @@ public class AdvertisementMapper {
     response.setClicked(advertisementView.getClicked());
     response.setClickedAt(advertisementView.getClickedAt());
     return response;
+  }
+
+  private void applyDeliveryStatus(AdvertisementResponse response, Advertisement advertisement) {
+    LocalDateTime now = LocalDateTime.now();
+    String status;
+    String label;
+    boolean eligible;
+
+    if (!Boolean.TRUE.equals(advertisement.getIsActive())) {
+      status = "PAUSED";
+      label = "Tạm dừng";
+      eligible = false;
+    } else if (advertisement.getStartAt() != null && advertisement.getStartAt().isAfter(now)) {
+      status = "SCHEDULED";
+      label = "Sắp chạy";
+      eligible = false;
+    } else if (advertisement.getEndAt() != null && advertisement.getEndAt().isBefore(now)) {
+      status = "EXPIRED";
+      label = "Hết hạn";
+      eligible = false;
+    } else {
+      status = "RUNNING";
+      label = "Đang chạy";
+      eligible = true;
+    }
+
+    response.setDeliveryStatus(status);
+    response.setDeliveryStatusLabel(label);
+    response.setEligibleNow(eligible);
   }
 }

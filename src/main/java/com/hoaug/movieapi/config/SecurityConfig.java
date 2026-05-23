@@ -3,7 +3,6 @@ package com.hoaug.movieapi.config;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Value;
-
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -39,28 +38,27 @@ public class SecurityConfig {
 
   @Bean
   public SecurityFilterChain filterChain (HttpSecurity http) throws Exception {
-    http.cors(cors -> cors.configurationSource(corsConfigurationSource()))
-        .csrf(csrf -> csrf.disable())
-        .sessionManagement(
-            session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-        .authorizeHttpRequests(auth -> auth
-            // Public endpoints - no auth needed
+    http.cors(cors -> cors.configurationSource(corsConfigurationSource())).csrf(csrf -> csrf
+        .disable()).sessionManagement(session -> session.sessionCreationPolicy(
+            SessionCreationPolicy.STATELESS))
+        .authorizeHttpRequests(auth -> auth.requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+
             .requestMatchers("/api/v1/auth/me").authenticated().requestMatchers("/api/v1/auth/**")
             .permitAll().requestMatchers(HttpMethod.GET, "/api/v1/movies/**").permitAll()
             .requestMatchers(HttpMethod.POST, "/api/v1/movies/*/view").permitAll()
-            .requestMatchers(HttpMethod.POST, "/api/v1/movies/search", "/api/v1/movies/search/advanced").permitAll()
-            .requestMatchers(HttpMethod.GET, "/api/v1/movies/categories").permitAll()
+            .requestMatchers(HttpMethod.POST, "/api/v1/movies/search",
+                "/api/v1/movies/search/advanced")
+            .permitAll().requestMatchers(HttpMethod.GET, "/api/v1/movies/categories").permitAll()
             .requestMatchers("/api/v1/subscription-plans/**").permitAll()
             .requestMatchers(HttpMethod.GET, "/api/v1/subscriptions/plans").permitAll()
             .requestMatchers("/api/v1/payments/success").permitAll()
-            .requestMatchers(HttpMethod.GET, "/api/v1/advertisements/active", "/api/v1/advertisements/type/**").permitAll()
-            .requestMatchers("/api/v1/ads/**").permitAll()
-            .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+            .requestMatchers(HttpMethod.GET, "/api/v1/advertisements/active",
+                "/api/v1/advertisements/type/**")
+            .permitAll().requestMatchers("/api/v1/ads/**").permitAll()
             .requestMatchers("/api/v1/webhooks/**").permitAll()
             .requestMatchers(HttpMethod.GET, "/api/v1/search-histories/search").permitAll()
-            .requestMatchers("/api/v1/discovery/**").permitAll()
-            .requestMatchers("/actuator/health").permitAll()
-            .requestMatchers(HttpMethod.GET, "/api/v1/system/status").permitAll()
+            .requestMatchers("/api/v1/discovery/**").permitAll().requestMatchers("/actuator/health")
+            .permitAll().requestMatchers(HttpMethod.GET, "/api/v1/system/status").permitAll()
             .requestMatchers(HttpMethod.POST, "/api/v1/support/contact").permitAll()
             .requestMatchers(HttpMethod.GET, "/avatar/**").permitAll()
             .requestMatchers(HttpMethod.GET, "/api/v1/assistant/health").hasRole("ADMIN")
@@ -68,10 +66,10 @@ public class SecurityConfig {
             .requestMatchers("/swagger-ui/**", "/v3/api-docs/**", "/swagger-resources/**")
             .permitAll()
 
-            // Admin endpoints
-            .requestMatchers("/api/v1/admin/**").hasRole("ADMIN")
+            .requestMatchers("/api/v1/admin/comments/**", "/api/v1/admin/reviews/**",
+                "/api/v1/admin/reports/**")
+            .hasAnyRole("ADMIN", "MODERATOR").requestMatchers("/api/v1/admin/**").hasRole("ADMIN")
 
-            // User personalization - auth required
             .requestMatchers("/api/v1/users/**").authenticated()
             .requestMatchers("/api/v1/watch-histories/**").authenticated()
             .requestMatchers("/api/v1/watchlists/**").authenticated()
@@ -85,14 +83,16 @@ public class SecurityConfig {
             .requestMatchers("/api/v1/notifications/**").authenticated()
             .requestMatchers("/api/v1/device-sessions/**").authenticated()
             .requestMatchers("/api/v1/recommendations/**").authenticated()
+            .requestMatchers(HttpMethod.GET, "/api/v1/stream/keys/ads/**").permitAll()
             .requestMatchers(HttpMethod.GET, "/api/v1/stream/keys/**").permitAll()
             .requestMatchers(HttpMethod.GET, "/api/v1/stream/offline/key/**").permitAll()
             .requestMatchers(HttpMethod.GET, "/api/v1/stream/offline/**").authenticated()
+            .requestMatchers(HttpMethod.PUT, "/api/v1/stream/sessions/*/heartbeat").permitAll()
+            .requestMatchers(HttpMethod.POST, "/api/v1/stream/sessions/*/start").permitAll()
             .requestMatchers("/api/v1/stream/sessions/**").authenticated()
             .requestMatchers("/api/v1/push/**").authenticated()
             .requestMatchers("/api/v1/search-histories/**").authenticated()
 
-            // Default deny
             .anyRequest().authenticated())
         .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 

@@ -27,6 +27,7 @@ import com.hoaug.movieapi.modules.movie.application.usecase.GetTopSeriesUseCase;
 import com.hoaug.movieapi.modules.movie.application.usecase.GetTrendingMoviesUseCase;
 import com.hoaug.movieapi.modules.movie.application.usecase.GetUpcomingMoviesUseCase;
 import com.hoaug.movieapi.modules.movie.application.usecase.GetWeeklyNewMoviesUseCase;
+import com.hoaug.movieapi.modules.movie.application.usecase.GetWeeklyTrendingMoviesUseCase;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -52,6 +53,7 @@ public class DiscoveryController {
   private final GetAnimeMoviesUseCase getAnimeMoviesUseCase;
   private final GetMostCommentedMoviesUseCase getMostCommentedMoviesUseCase;
   private final GetTopSeriesByRegionUseCase getTopSeriesByRegionUseCase;
+  private final GetWeeklyTrendingMoviesUseCase getWeeklyTrendingMoviesUseCase;
 
   public DiscoveryController(GetTrendingMoviesUseCase getTrendingMoviesUseCase,
       GetWeeklyNewMoviesUseCase getWeeklyNewMoviesUseCase,
@@ -66,7 +68,8 @@ public class DiscoveryController {
       GetAnimeSeriesUseCase getAnimeSeriesUseCase,
       GetAnimeMoviesUseCase getAnimeMoviesUseCase,
       GetMostCommentedMoviesUseCase getMostCommentedMoviesUseCase,
-      GetTopSeriesByRegionUseCase getTopSeriesByRegionUseCase) {
+      GetTopSeriesByRegionUseCase getTopSeriesByRegionUseCase,
+      GetWeeklyTrendingMoviesUseCase getWeeklyTrendingMoviesUseCase) {
     this.getTrendingMoviesUseCase = getTrendingMoviesUseCase;
     this.getWeeklyNewMoviesUseCase = getWeeklyNewMoviesUseCase;
     this.getUpcomingMoviesUseCase = getUpcomingMoviesUseCase;
@@ -83,6 +86,14 @@ public class DiscoveryController {
     this.getAnimeMoviesUseCase = getAnimeMoviesUseCase;
     this.getMostCommentedMoviesUseCase = getMostCommentedMoviesUseCase;
     this.getTopSeriesByRegionUseCase = getTopSeriesByRegionUseCase;
+    this.getWeeklyTrendingMoviesUseCase = getWeeklyTrendingMoviesUseCase;
+  }
+
+  @GetMapping("/weekly-trending")
+  @Operation(summary = "Get movies trending in the last 7 days")
+  public ResponseEntity<MovieListResponse> getWeeklyTrending (
+      @RequestParam(defaultValue = "10") int limit) {
+    return ResponseUtil.ok(getWeeklyTrendingMoviesUseCase.execute(limit));
   }
 
   @GetMapping("/trending")

@@ -18,6 +18,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.hoaug.movieapi.common.enums.ErrorCode;
 import com.hoaug.movieapi.common.exception.AppException;
+import com.hoaug.movieapi.modules.movie.domain.model.EpisodeStatus;
 import com.hoaug.movieapi.modules.movie.infrastructure.persistence.entity.EpisodeEntity;
 import com.hoaug.movieapi.modules.movie.infrastructure.persistence.entity.MovieEntity;
 import com.hoaug.movieapi.modules.movie.infrastructure.persistence.repository.JpaEpisodeRepository;
@@ -96,16 +97,35 @@ public class AdminChunkedUploadController {
       @PathVariable Long movieId) {
     MovieEntity movie = movieRepository.findById(movieId)
         .orElseThrow( () -> new AppException(ErrorCode.MOVIE_NOT_FOUND));
+    EpisodeEntity episode = findOrCreateMovieEpisode(movie);
 
     String fileName = chunkedUploadService.getFileName(uploadId);
-    Path destination = storageService.resolveMovieDestination(movieId, fileName);
-    chunkedUploadService.assemble(uploadId, destination);
+    Path destination = storageService.resolveEpisodeDestination(episode.getId(), fileName);
+    Path saved = chunkedUploadService.assemble(uploadId, destination);
 
-    String videoUrl = streamUrlService.movieMp4Url(movieId);
-    movie.setTrailerUrl(videoUrl);
-    movieRepository.save(movie);
+    String mp4Url = streamUrlService.episodeMp4Url(episode.getId());
+    episode.setVideoUrl(mp4Url);
+    episode.setAvailableQualities("TRANSCODING");
+    episodeRepository.save(episode);
 
-    return new MediaUploadResponse(movieId, videoUrl, "UPLOADED");
+    asyncTranscodeService.transcodeEpisodeAsync(episode.getId(), saved);
+    return new MediaUploadResponse(episode.getId(), mp4Url, "TRANSCODING");
+  }
+
+  private EpisodeEntity findOrCreateMovieEpisode (MovieEntity movie) {
+    return episodeRepository.findByMovieIdOrderByEpisodeNumberAsc(movie.getId()).stream()
+        .findFirst()
+        .orElseGet(() -> {
+          EpisodeEntity episode = new EpisodeEntity();
+          episode.setMovieId(movie.getId());
+          episode.setTitle(movie.getTitle());
+          episode.setEpisodeNumber(1);
+          episode.setVideoUrl("");
+          episode.setDurationSeconds(0);
+          episode.setIsFreePreview(false);
+          episode.setStatus(EpisodeStatus.PUBLISHED);
+          return episodeRepository.save(episode);
+        });
   }
 
   @DeleteMapping("/{uploadId}")

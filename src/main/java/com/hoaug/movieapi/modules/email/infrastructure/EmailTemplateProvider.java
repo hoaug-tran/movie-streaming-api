@@ -17,6 +17,7 @@ public class EmailTemplateProvider {
     case EMAIL_VERIFICATION -> getEmailVerificationTemplate(variables);
     case ACCOUNT_NOTIFICATION -> getAccountNotificationTemplate(variables);
     case NEW_MOVIE_RELEASE -> getNewMovieReleaseTemplate(variables);
+    case OTP_VERIFICATION -> getOtpVerificationTemplate(variables);
     };
   }
 
@@ -81,5 +82,21 @@ public class EmailTemplateProvider {
         + "</div><div class='movie-description'>Bộ phim mới được phát hành. Hãy xem ngay!</div><a href='"
         + movieLink
         + "' class='cta-button'>Xem Phim</a></div></div><div class='footer'><div>© 2026 Gió Phim. Tất cả quyền được bảo lưu.</div></div></div></div></body></html>";
+  }
+
+  private String getOtpVerificationTemplate (Map<String, String> variables) {
+    String fullName = variables.getOrDefault("fullName", "Người dùng");
+    String otp = variables.getOrDefault("otp", "------");
+    String purposeLabel = variables.getOrDefault("purposeLabel", "xác thực tài khoản");
+    String ttlMinutes = variables.getOrDefault("ttlMinutes", "10");
+    return "<!DOCTYPE html><html lang='vi'><head><meta charset='UTF-8'><meta name='viewport' content='width=device-width, initial-scale=1.0'><title>Mã xác thực OTP</title><style>body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','Roboto','Helvetica Neue',Arial,sans-serif;background-color:#f4f5f7;margin:0;padding:0;color:#2c2c2c}.container{max-width:600px;margin:0 auto;padding:24px}.email-wrapper{background-color:#fff;border-radius:12px;overflow:hidden;box-shadow:0 4px 16px rgba(20,20,40,.06)}.header{background:linear-gradient(135deg,#0f172a 0%,#1e293b 100%);padding:48px 24px;text-align:center}.brand{color:#fff;margin:0;font-size:26px;font-weight:700;letter-spacing:1px}.tagline{color:#94a3b8;margin-top:8px;font-size:13px;letter-spacing:.5px;text-transform:uppercase}.content{padding:40px 36px}.greeting{font-size:16px;margin-bottom:20px;line-height:1.6}.message{font-size:14px;color:#475569;line-height:1.7;margin-bottom:24px}.otp-box{background:linear-gradient(135deg,#f8fafc 0%,#eef2ff 100%);border:1px solid #e2e8f0;border-radius:12px;padding:28px 16px;text-align:center;margin:32px 0}.otp-label{font-size:12px;color:#64748b;text-transform:uppercase;letter-spacing:2px;margin-bottom:12px}.otp-code{font-family:'SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace;font-size:36px;font-weight:700;color:#0f172a;letter-spacing:12px;padding:8px 0}.otp-meta{font-size:12px;color:#94a3b8;margin-top:14px}.warning{background-color:#fef9c3;border-left:4px solid #facc15;padding:14px 18px;border-radius:6px;font-size:13px;color:#713f12;margin-top:24px;line-height:1.6}.footer{background-color:#f8fafc;padding:24px 36px;border-top:1px solid #e2e8f0;font-size:12px;color:#94a3b8;text-align:center;line-height:1.6}.footer a{color:#475569;text-decoration:none}</style></head><body><div class='container'><div class='email-wrapper'><div class='header'><div class='brand'>Gió Phim</div><div class='tagline'>Xác thực bảo mật</div></div><div class='content'><div class='greeting'>Xin chào <strong>"
+        + fullName
+        + "</strong>,</div><div class='message'>Bạn đã yêu cầu mã xác thực để <strong>"
+        + purposeLabel
+        + "</strong>. Vui lòng nhập mã bên dưới để hoàn tất quá trình.</div><div class='otp-box'><div class='otp-label'>Mã xác thực của bạn</div><div class='otp-code'>"
+        + otp
+        + "</div><div class='otp-meta'>Hiệu lực trong "
+        + ttlMinutes
+        + " phút</div></div><div class='warning'><strong>Lưu ý bảo mật:</strong> Tuyệt đối không chia sẻ mã này với bất kỳ ai. Đội ngũ Gió Phim sẽ không bao giờ chủ động yêu cầu mã OTP qua điện thoại hoặc email.</div><div class='message' style='margin-top:24px;font-size:13px;color:#94a3b8'>Nếu bạn không thực hiện yêu cầu này, bạn có thể bỏ qua email này một cách an toàn.</div></div><div class='footer'><div>© 2026 Gió Phim. Tất cả quyền được bảo lưu.</div><div style='margin-top:6px'>Email tự động, vui lòng không trả lời.</div></div></div></div></body></html>";
   }
 }

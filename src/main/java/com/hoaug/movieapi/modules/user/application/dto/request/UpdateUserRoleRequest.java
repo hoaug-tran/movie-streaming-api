@@ -5,7 +5,7 @@ import com.hoaug.movieapi.modules.user.domain.model.Role;
 import jakarta.validation.constraints.NotNull;
 
 public class UpdateUserRoleRequest {
-  @NotNull(message = "User role is required")
+  @NotNull(message = "Vui lòng chọn vai trò người dùng.")
   private Role role;
 
   public Role getRole () {

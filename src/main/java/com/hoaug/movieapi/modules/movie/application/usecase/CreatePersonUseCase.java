@@ -4,6 +4,8 @@ import java.time.LocalDateTime;
 
 import org.springframework.stereotype.Component;
 
+import com.hoaug.movieapi.common.enums.ErrorCode;
+import com.hoaug.movieapi.common.exception.AppException;
 import com.hoaug.movieapi.modules.movie.application.dto.request.CreatePersonRequest;
 import com.hoaug.movieapi.modules.movie.application.dto.response.PersonResponse;
 import com.hoaug.movieapi.modules.movie.application.mapper.PersonMapper;
@@ -23,6 +25,10 @@ public class CreatePersonUseCase {
   }
 
   public PersonResponse execute (CreatePersonRequest request) {
+    if (jpaPersonRepository.existsByFullNameIgnoreCase(request.getFullName())) {
+      throw new AppException(ErrorCode.PERSON_EXISTED);
+    }
+
     PersonEntity entity = new PersonEntity();
     entity.setFullName(request.getFullName());
     entity.setStageName(request.getStageName());

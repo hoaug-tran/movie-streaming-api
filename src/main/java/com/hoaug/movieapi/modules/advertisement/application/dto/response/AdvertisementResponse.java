@@ -17,6 +17,9 @@ public class AdvertisementResponse {
   private LocalDateTime startAt;
   private LocalDateTime endAt;
   private LocalDateTime createdAt;
+  private String deliveryStatus;
+  private String deliveryStatusLabel;
+  private Boolean eligibleNow;
 
   public Long getId () {
     return id;
@@ -120,5 +123,29 @@ public class AdvertisementResponse {
 
   public void setCreatedAt (LocalDateTime createdAt) {
     this.createdAt = createdAt;
+  }
+
+  public String getDeliveryStatus () {
+    return deliveryStatus;
+  }
+
+  public void setDeliveryStatus (String deliveryStatus) {
+    this.deliveryStatus = deliveryStatus;
+  }
+
+  public String getDeliveryStatusLabel () {
+    return deliveryStatusLabel;
+  }
+
+  public void setDeliveryStatusLabel (String deliveryStatusLabel) {
+    this.deliveryStatusLabel = deliveryStatusLabel;
+  }
+
+  public Boolean getEligibleNow () {
+    return eligibleNow;
+  }
+
+  public void setEligibleNow (Boolean eligibleNow) {
+    this.eligibleNow = eligibleNow;
   }
 }

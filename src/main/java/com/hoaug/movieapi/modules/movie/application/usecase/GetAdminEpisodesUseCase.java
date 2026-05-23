@@ -14,10 +14,6 @@ import com.hoaug.movieapi.modules.movie.domain.repository.EpisodeRepository;
 import com.hoaug.movieapi.modules.movie.domain.repository.MovieRepository;
 import com.hoaug.movieapi.shared.media.MediaUrlResolver;
 
-/**
- * Trả về toàn bộ episode kèm thông tin tóm tắt phim cha cho trang quản trị.
- * Dùng batch lookup theo movieId để tránh N+1 queries.
- */
 @Component
 public class GetAdminEpisodesUseCase {
 
@@ -34,19 +30,20 @@ public class GetAdminEpisodesUseCase {
 
   public List<AdminEpisodeListItemResponse> execute () {
     List<Episode> episodes = episodeRepository.findAll();
-    if (episodes.isEmpty()) return List.of();
+    if (episodes.isEmpty())
+      return List.of();
 
-    List<Long> movieIds = episodes.stream().map(Episode::getMovieId).filter(java.util.Objects::nonNull)
-        .distinct().toList();
-    Map<Long, Movie> moviesById = movieIds.stream()
-        .map(movieRepository::findById)
+    List<Long> movieIds = episodes.stream().map(Episode::getMovieId)
+        .filter(java.util.Objects::nonNull).distinct().toList();
+    Map<Long, Movie> moviesById = movieIds.stream().map(movieRepository::findById)
         .flatMap(java.util.Optional::stream)
         .collect(Collectors.toMap(Movie::getId, Function.identity(), (a, b) -> a));
 
     return episodes.stream().map(ep -> toItem(ep, moviesById.get(ep.getMovieId())))
-        .sorted((a, b) -> {
+        .sorted( (a, b) -> {
           int cmp = Long.compare(safeLong(b.getMovieId()), safeLong(a.getMovieId()));
-          if (cmp != 0) return cmp;
+          if (cmp != 0)
+            return cmp;
           return Integer.compare(safeInt(a.getEpisodeNumber()), safeInt(b.getEpisodeNumber()));
         }).toList();
   }

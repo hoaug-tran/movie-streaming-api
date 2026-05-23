@@ -34,6 +34,7 @@ import com.hoaug.movieapi.modules.subscription.application.usecase.CreateInvoice
 import com.hoaug.movieapi.modules.subscription.application.usecase.CreatePaymentTransactionUseCase;
 import com.hoaug.movieapi.modules.subscription.application.usecase.CreateSubscriptionPlanUseCase;
 import com.hoaug.movieapi.modules.subscription.application.usecase.GetActiveSubscriptionPlansUseCase;
+import com.hoaug.movieapi.modules.subscription.application.usecase.GetAllSubscriptionPlansUseCase;
 import com.hoaug.movieapi.modules.subscription.application.usecase.GetMyCurrentSubscriptionUseCase;
 import com.hoaug.movieapi.modules.subscription.application.usecase.GetMyInvoicesUseCase;
 import com.hoaug.movieapi.modules.subscription.application.usecase.GetMyPaymentTransactionsUseCase;
@@ -55,6 +56,7 @@ public class SubscriptionController {
   private final UpdateSubscriptionPlanUseCase updateSubscriptionPlanUseCase;
   private final DeleteSubscriptionPlanUseCase deleteSubscriptionPlanUseCase;
   private final GetActiveSubscriptionPlansUseCase getActiveSubscriptionPlansUseCase;
+  private final GetAllSubscriptionPlansUseCase getAllSubscriptionPlansUseCase;
   private final SubscribePlanUseCase subscribePlanUseCase;
   private final GetMySubscriptionsUseCase getMySubscriptionsUseCase;
   private final GetMyCurrentSubscriptionUseCase getMyCurrentSubscriptionUseCase;
@@ -70,6 +72,7 @@ public class SubscriptionController {
       UpdateSubscriptionPlanUseCase updateSubscriptionPlanUseCase,
       DeleteSubscriptionPlanUseCase deleteSubscriptionPlanUseCase,
       GetActiveSubscriptionPlansUseCase getActiveSubscriptionPlansUseCase,
+      GetAllSubscriptionPlansUseCase getAllSubscriptionPlansUseCase,
       SubscribePlanUseCase subscribePlanUseCase,
       GetMySubscriptionsUseCase getMySubscriptionsUseCase,
       GetMyCurrentSubscriptionUseCase getMyCurrentSubscriptionUseCase,
@@ -83,6 +86,7 @@ public class SubscriptionController {
     this.updateSubscriptionPlanUseCase = updateSubscriptionPlanUseCase;
     this.deleteSubscriptionPlanUseCase = deleteSubscriptionPlanUseCase;
     this.getActiveSubscriptionPlansUseCase = getActiveSubscriptionPlansUseCase;
+    this.getAllSubscriptionPlansUseCase = getAllSubscriptionPlansUseCase;
     this.subscribePlanUseCase = subscribePlanUseCase;
     this.getMySubscriptionsUseCase = getMySubscriptionsUseCase;
     this.getMyCurrentSubscriptionUseCase = getMyCurrentSubscriptionUseCase;
@@ -119,6 +123,12 @@ public class SubscriptionController {
   @GetMapping("/plans")
   public ResponseEntity<List<SubscriptionPlanResponse>> getActivePlans () {
     return ResponseUtil.ok(getActiveSubscriptionPlansUseCase.execute());
+  }
+
+  @PreAuthorize("hasRole('ADMIN')")
+  @GetMapping("/admin/plans")
+  public ResponseEntity<List<SubscriptionPlanResponse>> getAllPlans () {
+    return ResponseUtil.ok(getAllSubscriptionPlansUseCase.execute());
   }
 
   @PreAuthorize("hasRole('ADMIN')")

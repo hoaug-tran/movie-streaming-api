@@ -9,10 +9,10 @@ public class CreateAdvertisementViewRequest {
   @Positive(message = "Advertisement ID must be positive")
   private Long advertisementId;
 
-  @Positive(message = "Movie ID must be positive if provided")
+  @Positive(message = "ID phim phải là số dương. if provided")
   private Long movieId;
 
-  @Positive(message = "Episode ID must be positive if provided")
+  @Positive(message = "ID tập phim phải là số dương. if provided")
   private Long episodeId;
 
   public Long getAdvertisementId () {

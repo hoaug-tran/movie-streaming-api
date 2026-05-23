@@ -8,6 +8,9 @@ import org.springframework.stereotype.Component;
 import com.hoaug.movieapi.common.enums.ErrorCode;
 import com.hoaug.movieapi.common.exception.AppException;
 import com.hoaug.movieapi.common.security.BruteForceProtection;
+import com.hoaug.movieapi.modules.activitylog.application.service.ActivityLogService;
+import com.hoaug.movieapi.modules.activitylog.domain.model.ActivityScope;
+import com.hoaug.movieapi.modules.activitylog.domain.model.ActivitySeverity;
 import com.hoaug.movieapi.modules.auth.application.dto.request.LoginRequest;
 import com.hoaug.movieapi.modules.auth.application.dto.response.AuthResponse;
 import com.hoaug.movieapi.modules.auth.application.dto.response.LoginResult;
@@ -25,15 +28,17 @@ public class LoginUseCase {
   private final BruteForceProtection bruteForceProtection;
   private final AuthOtpService authOtpService;
   private final TrustedDeviceUseCase trustedDeviceUseCase;
+  private final ActivityLogService activityLogService;
 
   public LoginUseCase(AuthUserRepository authUserRepository, PasswordEncoder passwordEncoder,
       BruteForceProtection bruteForceProtection, AuthOtpService authOtpService,
-      TrustedDeviceUseCase trustedDeviceUseCase) {
+      TrustedDeviceUseCase trustedDeviceUseCase, ActivityLogService activityLogService) {
     this.authUserRepository = authUserRepository;
     this.passwordEncoder = passwordEncoder;
     this.bruteForceProtection = bruteForceProtection;
     this.authOtpService = authOtpService;
     this.trustedDeviceUseCase = trustedDeviceUseCase;
+    this.activityLogService = activityLogService;
   }
 
   public LoginResult execute (LoginRequest request, String trustedDeviceToken) {
@@ -63,6 +68,17 @@ public class LoginUseCase {
     if (request.isRememberMe()
         && trustedDeviceUseCase.isTrusted(user.getId(), trustedDeviceToken)) {
       AuthResponse directAuth = trustedDeviceUseCase.completeLogin(user);
+      activityLogService.record(
+        ActivityScope.USER,
+        user.getId(),
+        user.getFullName(),
+        "Đăng nhập",
+        "USER",
+        user.getId(),
+        user.getUsername(),
+        user.getFullName() + " đã đăng nhập vào hệ thống bằng thiết bị tin cậy.",
+        ActivitySeverity.INFO
+      );
       return new LoginResult(directAuth, null);
     }
 

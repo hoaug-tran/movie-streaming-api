@@ -1,5 +1,6 @@
 package com.hoaug.movieapi.modules.movie.domain.repository;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -7,6 +8,8 @@ import com.hoaug.movieapi.modules.movie.domain.model.Movie;
 
 public interface MovieRepository {
   List<Movie> findAllPublished ();
+
+  List<Movie> findAll ();
 
   Optional<Movie> findById (Long id);
 
@@ -22,6 +25,8 @@ public interface MovieRepository {
 
   List<Movie> findTopTrending (int limit);
 
+  List<Movie> findTopTrendingThisWeek (LocalDateTime since, int limit);
+
   List<Movie> findWeeklyNew (int limit);
 
   List<Movie> findTopRated (int limit);
@@ -31,6 +36,8 @@ public interface MovieRepository {
   List<Movie> findUpcoming (int limit);
 
   List<Movie> findByCountry (String country, int page, int size);
+
+  List<Movie> findRandomOtherCountries (List<String> excludedCountries, int limit);
 
   List<Movie> findTopSeriesByCountry (String country, int limit);
 

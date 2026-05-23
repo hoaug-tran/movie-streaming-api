@@ -16,6 +16,11 @@ import com.hoaug.movieapi.modules.notification.domain.model.NotificationType;
 import com.hoaug.movieapi.modules.notification.domain.repository.NotificationRepository;
 import com.hoaug.movieapi.modules.user.domain.model.User;
 import com.hoaug.movieapi.modules.user.domain.repository.UserRepository;
+import com.hoaug.movieapi.modules.activitylog.application.service.ActivityLogService;
+import com.hoaug.movieapi.modules.activitylog.domain.model.ActivityScope;
+import com.hoaug.movieapi.modules.activitylog.domain.model.ActivitySeverity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 
 @Component
 public class CreateNotificationUseCase {
@@ -27,17 +32,20 @@ public class CreateNotificationUseCase {
   private final EmailService emailService;
   private final UserRepository userRepository;
   private final WebPushService webPushService;
+  private final ActivityLogService activityLogService;
 
   public CreateNotificationUseCase(NotificationRepository notificationRepository,
       NotificationMapper notificationMapper,
       EmailService emailService,
       UserRepository userRepository,
-      WebPushService webPushService) {
+      WebPushService webPushService,
+      ActivityLogService activityLogService) {
     this.notificationRepository = notificationRepository;
     this.notificationMapper = notificationMapper;
     this.emailService = emailService;
     this.userRepository = userRepository;
     this.webPushService = webPushService;
+    this.activityLogService = activityLogService;
   }
 
   public NotificationResponse execute(CreateNotificationRequest request) {
@@ -92,6 +100,31 @@ public class CreateNotificationUseCase {
       notification.setCreatedAt(LocalDateTime.now());
       savedNotification = notificationRepository.save(notification);
     }
+
+    final Notification finalSaved = savedNotification;
+    userRepository.findById(request.getUserId()).ifPresent(recipient -> {
+      Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+      Long actorId = 0L;
+      String actorName = "Hệ thống";
+      if (auth != null && auth.isAuthenticated() && !"anonymousUser".equals(auth.getName())) {
+        var opt = userRepository.findByUsername(auth.getName());
+        if (opt.isPresent()) {
+          actorId = opt.get().getId();
+          actorName = opt.get().getFullName();
+        }
+      }
+      activityLogService.record(
+        ActivityScope.ADMIN,
+        actorId,
+        actorName,
+        "Gửi thông báo",
+        "NOTIFICATION",
+        finalSaved.getId(),
+        request.getTitle(),
+        actorName + " đã gửi thông báo đến người dùng " + recipient.getFullName() + ": " + request.getTitle(),
+        ActivitySeverity.INFO
+      );
+    });
 
     return notificationMapper.toResponse(savedNotification);
   }

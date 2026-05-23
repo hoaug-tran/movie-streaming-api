@@ -13,6 +13,12 @@ import com.hoaug.movieapi.modules.notification.application.service.WebPushServic
 import com.hoaug.movieapi.modules.notification.domain.model.Notification;
 import com.hoaug.movieapi.modules.notification.domain.model.NotificationType;
 import com.hoaug.movieapi.modules.notification.domain.repository.NotificationRepository;
+import com.hoaug.movieapi.modules.user.domain.repository.UserRepository;
+import com.hoaug.movieapi.modules.activitylog.application.service.ActivityLogService;
+import com.hoaug.movieapi.modules.activitylog.domain.model.ActivityScope;
+import com.hoaug.movieapi.modules.activitylog.domain.model.ActivitySeverity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 
 @Component
 public class BroadcastNotificationUseCase {
@@ -22,13 +28,19 @@ public class BroadcastNotificationUseCase {
   private final NotificationRepository notificationRepository;
   private final EmailService emailService;
   private final WebPushService webPushService;
+  private final UserRepository userRepository;
+  private final ActivityLogService activityLogService;
 
   public BroadcastNotificationUseCase(NotificationRepository notificationRepository,
       EmailService emailService,
-      WebPushService webPushService) {
+      WebPushService webPushService,
+      UserRepository userRepository,
+      ActivityLogService activityLogService) {
     this.notificationRepository = notificationRepository;
     this.emailService = emailService;
     this.webPushService = webPushService;
+    this.userRepository = userRepository;
+    this.activityLogService = activityLogService;
   }
 
   public int execute(BroadcastNotificationRequest request) {
@@ -77,12 +89,38 @@ public class BroadcastNotificationUseCase {
       log.warn("Failed to send broadcast web push: {}", e.getMessage());
     }
 
+    int totalCount = 0;
     if (sendInApp && sendEmail) {
-      return Math.max(notificationRepository.findAllActiveUserIds().size(), emailCount);
+      totalCount = Math.max(notificationRepository.findAllActiveUserIds().size(), emailCount);
     } else if (sendEmail) {
-      return emailCount;
+      totalCount = emailCount;
     } else {
-      return notificationRepository.findAllActiveUserIds().size();
+      totalCount = notificationRepository.findAllActiveUserIds().size();
     }
+
+    Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+    Long actorId = 0L;
+    String actorName = "Hệ thống";
+    if (auth != null && auth.isAuthenticated() && !"anonymousUser".equals(auth.getName())) {
+      var opt = userRepository.findByUsername(auth.getName());
+      if (opt.isPresent()) {
+        actorId = opt.get().getId();
+        actorName = opt.get().getFullName();
+      }
+    }
+
+    activityLogService.record(
+      ActivityScope.ADMIN,
+      actorId,
+      actorName,
+      "Phát thông báo",
+      "NOTIFICATION",
+      null,
+      request.getTitle(),
+      actorName + " đã phát thông báo hệ thống: " + request.getTitle(),
+      ActivitySeverity.INFO
+    );
+
+    return totalCount;
   }
 }

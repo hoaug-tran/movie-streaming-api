@@ -17,21 +17,35 @@ public class OfflineKeyController {
 
   private final GetOfflineHlsKeyUseCase getOfflineHlsKeyUseCase;
 
-  public OfflineKeyController (GetOfflineHlsKeyUseCase getOfflineHlsKeyUseCase) {
+  public OfflineKeyController(GetOfflineHlsKeyUseCase getOfflineHlsKeyUseCase) {
     this.getOfflineHlsKeyUseCase = getOfflineHlsKeyUseCase;
   }
 
   @GetMapping("/key/{episodeId}/{quality}")
-  public ResponseEntity<byte[]> getOfflineKey (
-      @PathVariable Long episodeId,
-      @PathVariable String quality,
-      @RequestParam String token) {
+  public ResponseEntity<byte[]> getOfflineKey (@PathVariable Long episodeId,
+      @PathVariable String quality, @RequestParam String token) {
 
-    byte[] key = getOfflineHlsKeyUseCase.execute(episodeId, quality, token);
+    String normalizedQuality = normalizeQuality(quality);
+    byte[] key = getOfflineHlsKeyUseCase.execute(episodeId, normalizedQuality, token);
 
-    return ResponseEntity.ok()
-        .contentType(MediaType.APPLICATION_OCTET_STREAM)
-        .cacheControl(CacheControl.noStore())
-        .body(key);
+    return ResponseEntity.ok().contentType(MediaType.APPLICATION_OCTET_STREAM)
+        .cacheControl(CacheControl.noStore()).body(key);
+  }
+
+  private String normalizeQuality (String quality) {
+    if (quality == null || quality.isBlank())
+      return "720p";
+
+    String q = quality.trim().toUpperCase();
+
+    if ("4K".equals(q) || "2160P".equals(q) || "UHD".equals(q)) {
+      return "4K";
+    }
+
+    if ("1080P".equals(q) || "FHD".equals(q) || "FULL_HD".equals(q)) {
+      return "1080p";
+    }
+
+    return "720p";
   }
 }

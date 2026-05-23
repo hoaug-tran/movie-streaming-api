@@ -15,8 +15,8 @@ public class UpsertMovieRecommendationRequest {
   @Positive(message = "User ID must be positive")
   private Long userId;
 
-  @NotNull(message = "Movie ID is required")
-  @Positive(message = "Movie ID must be positive")
+  @NotNull(message = "Vui lòng chọn phim.")
+  @Positive(message = "ID phim phải là số dương.")
   private Long movieId;
 
   @NotNull(message = "Recommendation score is required")

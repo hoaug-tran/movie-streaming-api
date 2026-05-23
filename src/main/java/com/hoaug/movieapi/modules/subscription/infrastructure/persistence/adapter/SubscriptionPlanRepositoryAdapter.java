@@ -46,6 +46,11 @@ public class SubscriptionPlanRepositoryAdapter implements SubscriptionPlanReposi
   }
 
   @Override
+  public List<SubscriptionPlan> findAll () {
+    return jpaSubscriptionPlanRepository.findAll().stream().map(this::toDomain).toList();
+  }
+
+  @Override
   public List<SubscriptionPlan> findByIsActiveTrueOrderByPriceAsc () {
     return jpaSubscriptionPlanRepository.findByIsActiveTrueOrderByPriceAsc().stream()
         .map(this::toDomain).toList();

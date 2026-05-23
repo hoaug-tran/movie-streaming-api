@@ -10,6 +10,9 @@ import org.springframework.stereotype.Component;
 
 import com.hoaug.movieapi.common.enums.ErrorCode;
 import com.hoaug.movieapi.common.exception.AppException;
+import com.hoaug.movieapi.modules.activitylog.application.service.ActivityLogService;
+import com.hoaug.movieapi.modules.activitylog.domain.model.ActivityScope;
+import com.hoaug.movieapi.modules.activitylog.domain.model.ActivitySeverity;
 import com.hoaug.movieapi.modules.auth.application.dto.response.AuthResponse;
 import com.hoaug.movieapi.modules.auth.domain.model.OAuthCredential;
 import com.hoaug.movieapi.modules.auth.domain.model.RefreshToken;
@@ -28,16 +31,18 @@ public class ExchangeOAuthTokenUseCase {
   private final RefreshTokenRepository refreshTokenRepository;
   private final TokenService tokenService;
   private final PasswordEncoder passwordEncoder;
+  private final ActivityLogService activityLogService;
 
   public ExchangeOAuthTokenUseCase(AuthUserRepository authUserRepository,
       OAuthCredentialRepository oauthCredentialRepository,
       RefreshTokenRepository refreshTokenRepository, TokenService tokenService,
-      PasswordEncoder passwordEncoder) {
+      PasswordEncoder passwordEncoder, ActivityLogService activityLogService) {
     this.authUserRepository = authUserRepository;
     this.oauthCredentialRepository = oauthCredentialRepository;
     this.refreshTokenRepository = refreshTokenRepository;
     this.tokenService = tokenService;
     this.passwordEncoder = passwordEncoder;
+    this.activityLogService = activityLogService;
   }
 
   public AuthResponse execute (String provider, String oauthId, Map<String, Object> userInfo,
@@ -182,7 +187,7 @@ public class ExchangeOAuthTokenUseCase {
     user.setUpdatedAt(now);
     authUserRepository.save(user);
 
-    String accessToken = tokenService.generateAccessToken(user.getUsername());
+    String accessToken = tokenService.generateAccessToken(user.getUsername(), user.getRole().name());
     String refreshTokenValue = tokenService.generateRefreshToken();
 
     RefreshToken refreshToken = new RefreshToken();
@@ -201,6 +206,18 @@ public class ExchangeOAuthTokenUseCase {
     response.setEmail(user.getEmail());
     response.setFullName(user.getFullName());
     response.setRole(user.getRole());
+
+    activityLogService.record(
+      ActivityScope.USER,
+      user.getId(),
+      user.getFullName(),
+      "Đăng nhập",
+      "USER",
+      user.getId(),
+      user.getUsername(),
+      user.getFullName() + " đã đăng nhập vào hệ thống bằng Google OAuth.",
+      ActivitySeverity.INFO
+    );
 
     return response;
   }

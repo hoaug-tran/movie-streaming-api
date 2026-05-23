@@ -27,6 +27,11 @@ public class MovieRepositoryAdapter implements MovieRepository {
   }
 
   @Override
+  public List<Movie> findAll () {
+    return jpaMovieRepository.findAll().stream().map(this::toDomain).toList();
+  }
+
+  @Override
   public Optional<Movie> findById (Long id) {
     return jpaMovieRepository.findById(id).map(this::toDomain);
   }
@@ -120,14 +125,23 @@ public class MovieRepositoryAdapter implements MovieRepository {
 
   @Override
   public List<Movie> findTopTrending (int limit) {
-    return jpaMovieRepository.findTopTrending(org.springframework.data.domain.PageRequest.of(0, limit))
-        .stream().map(this::toDomain).toList();
+    return jpaMovieRepository
+        .findTopTrending(org.springframework.data.domain.PageRequest.of(0, limit)).stream()
+        .map(this::toDomain).toList();
+  }
+
+  @Override
+  public List<Movie> findTopTrendingThisWeek (java.time.LocalDateTime since, int limit) {
+    return jpaMovieRepository
+        .findTopTrendingThisWeek(since, org.springframework.data.domain.PageRequest.of(0, limit)).stream()
+        .map(this::toDomain).toList();
   }
 
   @Override
   public List<Movie> findWeeklyNew (int limit) {
-    return jpaMovieRepository.findWeeklyNew(org.springframework.data.domain.PageRequest.of(0, limit))
-        .stream().map(this::toDomain).toList();
+    return jpaMovieRepository
+        .findWeeklyNew(org.springframework.data.domain.PageRequest.of(0, limit)).stream()
+        .map(this::toDomain).toList();
   }
 
   @Override
@@ -138,14 +152,16 @@ public class MovieRepositoryAdapter implements MovieRepository {
 
   @Override
   public List<Movie> findTopSeries (int limit) {
-    return jpaMovieRepository.findTopSeries(org.springframework.data.domain.PageRequest.of(0, limit))
-        .stream().map(this::toDomain).toList();
+    return jpaMovieRepository
+        .findTopSeries(org.springframework.data.domain.PageRequest.of(0, limit)).stream()
+        .map(this::toDomain).toList();
   }
 
   @Override
   public List<Movie> findUpcoming (int limit) {
     int currentYear = java.time.LocalDate.now().getYear();
-    return jpaMovieRepository.findUpcoming(currentYear, org.springframework.data.domain.PageRequest.of(0, limit))
+    return jpaMovieRepository
+        .findUpcoming(currentYear, org.springframework.data.domain.PageRequest.of(0, limit))
         .stream().map(this::toDomain).toList();
   }
 
@@ -157,6 +173,14 @@ public class MovieRepositoryAdapter implements MovieRepository {
   }
 
   @Override
+  public List<Movie> findRandomOtherCountries (List<String> excludedCountries, int limit) {
+    return jpaMovieRepository
+        .findRandomByCountryNotIn(excludedCountries,
+            org.springframework.data.domain.PageRequest.of(0, limit))
+        .stream().map(this::toDomain).toList();
+  }
+
+  @Override
   public List<Movie> findTopSeriesByCountry (String country, int limit) {
     return jpaMovieRepository
         .findTopSeriesByCountry(country, org.springframework.data.domain.PageRequest.of(0, limit))
@@ -165,38 +189,44 @@ public class MovieRepositoryAdapter implements MovieRepository {
 
   @Override
   public List<Movie> findTopSeriesDrama (int limit) {
-    return jpaMovieRepository.findTopSeriesDrama(org.springframework.data.domain.PageRequest.of(0, limit))
-        .stream().map(this::toDomain).toList();
+    return jpaMovieRepository
+        .findTopSeriesDrama(org.springframework.data.domain.PageRequest.of(0, limit)).stream()
+        .map(this::toDomain).toList();
   }
 
   @Override
   public List<Movie> findActionMovies (int limit) {
-    return jpaMovieRepository.findActionMovies(org.springframework.data.domain.PageRequest.of(0, limit))
-        .stream().map(this::toDomain).toList();
+    return jpaMovieRepository
+        .findActionMovies(org.springframework.data.domain.PageRequest.of(0, limit)).stream()
+        .map(this::toDomain).toList();
   }
 
   @Override
   public List<Movie> findThrillerMovies (int limit) {
-    return jpaMovieRepository.findThrillerMovies(org.springframework.data.domain.PageRequest.of(0, limit))
-        .stream().map(this::toDomain).toList();
+    return jpaMovieRepository
+        .findThrillerMovies(org.springframework.data.domain.PageRequest.of(0, limit)).stream()
+        .map(this::toDomain).toList();
   }
 
   @Override
   public List<Movie> findAnimeSeries (int limit) {
-    return jpaMovieRepository.findAnimeSeries(org.springframework.data.domain.PageRequest.of(0, limit))
-        .stream().map(this::toDomain).toList();
+    return jpaMovieRepository
+        .findAnimeSeries(org.springframework.data.domain.PageRequest.of(0, limit)).stream()
+        .map(this::toDomain).toList();
   }
 
   @Override
   public List<Movie> findAnimeMovies (int limit) {
-    return jpaMovieRepository.findAnimeMovies(org.springframework.data.domain.PageRequest.of(0, limit))
-        .stream().map(this::toDomain).toList();
+    return jpaMovieRepository
+        .findAnimeMovies(org.springframework.data.domain.PageRequest.of(0, limit)).stream()
+        .map(this::toDomain).toList();
   }
 
   @Override
   public List<Movie> findMostCommented (int limit) {
-    return jpaMovieRepository.findMostCommented(org.springframework.data.domain.PageRequest.of(0, limit))
-        .stream().map(this::toDomain).toList();
+    return jpaMovieRepository
+        .findMostCommented(org.springframework.data.domain.PageRequest.of(0, limit)).stream()
+        .map(this::toDomain).toList();
   }
 
   @Override

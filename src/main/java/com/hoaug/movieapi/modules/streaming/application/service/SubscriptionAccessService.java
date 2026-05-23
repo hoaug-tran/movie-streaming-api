@@ -16,24 +16,29 @@ public class SubscriptionAccessService {
   private final UserSubscriptionRepository userSubscriptionRepository;
   private final SubscriptionPlanRepository subscriptionPlanRepository;
 
-  public SubscriptionAccessService (UserSubscriptionRepository userSubscriptionRepository,
+  public SubscriptionAccessService(UserSubscriptionRepository userSubscriptionRepository,
       SubscriptionPlanRepository subscriptionPlanRepository) {
     this.userSubscriptionRepository = userSubscriptionRepository;
     this.subscriptionPlanRepository = subscriptionPlanRepository;
   }
 
   public boolean canAccessQuality (Long userId, String quality) {
-    if ("720p".equals(quality)) return true;
+    if ("720p".equals(quality))
+      return true;
+
     return getActivePlan(userId).map(plan -> switch (quality) {
-      case "1080p" -> "PREMIUM".equals(plan.getCode()) || "PREMIUM_PLUS".equals(plan.getCode());
-      case "4K" -> "PREMIUM_PLUS".equals(plan.getCode());
-      default -> false;
+    case "1080p" -> "PREMIUM".equals(plan.getCode()) || "PREMIUM_PLUS".equals(plan.getCode());
+    case "4K" -> "PREMIUM_PLUS".equals(plan.getCode());
+    default -> false;
     }).orElse(false);
   }
 
+  public boolean canDownloadOffline (Long userId) {
+    return getActivePlan(userId).map(plan -> "PREMIUM_PLUS".equals(plan.getCode())).orElse(false);
+  }
+
   public int getMaxDevices (Long userId) {
-    return getActivePlan(userId)
-        .map(p -> p.getMaxDevices() != null ? p.getMaxDevices() : 1)
+    return getActivePlan(userId).map(p -> p.getMaxDevices() != null ? p.getMaxDevices() : 1)
         .orElse(1);
   }
 
@@ -41,8 +46,7 @@ public class SubscriptionAccessService {
     LocalDateTime now = LocalDateTime.now();
     return userSubscriptionRepository.findByUserIdOrderByCreatedAtDesc(userId).stream()
         .filter(s -> s.getStatus() == SubscriptionStatus.ACTIVE)
-        .filter(s -> s.getEndAt() == null || s.getEndAt().isAfter(now))
-        .findFirst()
+        .filter(s -> s.getEndAt() == null || s.getEndAt().isAfter(now)).findFirst()
         .flatMap(s -> subscriptionPlanRepository.findById(s.getPlanId()));
   }
 }

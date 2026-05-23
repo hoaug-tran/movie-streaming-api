@@ -51,8 +51,13 @@ public class UpdateMovieStatusUseCase {
     Movie movie = movieRepository.findById(movieId)
         .orElseThrow( () -> new AppException(ErrorCode.MOVIE_NOT_FOUND));
 
-    movie.setMovieStatus(request.getStatus());
-    if (request.getStatus() == MovieStatus.PUBLISHED && movie.getPublishedAt() == null) {
+    MovieStatus nextStatus = request.getStatus();
+    if (nextStatus == null) {
+      throw new AppException(ErrorCode.BAD_REQUEST);
+    }
+
+    movie.setMovieStatus(nextStatus);
+    if (nextStatus == MovieStatus.PUBLISHED && movie.getPublishedAt() == null) {
       movie.setPublishedAt(LocalDateTime.now());
     }
 

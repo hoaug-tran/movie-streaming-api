@@ -30,11 +30,9 @@ public class GetOfflinePackageUseCase {
   private final OfflineTokenService offlineTokenService;
   private final SubscriptionAccessService subscriptionAccessService;
 
-  public GetOfflinePackageUseCase (JpaEpisodeRepository episodeRepository,
-      JpaMovieRepository movieRepository,
-      HlsPathService hlsPathService,
-      StreamUrlService streamUrlService,
-      OfflineTokenService offlineTokenService,
+  public GetOfflinePackageUseCase(JpaEpisodeRepository episodeRepository,
+      JpaMovieRepository movieRepository, HlsPathService hlsPathService,
+      StreamUrlService streamUrlService, OfflineTokenService offlineTokenService,
       SubscriptionAccessService subscriptionAccessService) {
     this.episodeRepository = episodeRepository;
     this.movieRepository = movieRepository;
@@ -44,36 +42,55 @@ public class GetOfflinePackageUseCase {
     this.subscriptionAccessService = subscriptionAccessService;
   }
 
+  private String normalizeQuality (String quality) {
+    if (quality == null || quality.isBlank())
+      return "720p";
+
+    String q = quality.trim().toUpperCase();
+
+    if ("4K".equals(q) || "2160P".equals(q) || "UHD".equals(q)) {
+      return "4K";
+    }
+
+    if ("1080P".equals(q) || "FHD".equals(q) || "FULL_HD".equals(q)) {
+      return "1080p";
+    }
+
+    return "720p";
+  }
+
   public OfflinePackageResponse execute (Long userId, Long episodeId, String quality) {
+    String normalizedQuality = normalizeQuality(quality);
+
     EpisodeEntity episode = episodeRepository.findById(episodeId)
-        .orElseThrow(() -> new AppException(ErrorCode.EPISODE_NOT_FOUND));
+        .orElseThrow( () -> new AppException(ErrorCode.EPISODE_NOT_FOUND));
 
     MovieEntity movie = movieRepository.findById(episode.getMovieId())
-        .orElseThrow(() -> new AppException(ErrorCode.MOVIE_NOT_FOUND));
+        .orElseThrow( () -> new AppException(ErrorCode.MOVIE_NOT_FOUND));
 
-    if (!subscriptionAccessService.canAccessQuality(userId, quality)) {
+    if (!subscriptionAccessService.canDownloadOffline(userId)) {
       throw new AppException(ErrorCode.FORBIDDEN);
     }
 
-    Path hlsDir = hlsPathService.episodeOutputDirectory(episodeId, quality);
-    List<SegmentInfo> segments = buildSegmentList(hlsDir, episodeId, quality);
+    if (!subscriptionAccessService.canAccessQuality(userId, normalizedQuality)) {
+      throw new AppException(ErrorCode.FORBIDDEN);
+    }
 
-    String offlineToken = offlineTokenService.generateOfflineToken(userId, episodeId, quality);
+    Path hlsDir = hlsPathService.episodeOutputDirectory(episodeId, normalizedQuality);
+    List<SegmentInfo> segments = buildSegmentList(hlsDir, episodeId, normalizedQuality);
+
+    String offlineToken = offlineTokenService.generateOfflineToken(userId, episodeId,
+        normalizedQuality);
+
     Date expiresAt = new Date(System.currentTimeMillis() + offlineTokenService.getOfflineTtlMs());
 
-    OfflineMetadata metadata = new OfflineMetadata(
-        movie.getId(),
-        movie.getSlug(),
-        movie.getTitle(),
-        episodeId,
-        episode.getTitle(),
-        episode.getEpisodeNumber(),
+    OfflineMetadata metadata = new OfflineMetadata(movie.getId(), movie.getSlug(), movie.getTitle(),
+        episodeId, episode.getTitle(), episode.getEpisodeNumber(),
         episode.getThumbnailUrl() != null ? episode.getThumbnailUrl() : movie.getPosterUrl(),
-        episode.getDurationSeconds(),
-        quality
-    );
+        episode.getDurationSeconds(), normalizedQuality);
 
-    return new OfflinePackageResponse(offlineToken, expiresAt.toInstant().toString(), segments, metadata);
+    return new OfflinePackageResponse(offlineToken, expiresAt.toInstant().toString(), segments,
+        metadata);
   }
 
   private List<SegmentInfo> buildSegmentList (Path hlsDir, Long episodeId, String quality) {
@@ -86,11 +103,14 @@ public class GetOfflinePackageUseCase {
 
     try {
       List<String> lines = Files.readAllLines(playlistPath);
-      String keyUrl = streamUrlService.episodeKeyUrl(episodeId, quality);
+      String keyUrl = streamUrlService.offlineEpisodeKeyUrl(episodeId, quality);
 
       for (String line : lines) {
         line = line.trim();
-        if (line.isEmpty() || line.startsWith("#")) continue;
+        if (line.isEmpty() || line.startsWith("#")) {
+          continue;
+        }
+
         if (line.endsWith(".ts")) {
           String segmentUrl = streamUrlService.episodeSegmentUrl(episodeId, quality, line);
           segments.add(new SegmentInfo(segmentUrl, keyUrl));
@@ -103,24 +123,15 @@ public class GetOfflinePackageUseCase {
     return segments;
   }
 
-  public record SegmentInfo(String url, String keyUrl) {}
+  public record SegmentInfo(String url, String keyUrl) {
+  }
 
-  public record OfflineMetadata(
-      Long movieId,
-      String movieSlug,
-      String movieTitle,
-      Long episodeId,
-      String episodeTitle,
-      Integer episodeNumber,
-      String posterUrl,
-      Integer durationSeconds,
-      String quality
-  ) {}
+  public record OfflineMetadata(Long movieId, String movieSlug, String movieTitle, Long episodeId,
+      String episodeTitle, Integer episodeNumber, String posterUrl, Integer durationSeconds,
+      String quality) {
+  }
 
-  public record OfflinePackageResponse(
-      String offlineToken,
-      String expiresAt,
-      List<SegmentInfo> segments,
-      OfflineMetadata metadata
-  ) {}
+  public record OfflinePackageResponse(String offlineToken, String expiresAt,
+      List<SegmentInfo> segments, OfflineMetadata metadata) {
+  }
 }

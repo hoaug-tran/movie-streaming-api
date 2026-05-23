@@ -11,8 +11,8 @@ public class LoginRequest {
   @ValidSafeString(minLength = 1, maxLength = 100)
   private String usernameOrEmail;
 
-  @NotBlank(message = "Password is required")
-  @Size(min = 6, max = 255, message = "Password must be between 6 and 255 characters")
+  @NotBlank(message = "Vui lòng nhập mật khẩu.")
+  @Size(min = 6, max = 255, message = "Mật khẩu phải từ 6 đến 255 ký tự.")
   @ValidSafeString(minLength = 6, maxLength = 255)
   private String password;
 

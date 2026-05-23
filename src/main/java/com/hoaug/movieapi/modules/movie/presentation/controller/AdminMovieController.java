@@ -1,5 +1,8 @@
 package com.hoaug.movieapi.modules.movie.presentation.controller;
 
+import java.util.List;
+
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -11,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.hoaug.movieapi.common.response.ResponseUtil;
 import com.hoaug.movieapi.modules.movie.application.dto.request.CreateEpisodeRequest;
 import com.hoaug.movieapi.modules.movie.application.dto.request.CreateMovieCategoryRequest;
 import com.hoaug.movieapi.modules.movie.application.dto.request.CreateMoviePersonRequest;
@@ -20,14 +24,15 @@ import com.hoaug.movieapi.modules.movie.application.dto.request.CreateMovieTagRe
 import com.hoaug.movieapi.modules.movie.application.dto.request.CreatePersonRequest;
 import com.hoaug.movieapi.modules.movie.application.dto.request.CreateStudioRequest;
 import com.hoaug.movieapi.modules.movie.application.dto.request.UpdateEpisodeRequest;
-import com.hoaug.movieapi.modules.movie.application.dto.request.UpdateMovieRequest;
 import com.hoaug.movieapi.modules.movie.application.dto.request.UpdateMovieInteractionLocksRequest;
+import com.hoaug.movieapi.modules.movie.application.dto.request.UpdateMovieRequest;
 import com.hoaug.movieapi.modules.movie.application.dto.request.UpdateMovieStatusRequest;
 import com.hoaug.movieapi.modules.movie.application.dto.response.CategoryResponse;
 import com.hoaug.movieapi.modules.movie.application.dto.response.EpisodeResponse;
 import com.hoaug.movieapi.modules.movie.application.dto.response.MovieDetailResponse;
 import com.hoaug.movieapi.modules.movie.application.dto.response.MoviePersonResponse;
 import com.hoaug.movieapi.modules.movie.application.dto.response.MovieStudioResponse;
+import com.hoaug.movieapi.modules.movie.application.dto.response.MovieSummaryResponse;
 import com.hoaug.movieapi.modules.movie.application.dto.response.PersonResponse;
 import com.hoaug.movieapi.modules.movie.application.dto.response.StudioResponse;
 import com.hoaug.movieapi.modules.movie.application.dto.response.TagResponse;
@@ -45,13 +50,14 @@ import com.hoaug.movieapi.modules.movie.application.usecase.DeleteMoviePersonUse
 import com.hoaug.movieapi.modules.movie.application.usecase.DeleteMovieStudioUseCase;
 import com.hoaug.movieapi.modules.movie.application.usecase.DeleteMovieTagUseCase;
 import com.hoaug.movieapi.modules.movie.application.usecase.DeleteMovieUseCase;
+import com.hoaug.movieapi.modules.movie.application.usecase.GetAdminMoviesUseCase;
+import com.hoaug.movieapi.modules.movie.application.usecase.GetMovieByIdAdminUseCase;
 import com.hoaug.movieapi.modules.movie.application.usecase.UpdateEpisodeUseCase;
+import com.hoaug.movieapi.modules.movie.application.usecase.UpdateMovieInteractionLocksUseCase;
 import com.hoaug.movieapi.modules.movie.application.usecase.UpdateMoviePersonUseCase;
 import com.hoaug.movieapi.modules.movie.application.usecase.UpdateMovieStatusUseCase;
 import com.hoaug.movieapi.modules.movie.application.usecase.UpdateMovieStudioUseCase;
 import com.hoaug.movieapi.modules.movie.application.usecase.UpdateMovieUseCase;
-import com.hoaug.movieapi.modules.movie.application.usecase.GetMovieByIdAdminUseCase;
-import com.hoaug.movieapi.modules.movie.application.usecase.UpdateMovieInteractionLocksUseCase;
 
 import jakarta.validation.Valid;
 
@@ -60,6 +66,7 @@ import jakarta.validation.Valid;
 @PreAuthorize("hasRole('ADMIN')")
 public class AdminMovieController {
 
+  private final GetAdminMoviesUseCase getAdminMoviesUseCase;
   private final GetMovieByIdAdminUseCase getMovieByIdAdminUseCase;
   private final CreateMovieUseCase createMovieUseCase;
   private final UpdateMovieUseCase updateMovieUseCase;
@@ -82,14 +89,13 @@ public class AdminMovieController {
   private final UpdateMovieStudioUseCase updateMovieStudioUseCase;
   private final DeleteMovieStudioUseCase deleteMovieStudioUseCase;
 
-  public AdminMovieController(GetMovieByIdAdminUseCase getMovieByIdAdminUseCase,
-      CreateMovieUseCase createMovieUseCase,
+  public AdminMovieController(GetAdminMoviesUseCase getAdminMoviesUseCase,
+      GetMovieByIdAdminUseCase getMovieByIdAdminUseCase, CreateMovieUseCase createMovieUseCase,
       UpdateMovieUseCase updateMovieUseCase, UpdateMovieStatusUseCase updateMovieStatusUseCase,
       UpdateMovieInteractionLocksUseCase updateMovieInteractionLocksUseCase,
       DeleteMovieUseCase deleteMovieUseCase, UpdateEpisodeUseCase updateEpisodeUseCase,
-      CreateEpisodeUseCase createEpisodeUseCase,
-      DeleteEpisodeUseCase deleteEpisodeUseCase, CreatePersonUseCase createPersonUseCase,
-      CreateStudioUseCase createStudioUseCase,
+      CreateEpisodeUseCase createEpisodeUseCase, DeleteEpisodeUseCase deleteEpisodeUseCase,
+      CreatePersonUseCase createPersonUseCase, CreateStudioUseCase createStudioUseCase,
       CreateMovieCategoryUseCase createMovieCategoryUseCase,
       DeleteMovieCategoryUseCase deleteMovieCategoryUseCase,
       CreateMovieTagUseCase createMovieTagUseCase, DeleteMovieTagUseCase deleteMovieTagUseCase,
@@ -99,6 +105,7 @@ public class AdminMovieController {
       CreateMovieStudioUseCase createMovieStudioUseCase,
       UpdateMovieStudioUseCase updateMovieStudioUseCase,
       DeleteMovieStudioUseCase deleteMovieStudioUseCase) {
+    this.getAdminMoviesUseCase = getAdminMoviesUseCase;
     this.getMovieByIdAdminUseCase = getMovieByIdAdminUseCase;
     this.createMovieUseCase = createMovieUseCase;
     this.updateMovieUseCase = updateMovieUseCase;
@@ -120,6 +127,11 @@ public class AdminMovieController {
     this.createMovieStudioUseCase = createMovieStudioUseCase;
     this.updateMovieStudioUseCase = updateMovieStudioUseCase;
     this.deleteMovieStudioUseCase = deleteMovieStudioUseCase;
+  }
+
+  @GetMapping
+  public ResponseEntity<List<MovieSummaryResponse>> getMovies () {
+    return ResponseUtil.ok(getAdminMoviesUseCase.execute().getMovies());
   }
 
   @GetMapping("/{id}")

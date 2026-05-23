@@ -7,6 +7,9 @@ import org.springframework.stereotype.Component;
 
 import com.hoaug.movieapi.common.enums.ErrorCode;
 import com.hoaug.movieapi.common.exception.AppException;
+import com.hoaug.movieapi.modules.activitylog.application.service.ActivityLogService;
+import com.hoaug.movieapi.modules.activitylog.domain.model.ActivityScope;
+import com.hoaug.movieapi.modules.activitylog.domain.model.ActivitySeverity;
 import com.hoaug.movieapi.modules.auth.application.dto.request.VerifyOtpRequest;
 import com.hoaug.movieapi.modules.auth.application.dto.response.AuthResponse;
 import com.hoaug.movieapi.modules.auth.application.service.AuthOtpService;
@@ -26,18 +29,21 @@ public class VerifyLoginOtpUseCase {
   private final RefreshTokenRepository refreshTokenRepository;
   private final TokenService tokenService;
   private final TrustedDeviceUseCase trustedDeviceUseCase;
+  private final ActivityLogService activityLogService;
 
   public record Result(AuthResponse authResponse, ResponseCookie trustedDeviceCookie) {
   }
 
   public VerifyLoginOtpUseCase(AuthOtpService authOtpService,
       AuthUserRepository authUserRepository, RefreshTokenRepository refreshTokenRepository,
-      TokenService tokenService, TrustedDeviceUseCase trustedDeviceUseCase) {
+      TokenService tokenService, TrustedDeviceUseCase trustedDeviceUseCase,
+      ActivityLogService activityLogService) {
     this.authOtpService = authOtpService;
     this.authUserRepository = authUserRepository;
     this.refreshTokenRepository = refreshTokenRepository;
     this.tokenService = tokenService;
     this.trustedDeviceUseCase = trustedDeviceUseCase;
+    this.activityLogService = activityLogService;
   }
 
   public Result execute (VerifyOtpRequest request) {
@@ -49,7 +55,7 @@ public class VerifyLoginOtpUseCase {
 
     LocalDateTime now = LocalDateTime.now();
 
-    String accessToken = tokenService.generateAccessToken(user.getUsername());
+    String accessToken = tokenService.generateAccessToken(user.getUsername(), user.getRole().name());
     String refreshTokenValue = tokenService.generateRefreshToken();
 
     RefreshToken refreshToken = new RefreshToken();
@@ -70,6 +76,19 @@ public class VerifyLoginOtpUseCase {
     response.setEmail(user.getEmail());
     response.setFullName(user.getFullName());
     response.setRole(user.getRole());
+
+    activityLogService.record(
+      ActivityScope.USER,
+      user.getId(),
+      user.getFullName(),
+      "Đăng nhập",
+      "USER",
+      user.getId(),
+      user.getUsername(),
+      user.getFullName() + " đã đăng nhập vào hệ thống qua OTP.",
+      ActivitySeverity.INFO
+    );
+
     return new Result(response, trustedDeviceCookie);
   }
 }

@@ -9,26 +9,26 @@ import jakarta.validation.constraints.Size;
 
 public class AdminCreateUserRequest {
 
-    @NotBlank(message = "Username is required")
-    @Size(min = 3, max = 50, message = "Username must be between 3 and 50 characters")
+    @NotBlank(message = "Vui lòng nhập tên đăng nhập.")
+    @Size(min = 3, max = 50, message = "Tên đăng nhập phải từ 3 đến 50 ký tự.")
     @ValidSafeString(minLength = 3, maxLength = 50)
     private String username;
 
-    @NotBlank(message = "Email is required")
-    @Email(message = "Invalid email format")
-    @Size(max = 100, message = "Email must be at most 100 characters")
+    @NotBlank(message = "Vui lòng nhập email.")
+    @Email(message = "Email không đúng định dạng.")
+    @Size(max = 100, message = "Email tối đa 100 ký tự.")
     private String email;
 
-    @NotBlank(message = "Password is required")
-    @Size(min = 6, max = 100, message = "Password must be between 6 and 100 characters")
+    @NotBlank(message = "Vui lòng nhập mật khẩu.")
+    @Size(min = 6, max = 100, message = "Mật khẩu phải từ 6 đến 100 ký tự.")
     private String password;
 
-    @NotBlank(message = "Full name is required")
-    @Size(min = 1, max = 100, message = "Full name must be between 1 and 100 characters")
+    @NotBlank(message = "Vui lòng nhập họ tên.")
+    @Size(min = 1, max = 100, message = "Họ tên phải từ 1 đến 100 ký tự.")
     @ValidSafeString(minLength = 1, maxLength = 100)
     private String fullName;
 
-    @Size(max = 500, message = "Avatar URL must be at most 500 characters")
+    @Size(max = 500, message = "Đường dẫn ảnh đại diện tối đa 500 ký tự.")
     private String avatarUrl;
 
     private Role role;

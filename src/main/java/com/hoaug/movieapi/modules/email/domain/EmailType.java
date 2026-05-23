@@ -3,7 +3,8 @@ package com.hoaug.movieapi.modules.email.domain;
 public enum EmailType {
   FORGOT_PASSWORD("Quên mật khẩu"), RESET_PASSWORD("Xác nhận reset mật khẩu"),
   SIGNUP_SUCCESS("Đăng ký thành công"), EMAIL_VERIFICATION("Xác minh email"),
-  ACCOUNT_NOTIFICATION("Thông báo tài khoản"), NEW_MOVIE_RELEASE("Phim mới phát hành");
+  ACCOUNT_NOTIFICATION("Thông báo tài khoản"), NEW_MOVIE_RELEASE("Phim mới phát hành"),
+  OTP_VERIFICATION("Mã xác thực OTP");
 
   private final String displayName;
 

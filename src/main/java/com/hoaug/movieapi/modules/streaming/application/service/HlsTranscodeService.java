@@ -40,19 +40,16 @@ public class HlsTranscodeService {
     activeProcesses.clear();
   }
 
-  // height, target bitrate kbps, max bitrate kbps, buffer kbps
-  private static final Map<String, int[]> QUALITY_SETTINGS = Map.of(
-      "720p", new int[] { 720, 3500, 4500, 7000 },
-      "1080p", new int[] { 1080, 6500, 8000, 13000 },
-      "4K", new int[] { 2160, 18000, 22000, 36000 });
+  private static final Map<String, int[]> QUALITY_SETTINGS = Map.of("720p",
+      new int[] { 720, 3500, 4500, 7000 }, "1080p", new int[] { 1080, 6500, 8000, 13000 }, "4K",
+      new int[] { 2160, 18000, 22000, 36000 });
 
-  private static final Map<String, String> QUALITY_LEVELS = Map.of(
-      "720p", "4.0",
-      "1080p", "4.2",
+  private static final Map<String, String> QUALITY_LEVELS = Map.of("720p", "4.0", "1080p", "4.2",
       "4K", "5.2");
 
   private static final int SEGMENT_DURATION = 4;
   private static final int DEFAULT_FPS = 30;
+  private static final int MAX_OUTPUT_FPS = 30;
 
   private final MediaStorageProperties properties;
   private final HlsEncryptionKeyService encryptionKeyService;
@@ -89,10 +86,10 @@ public class HlsTranscodeService {
 
     if (quality != null) {
       int targetHeight = QUALITY_SETTINGS.get(quality)[0];
-      // Allow upscale only from 1080p → 4K. Skip 1080p when source is 720p, etc.
-      if (probe.height > 0 && probe.height < targetHeight && !isAllowedUpscale(probe.height, targetHeight)) {
-        log.info("[Transcode] Skipping {} - source height {}px < target {}px", quality, probe.height,
-            targetHeight);
+      if (probe.height > 0 && probe.height < targetHeight
+          && !isAllowedUpscale(probe.height, targetHeight)) {
+        log.info("[Transcode] Skipping {} - source height {}px < target {}px", quality,
+            probe.height, targetHeight);
         throw new AppException(ErrorCode.BAD_REQUEST);
       }
     }
@@ -102,8 +99,8 @@ public class HlsTranscodeService {
       cleanupOldSegments(outputDirectory, segmentPrefix);
       String ivHex = encryptionKeyService.writeNewKey(request.keyPath());
       writeKeyInfoFile(keyInfoPath, request.keyUri(), request.keyPath(), ivHex);
-      runFfmpeg(ffmpegPath, request.sourcePath(), playlistPath, segmentPattern, keyInfoPath,
-          quality, probe);
+      runFfmpegWithFallback(ffmpegPath, request.sourcePath(), playlistPath, segmentPattern,
+          keyInfoPath, quality, probe);
       verifyPlaylist(playlistPath);
       return new HlsTranscodeResult(playlistPath, playlistUrl);
     } catch (IOException exception) {
@@ -114,26 +111,24 @@ public class HlsTranscodeService {
   }
 
   private boolean isAllowedUpscale (int sourceHeight, int targetHeight) {
-    // Only upscale 1080p (>=1000px) → 4K (2160px). Refuse silly upscales like 480p → 4K.
     return sourceHeight >= 1000 && targetHeight == 2160;
   }
 
   private String sanitizePrefix (String prefix) {
-    if (prefix == null || prefix.isBlank()) return "";
+    if (prefix == null || prefix.isBlank())
+      return "";
     String cleaned = prefix.replaceAll("[^A-Za-z0-9_\\-]", "");
     return cleaned.isEmpty() ? "" : cleaned + "_";
   }
 
-  /**
-   * Remove old `*_segment_*.ts` files that don't match the current prefix. Keeps the previous
-   * generation around briefly only if their prefix matches (idempotent re-runs).
-   */
   private void cleanupOldSegments (Path outputDirectory, String currentPrefix) {
-    if (!Files.isDirectory(outputDirectory)) return;
+    if (!Files.isDirectory(outputDirectory))
+      return;
     try (var stream = Files.list(outputDirectory)) {
       stream.filter(p -> {
         String name = p.getFileName().toString();
-        if (!name.endsWith(".ts")) return false;
+        if (!name.endsWith(".ts"))
+          return false;
         return !name.startsWith(currentPrefix);
       }).forEach(p -> {
         try {
@@ -142,7 +137,8 @@ public class HlsTranscodeService {
         }
       });
     } catch (IOException ex) {
-      log.warn("[Transcode] cleanup old segments failed in {}: {}", outputDirectory, ex.getMessage());
+      log.warn("[Transcode] cleanup old segments failed in {}: {}", outputDirectory,
+          ex.getMessage());
     }
   }
 
@@ -169,20 +165,39 @@ public class HlsTranscodeService {
     }
   }
 
-  private void runFfmpeg (Path ffmpegPath, Path sourcePath, Path playlistPath, Path segmentPattern,
-      Path keyInfoPath, String quality, SourceProbe probe) {
-    int fps = probe.fps > 0 ? probe.fps : DEFAULT_FPS;
-    int gop = SEGMENT_DURATION * fps;
+  private void runFfmpegWithFallback (Path ffmpegPath, Path sourcePath, Path playlistPath,
+      Path segmentPattern, Path keyInfoPath, String quality, SourceProbe probe) {
+    try {
+      runFfmpeg(ffmpegPath, sourcePath, playlistPath, segmentPattern, keyInfoPath, quality, probe,
+          EncoderMode.NVENC);
+      return;
+    } catch (AppException nvencFailure) {
+      log.warn("[FFmpeg] NVENC failed for quality={} - retrying with libx264 software encoder",
+          quality);
+    }
 
-    // Build the FFmpeg command. Order matters:
-    //   global → input options → input → mapping → encoder → filters → HLS muxer.
+    runFfmpeg(ffmpegPath, sourcePath, playlistPath, segmentPattern, keyInfoPath, quality, probe,
+        EncoderMode.LIBX264);
+  }
+
+  private enum EncoderMode {
+    NVENC,
+    LIBX264
+  }
+
+  private void runFfmpeg (Path ffmpegPath, Path sourcePath, Path playlistPath, Path segmentPattern,
+      Path keyInfoPath, String quality, SourceProbe probe, EncoderMode mode) {
+    int sourceFps = probe.fps > 0 ? probe.fps : DEFAULT_FPS;
+    int fps = Math.min(sourceFps, MAX_OUTPUT_FPS);
+    int gop = SEGMENT_DURATION * fps;
+    boolean useNvenc = mode != EncoderMode.LIBX264;
+
     List<String> cmd = new ArrayList<>();
     cmd.add(ffmpegPath.toString());
     cmd.add("-y");
     cmd.add("-hide_banner");
     cmd.add("-loglevel");
     cmd.add("error");
-    // Read enough of the source for ffprobe to lock metadata (1080p+ files often hide info past 5MB).
     cmd.add("-probesize");
     cmd.add("100M");
     cmd.add("-analyzeduration");
@@ -195,32 +210,41 @@ public class HlsTranscodeService {
     cmd.add("0:v:0");
     cmd.add("-map");
     cmd.add("0:a:0?");
-
-    // Video encoder (NVENC).
     cmd.add("-c:v");
-    cmd.add("h264_nvenc");
+    cmd.add(useNvenc ? "h264_nvenc" : "libx264");
     cmd.add("-profile:v");
     cmd.add("high");
     cmd.add("-pix_fmt");
     cmd.add("yuv420p");
-    cmd.add("-preset");
-    cmd.add("p5");
-    cmd.add("-tune");
-    cmd.add("hq");
-    cmd.add("-rc");
-    cmd.add("vbr");
-    // Modern NVENC encoders accept up to 3 b-frames with middle ref - better compression at same quality.
-    cmd.add("-bf");
-    cmd.add("3");
-    cmd.add("-b_ref_mode");
-    cmd.add("middle");
-    cmd.add("-spatial_aq");
-    cmd.add("1");
-    cmd.add("-temporal_aq");
-    cmd.add("1");
-    cmd.add("-rc-lookahead");
-    cmd.add("32");
-    // Lock framerate so segment durations stay close to hls_time.
+    if (useNvenc) {
+      cmd.add("-preset");
+      cmd.add("p5");
+      cmd.add("-tune");
+      cmd.add("hq");
+      cmd.add("-rc");
+      cmd.add("vbr");
+      cmd.add("-multipass");
+      cmd.add("qres");
+      cmd.add("-bf");
+      cmd.add("2");
+      cmd.add("-b_ref_mode");
+      cmd.add("disabled");
+      cmd.add("-spatial_aq");
+      cmd.add("1");
+      cmd.add("-aq-strength");
+      cmd.add("8");
+      cmd.add("-temporal_aq");
+      cmd.add("1");
+      cmd.add("-rc-lookahead");
+      cmd.add("20");
+    } else {
+      cmd.add("-preset");
+      cmd.add("veryfast");
+      cmd.add("-tune");
+      cmd.add("film");
+      cmd.add("-x264-params");
+      cmd.add("keyint=" + gop + ":min-keyint=" + gop + ":scenecut=0");
+    }
     cmd.add("-r");
     cmd.add(String.valueOf(fps));
     cmd.add("-g");
@@ -232,19 +256,17 @@ public class HlsTranscodeService {
     cmd.add("-fps_mode");
     cmd.add("cfr");
 
-    // Video filter chain. Use lanczos for upscale and bicubic for downscale - both produce sharper
-    // results than the default bilinear and align with the upstream guidance for 1080p→4K.
     if (quality != null && QUALITY_SETTINGS.containsKey(quality)) {
       int[] s = QUALITY_SETTINGS.get(quality);
       String level = QUALITY_LEVELS.getOrDefault(quality, "4.2");
       String scaleAlgo = (probe.height > 0 && probe.height < s[0]) ? "lanczos" : "bicubic";
-      // -2 keeps even width while preserving aspect ratio.
-      String filter = String.format(Locale.ROOT,
-          "scale=-2:%d:flags=%s,format=yuv420p", s[0], scaleAlgo);
+      String filter = String.format(Locale.ROOT, "scale=-2:%d:flags=%s,format=yuv420p", s[0], scaleAlgo);
       cmd.add("-vf");
       cmd.add(filter);
-      cmd.add("-level:v");
-      cmd.add(level);
+      if (!useNvenc) {
+        cmd.add("-level:v");
+        cmd.add(level);
+      }
       cmd.add("-b:v");
       cmd.add(s[1] + "k");
       cmd.add("-maxrate");
@@ -262,7 +284,6 @@ public class HlsTranscodeService {
       cmd.add("10000k");
     }
 
-    // Audio. 192k AAC keeps stereo dialogue clean even at 4K.
     cmd.add("-c:a");
     cmd.add("aac");
     cmd.add("-b:a");
@@ -272,7 +293,6 @@ public class HlsTranscodeService {
     cmd.add("-ar");
     cmd.add("48000");
 
-    // HLS muxer.
     cmd.add("-hls_time");
     cmd.add(String.valueOf(SEGMENT_DURATION));
     cmd.add("-hls_playlist_type");
@@ -298,8 +318,8 @@ public class HlsTranscodeService {
         byte[] output = process.getInputStream().readAllBytes();
         int exitCode = process.waitFor();
         if (exitCode != 0) {
-          log.error("[FFmpeg] exit={} quality={} output=\n{}", exitCode, quality,
-              new String(output, StandardCharsets.UTF_8));
+          log.error("[FFmpeg] exit={} mode={} quality={} sourceFps={} outputFps={} output=\n{}", exitCode,
+              mode, quality, sourceFps, fps, new String(output, StandardCharsets.UTF_8));
           throw new AppException(ErrorCode.FILE_UPLOAD_FAILED);
         }
       } finally {
@@ -317,16 +337,12 @@ public class HlsTranscodeService {
     final int height;
     final int fps;
 
-    SourceProbe (int height, int fps) {
+    SourceProbe(int height, int fps) {
       this.height = height;
       this.fps = fps;
     }
   }
 
-  /**
-   * Single ffprobe call that returns both height and fps so we don't pay for two child processes
-   * per quality. Both fields default to -1/-1 if probe fails - callers fall back to safe defaults.
-   */
   private SourceProbe probeSource (Path sourcePath) {
     try {
       Path ffmpegBin = Path.of(properties.getFfmpegPath()).toAbsolutePath().normalize().getParent();
@@ -341,8 +357,8 @@ public class HlsTranscodeService {
       byte[] out = process.getInputStream().readAllBytes();
       process.waitFor();
       String raw = new String(out, StandardCharsets.UTF_8).trim();
-      if (raw.isEmpty()) return new SourceProbe(-1, -1);
-      // Output: "1080,30/1" or "2160,24000/1001"
+      if (raw.isEmpty())
+        return new SourceProbe(-1, -1);
       String[] parts = raw.split(",");
       int height = parts.length > 0 ? safeParseInt(parts[0].trim(), -1) : -1;
       int fps = parts.length > 1 ? parseFraction(parts[1].trim()) : -1;
@@ -355,13 +371,16 @@ public class HlsTranscodeService {
   }
 
   private int parseFraction (String raw) {
-    if (raw == null || raw.isEmpty()) return -1;
+    if (raw == null || raw.isEmpty())
+      return -1;
     int slash = raw.indexOf('/');
     try {
-      if (slash < 0) return Math.round(Float.parseFloat(raw));
+      if (slash < 0)
+        return Math.round(Float.parseFloat(raw));
       int num = safeParseInt(raw.substring(0, slash), -1);
       int den = safeParseInt(raw.substring(slash + 1), 1);
-      if (num <= 0 || den <= 0) return -1;
+      if (num <= 0 || den <= 0)
+        return -1;
       return Math.max(1, Math.round((float) num / den));
     } catch (NumberFormatException e) {
       return -1;

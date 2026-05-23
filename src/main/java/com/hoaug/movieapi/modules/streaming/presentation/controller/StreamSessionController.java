@@ -32,10 +32,9 @@ public class StreamSessionController {
   private final StopStreamSessionUseCase stopStreamSessionUseCase;
   private final AuthUserRepository authUserRepository;
 
-  public StreamSessionController (StartStreamSessionUseCase startStreamSessionUseCase,
+  public StreamSessionController(StartStreamSessionUseCase startStreamSessionUseCase,
       HeartbeatStreamSessionUseCase heartbeatStreamSessionUseCase,
-      StopStreamSessionUseCase stopStreamSessionUseCase,
-      AuthUserRepository authUserRepository) {
+      StopStreamSessionUseCase stopStreamSessionUseCase, AuthUserRepository authUserRepository) {
     this.startStreamSessionUseCase = startStreamSessionUseCase;
     this.heartbeatStreamSessionUseCase = heartbeatStreamSessionUseCase;
     this.stopStreamSessionUseCase = stopStreamSessionUseCase;
@@ -47,20 +46,21 @@ public class StreamSessionController {
   public Map<String, Long> start (@RequestBody Map<String, String> body,
       Authentication authentication, HttpServletRequest request) {
     User user = resolveUser(authentication);
-    Long sessionId = startStreamSessionUseCase.execute(
-        user.getId(),
-        body.getOrDefault("deviceName", "Unknown"),
-        body.getOrDefault("deviceType", "WEB"),
-        request.getHeader("User-Agent"),
-        request.getRemoteAddr()
-    );
+    Long sessionId = startStreamSessionUseCase.execute(user.getId(),
+        body.getOrDefault("deviceName", "Unknown"), body.getOrDefault("deviceType", "WEB"),
+        request.getHeader("User-Agent"), request.getRemoteAddr());
     return Map.of("sessionId", sessionId);
   }
 
   @PutMapping("/{sessionId}/heartbeat")
   @ResponseStatus(HttpStatus.NO_CONTENT)
   public void heartbeat (@PathVariable Long sessionId, Authentication authentication) {
-    heartbeatStreamSessionUseCase.execute(sessionId, resolveUser(authentication).getId());
+    Long userId = null;
+    if (authentication != null && authentication.isAuthenticated()
+        && !"anonymousUser".equals(authentication.getPrincipal())) {
+      userId = resolveUser(authentication).getId();
+    }
+    heartbeatStreamSessionUseCase.execute(sessionId, userId);
   }
 
   @DeleteMapping("/{sessionId}")
@@ -75,6 +75,6 @@ public class StreamSessionController {
       throw new AppException(ErrorCode.UNAUTHORIZED);
     }
     return authUserRepository.findByUsername(authentication.getName())
-        .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
+        .orElseThrow( () -> new AppException(ErrorCode.USER_NOT_FOUND));
   }
 }

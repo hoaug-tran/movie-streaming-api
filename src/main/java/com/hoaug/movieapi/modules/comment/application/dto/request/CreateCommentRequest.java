@@ -8,7 +8,7 @@ import jakarta.validation.constraints.Size;
 
 public class CreateCommentRequest {
 
-  @NotNull(message = "Movie ID is required")
+  @NotNull(message = "Vui lòng chọn phim.")
   private Long movieId;
 
   private Long episodeId;

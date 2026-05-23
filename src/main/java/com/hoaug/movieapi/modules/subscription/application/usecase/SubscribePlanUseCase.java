@@ -12,6 +12,10 @@ import com.hoaug.movieapi.modules.subscription.domain.model.SubscriptionStatus;
 import com.hoaug.movieapi.modules.subscription.domain.model.UserSubscription;
 import com.hoaug.movieapi.modules.subscription.domain.repository.SubscriptionPlanRepository;
 import com.hoaug.movieapi.modules.subscription.domain.repository.UserSubscriptionRepository;
+import com.hoaug.movieapi.modules.user.domain.repository.UserRepository;
+import com.hoaug.movieapi.modules.activitylog.application.service.ActivityLogService;
+import com.hoaug.movieapi.modules.activitylog.domain.model.ActivityScope;
+import com.hoaug.movieapi.modules.activitylog.domain.model.ActivitySeverity;
 
 @Component
 public class SubscribePlanUseCase {
@@ -19,13 +23,19 @@ public class SubscribePlanUseCase {
   private final SubscriptionPlanRepository subscriptionPlanRepository;
   private final UserSubscriptionRepository userSubscriptionRepository;
   private final SubscriptionMapper subscriptionMapper;
+  private final UserRepository userRepository;
+  private final ActivityLogService activityLogService;
 
   public SubscribePlanUseCase(SubscriptionPlanRepository subscriptionPlanRepository,
       UserSubscriptionRepository userSubscriptionRepository,
-      SubscriptionMapper subscriptionMapper) {
+      SubscriptionMapper subscriptionMapper,
+      UserRepository userRepository,
+      ActivityLogService activityLogService) {
     this.subscriptionPlanRepository = subscriptionPlanRepository;
     this.userSubscriptionRepository = userSubscriptionRepository;
     this.subscriptionMapper = subscriptionMapper;
+    this.userRepository = userRepository;
+    this.activityLogService = activityLogService;
   }
 
   public UserSubscriptionResponse execute(Long userId, SubscribePlanRequest request) {
@@ -71,6 +81,22 @@ public class SubscribePlanUseCase {
     subscription.setCreatedAt(now);
     subscription.setUpdatedAt(now);
 
-    return subscriptionMapper.toResponse(userSubscriptionRepository.save(subscription));
+    UserSubscription saved = userSubscriptionRepository.save(subscription);
+
+    userRepository.findById(userId).ifPresent(user -> {
+      activityLogService.record(
+        ActivityScope.USER,
+        user.getId(),
+        user.getFullName(),
+        "Kích hoạt VIP",
+        "SUBSCRIPTION",
+        saved.getId(),
+        plan.getName(),
+        user.getFullName() + " được kích hoạt trực tiếp gói VIP " + plan.getName() + ".",
+        ActivitySeverity.SUCCESS
+      );
+    });
+
+    return subscriptionMapper.toResponse(saved);
   }
 }

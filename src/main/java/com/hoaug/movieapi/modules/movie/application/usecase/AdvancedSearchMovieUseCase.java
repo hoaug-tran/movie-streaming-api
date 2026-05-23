@@ -31,7 +31,10 @@ public class AdvancedSearchMovieUseCase {
     Sort.Direction direction = "ASC".equalsIgnoreCase(request.getSortDirection())
         ? Sort.Direction.ASC
         : Sort.Direction.DESC;
-    Sort sort = Sort.by(direction, request.getSortBy() != null && !request.getSortBy().isEmpty() ? request.getSortBy() : "createdAt");
+    String sortBy = request.getSortBy() != null && !request.getSortBy().isBlank()
+        ? request.getSortBy()
+        : "publishedAt";
+    Sort sort = Sort.by(direction, sortBy).and(Sort.by(Sort.Direction.DESC, "id"));
     Pageable pageable = PageRequest.of(request.getPage() != null ? request.getPage() : 0,
         request.getSize() != null ? request.getSize() : 20, sort);
 

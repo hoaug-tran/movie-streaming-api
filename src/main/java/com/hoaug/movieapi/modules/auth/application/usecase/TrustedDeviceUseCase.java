@@ -58,7 +58,7 @@ public class TrustedDeviceUseCase {
   public AuthResponse completeLogin (User user) {
     LocalDateTime now = LocalDateTime.now();
 
-    String accessToken = tokenService.generateAccessToken(user.getUsername());
+    String accessToken = tokenService.generateAccessToken(user.getUsername(), user.getRole().name());
     String refreshTokenValue = tokenService.generateRefreshToken();
 
     RefreshToken refreshToken = new RefreshToken();

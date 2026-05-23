@@ -4,6 +4,8 @@ import java.time.LocalDateTime;
 
 import org.springframework.stereotype.Component;
 
+import com.hoaug.movieapi.common.enums.ErrorCode;
+import com.hoaug.movieapi.common.exception.AppException;
 import com.hoaug.movieapi.modules.movie.application.dto.request.CreateStudioRequest;
 import com.hoaug.movieapi.modules.movie.application.dto.response.StudioResponse;
 import com.hoaug.movieapi.modules.movie.application.mapper.StudioMapper;
@@ -23,6 +25,11 @@ public class CreateStudioUseCase {
   }
 
   public StudioResponse execute (CreateStudioRequest request) {
+    if (jpaStudioRepository.existsByNameIgnoreCase(request.getName())
+        || jpaStudioRepository.existsBySlug(request.getSlug())) {
+      throw new AppException(ErrorCode.STUDIO_EXISTED);
+    }
+
     StudioEntity entity = new StudioEntity();
     entity.setName(request.getName());
     entity.setSlug(request.getSlug());

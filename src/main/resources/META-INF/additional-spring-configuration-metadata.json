@@ -1,0 +1,134 @@
+{
+  "properties": [
+    {
+      "name": "app.url.api-base",
+      "type": "java.lang.String",
+      "description": "Public API base URL used by application links and integrations."
+    },
+    {
+      "name": "app.cors.allowed-origins",
+      "type": "java.lang.String",
+      "description": "Comma-separated list of browser origins allowed by CORS."
+    },
+    {
+      "name": "app.cookie.secure",
+      "type": "java.lang.Boolean",
+      "description": "Whether authentication cookies must be marked Secure."
+    },
+    {
+      "name": "app.cookie.same-site",
+      "type": "java.lang.String",
+      "description": "SameSite attribute used for application cookies."
+    },
+    {
+      "name": "app.cookie.domain",
+      "type": "java.lang.String",
+      "description": "Domain attribute used for application cookies."
+    },
+    {
+      "name": "mail.from.email",
+      "type": "java.lang.String",
+      "description": "Default sender email address for outbound mail."
+    },
+    {
+      "name": "mail.from.name",
+      "type": "java.lang.String",
+      "description": "Default sender display name for outbound mail."
+    },
+    {
+      "name": "app.support.inbox.primary",
+      "type": "java.lang.String",
+      "description": "Primary support inbox address."
+    },
+    {
+      "name": "app.support.inbox.secondary",
+      "type": "java.lang.String",
+      "description": "Secondary support inbox address."
+    },
+    {
+      "name": "app.payment.reconciliation.fixed-delay-ms",
+      "type": "java.lang.Long",
+      "description": "Fixed delay in milliseconds for payment reconciliation jobs."
+    },
+    {
+      "name": "app.payment.reconciliation.initial-delay-ms",
+      "type": "java.lang.Long",
+      "description": "Initial delay in milliseconds for payment reconciliation jobs."
+    },
+    {
+      "name": "vapid.public-key",
+      "type": "java.lang.String",
+      "description": "VAPID public key for web push notifications."
+    },
+    {
+      "name": "vapid.private-key",
+      "type": "java.lang.String",
+      "description": "VAPID private key for web push notifications."
+    },
+    {
+      "name": "vapid.subject",
+      "type": "java.lang.String",
+      "description": "VAPID subject contact URI."
+    },
+    {
+      "name": "ollama.base-url",
+      "type": "java.lang.String",
+      "description": "Base URL for Ollama inference service."
+    },
+    {
+      "name": "ollama.model",
+      "type": "java.lang.String",
+      "description": "Ollama model name used by chatbot."
+    },
+    {
+      "name": "ollama.timeout-seconds",
+      "type": "java.lang.Integer",
+      "description": "Ollama request timeout in seconds."
+    },
+    {
+      "name": "chatbot.max-history-messages",
+      "type": "java.lang.Integer",
+      "description": "Maximum chat history messages sent to the assistant."
+    },
+    {
+      "name": "chatbot.rate-limit-per-hour",
+      "type": "java.lang.Integer",
+      "description": "Authenticated chatbot rate limit per hour."
+    },
+    {
+      "name": "chatbot.guest-rate-limit-per-hour",
+      "type": "java.lang.Integer",
+      "description": "Guest chatbot rate limit per hour."
+    },
+    {
+      "name": "spring.flyway.enabled",
+      "type": "java.lang.Boolean",
+      "description": "Whether Flyway database migration is enabled."
+    },
+    {
+      "name": "spring.flyway.locations",
+      "type": "java.util.List<java.lang.String>",
+      "description": "Flyway migration script locations."
+    },
+    {
+      "name": "spring.flyway.baseline-on-migrate",
+      "type": "java.lang.Boolean",
+      "description": "Whether Flyway should baseline an existing schema on migrate."
+    },
+    {
+      "name": "spring.flyway.baseline-version",
+      "type": "java.lang.String",
+      "description": "Flyway baseline version."
+    },
+    {
+      "name": "spring.flyway.baseline-description",
+      "type": "java.lang.String",
+      "description": "Flyway baseline description."
+    },
+    {
+      "name": "spring.flyway.validate-on-migrate",
+      "type": "java.lang.Boolean",
+      "description": "Whether Flyway validates applied migrations before migrate."
+    }
+  ]
+}

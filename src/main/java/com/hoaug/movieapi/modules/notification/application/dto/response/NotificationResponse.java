@@ -5,6 +5,9 @@ import java.time.LocalDateTime;
 public class NotificationResponse {
 
   private Long id;
+  private Long userId;
+  private String userFullName;
+  private String userUsername;
   private String title;
   private String content;
   private String type;
@@ -19,6 +22,30 @@ public class NotificationResponse {
 
   public void setId(Long id) {
     this.id = id;
+  }
+
+  public Long getUserId() {
+    return userId;
+  }
+
+  public void setUserId(Long userId) {
+    this.userId = userId;
+  }
+
+  public String getUserFullName() {
+    return userFullName;
+  }
+
+  public void setUserFullName(String userFullName) {
+    this.userFullName = userFullName;
+  }
+
+  public String getUserUsername() {
+    return userUsername;
+  }
+
+  public void setUserUsername(String userUsername) {
+    this.userUsername = userUsername;
   }
 
   public String getTitle() {

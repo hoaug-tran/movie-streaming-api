@@ -13,6 +13,9 @@ import org.springframework.transaction.annotation.Transactional;
 import com.hoaug.movieapi.common.config.PayOSConfig;
 import com.hoaug.movieapi.common.enums.ErrorCode;
 import com.hoaug.movieapi.common.exception.AppException;
+import com.hoaug.movieapi.modules.activitylog.application.service.ActivityLogService;
+import com.hoaug.movieapi.modules.activitylog.domain.model.ActivityScope;
+import com.hoaug.movieapi.modules.activitylog.domain.model.ActivitySeverity;
 import com.hoaug.movieapi.modules.subscription.domain.model.Invoice;
 import com.hoaug.movieapi.modules.subscription.domain.model.PaymentMethod;
 import com.hoaug.movieapi.modules.subscription.domain.model.PaymentStatus;
@@ -48,6 +51,7 @@ public class PaymentService {
   private final UserRepository userRepository;
   private final PayOS payOS;
   private final PayOSConfig payOSConfig;
+  private final ActivityLogService activityLogService;
 
   @Transactional
   public PaymentLinkResponse createPaymentLink (Long userId, Long planId) {
@@ -142,6 +146,20 @@ public class PaymentService {
     userSubscriptionRepository.save(subscription);
 
     ensureInvoiceForSuccessfulPayment(transaction);
+
+    userRepository.findById(transaction.getUserId()).ifPresent(user -> {
+      activityLogService.record(
+        ActivityScope.USER,
+        user.getId(),
+        user.getFullName(),
+        "Kích hoạt VIP",
+        "SUBSCRIPTION",
+        subscription.getId(),
+        plan.getName(),
+        user.getFullName() + " đã kích hoạt gói VIP " + plan.getName() + " thành công qua PayOS.",
+        ActivitySeverity.SUCCESS
+      );
+    });
 
     log.info("Payment completed successfully: orderId={}, transactionId={}", orderCode,
         transactionId);

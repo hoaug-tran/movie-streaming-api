@@ -1,6 +1,5 @@
 package com.hoaug.movieapi.modules.streaming.application.usecase;
 
-import java.nio.file.Files;
 import java.nio.file.Path;
 
 import org.slf4j.Logger;
@@ -14,6 +13,7 @@ import com.hoaug.movieapi.modules.movie.infrastructure.persistence.repository.Jp
 import com.hoaug.movieapi.modules.streaming.application.config.MediaStorageProperties;
 import com.hoaug.movieapi.modules.streaming.application.dto.response.MediaUploadResponse;
 import com.hoaug.movieapi.modules.streaming.application.service.AsyncTranscodeService;
+import com.hoaug.movieapi.modules.streaming.application.service.Mp4StorageService;
 import com.hoaug.movieapi.modules.streaming.application.service.StreamUrlService;
 
 @Component
@@ -25,31 +25,31 @@ public class RetranscodeEpisodeUseCase {
   private final MediaStorageProperties storageProperties;
   private final StreamUrlService streamUrlService;
   private final AsyncTranscodeService asyncTranscodeService;
+  private final Mp4StorageService storageService;
 
   public RetranscodeEpisodeUseCase(JpaEpisodeRepository episodeRepository,
       MediaStorageProperties storageProperties, StreamUrlService streamUrlService,
-      AsyncTranscodeService asyncTranscodeService) {
+      AsyncTranscodeService asyncTranscodeService, Mp4StorageService storageService) {
     this.episodeRepository = episodeRepository;
     this.storageProperties = storageProperties;
     this.streamUrlService = streamUrlService;
     this.asyncTranscodeService = asyncTranscodeService;
+    this.storageService = storageService;
   }
 
   public MediaUploadResponse execute(Long episodeId) {
     EpisodeEntity episode = episodeRepository.findById(episodeId)
         .orElseThrow(() -> new AppException(ErrorCode.EPISODE_NOT_FOUND));
 
-    Path sourcePath = Path.of(storageProperties.getSeriesDataDirectory())
-        .resolve("episodes")
-        .resolve(String.valueOf(episodeId))
-        .resolve("source.mp4")
-        .toAbsolutePath()
-        .normalize();
-
-    if (!Files.isRegularFile(sourcePath)) {
-      log.error("[Retranscode] Source not found for episode {} at {}", episodeId, sourcePath);
-      throw new AppException(ErrorCode.FILE_UPLOAD_FAILED);
-    }
+    Path sourcePath = storageService.findEpisodeSource(episodeId).orElseThrow(() -> {
+      Path expectedDirectory = Path.of(storageProperties.getSeriesDataDirectory())
+          .resolve("episodes")
+          .resolve(String.valueOf(episodeId))
+          .toAbsolutePath()
+          .normalize();
+      log.warn("[Retranscode] Source not found for episode {} in {}", episodeId, expectedDirectory);
+      return new AppException(ErrorCode.BAD_REQUEST);
+    });
 
     String mp4Url = streamUrlService.episodeMp4Url(episodeId);
     episode.setVideoUrl(mp4Url);

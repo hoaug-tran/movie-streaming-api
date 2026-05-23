@@ -11,6 +11,7 @@ public class NotificationMapper {
   public NotificationResponse toResponse(Notification notification) {
     NotificationResponse response = new NotificationResponse();
     response.setId(notification.getId());
+    response.setUserId(notification.getUserId());
     response.setTitle(notification.getTitle());
     response.setContent(notification.getContent());
     response.setType(notification.getType().name());

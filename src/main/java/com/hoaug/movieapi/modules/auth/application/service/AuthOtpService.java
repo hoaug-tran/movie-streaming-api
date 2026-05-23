@@ -121,14 +121,26 @@ public class AuthOtpService {
 
   private void sendOtpEmail (String email, String fullName, AuthOtpPurpose purpose, String otp,
       long ttl) {
-    String message = "Mã OTP của bạn là " + otp + ". Mã có hiệu lực trong " + ttl
-        + " phút. Không chia sẻ mã này với bất kỳ ai.";
+    String displayName = (fullName == null || fullName.isBlank()) ? "Người dùng" : fullName;
+    String purposeLabel = resolvePurposeLabel(purpose);
     try {
-      emailService.sendAccountNotificationEmail(email, fullName, message);
+      emailService.sendOtpVerificationEmail(email, displayName, otp, purposeLabel, ttl);
     } catch (MessagingException | UnsupportedEncodingException e) {
       LoggerFactory.getLogger(getClass()).warn("Failed to send OTP email", e);
       throw new AppException(ErrorCode.UNCATEGORIZED_EXCEPTION);
     }
+  }
+
+  private String resolvePurposeLabel (AuthOtpPurpose purpose) {
+    if (purpose == null) {
+      return "xác thực tài khoản";
+    }
+    return switch (purpose) {
+    case LOGIN -> "đăng nhập tài khoản";
+    case REGISTER -> "hoàn tất đăng ký";
+    case PASSWORD_CHANGE -> "đổi mật khẩu";
+    case PASSWORD_RESET -> "đặt lại mật khẩu";
+    };
   }
 
   private String maskEmail (String email) {

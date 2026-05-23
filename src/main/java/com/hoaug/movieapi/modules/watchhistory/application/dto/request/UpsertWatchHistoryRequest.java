@@ -6,23 +6,23 @@ import jakarta.validation.constraints.Positive;
 
 public class UpsertWatchHistoryRequest {
 
-  @NotNull(message = "Movie ID is required")
-  @Positive(message = "Movie ID must be positive")
+  @NotNull(message = "Vui lòng chọn phim.")
+  @Positive(message = "ID phim phải là số dương.")
   private Long movieId;
 
-  @NotNull(message = "Episode ID is required")
-  @Positive(message = "Episode ID must be positive")
+  @NotNull(message = "Vui lòng chọn tập phim.")
+  @Positive(message = "ID tập phim phải là số dương.")
   private Long episodeId;
 
-  @NotNull(message = "Watched duration seconds is required")
-  @Min(value = 0, message = "Watched duration seconds must be at least 0")
+  @NotNull(message = "Vui lòng cung cấp thời lượng đã xem.")
+  @Min(value = 0, message = "Thời lượng đã xem phải lớn hơn hoặc bằng 0.")
   private Integer watchedDurationSeconds;
 
-  @NotNull(message = "Stopped at second is required")
-  @Min(value = 0, message = "Stopped at second must be at least 0")
+  @NotNull(message = "Vui lòng cung cấp vị trí dừng xem.")
+  @Min(value = 0, message = "Vị trí dừng xem phải lớn hơn hoặc bằng 0.")
   private Integer stoppedAtSecond;
 
-  @NotNull(message = "Is completed flag is required")
+  @NotNull(message = "Vui lòng cho biết đã xem xong hay chưa.")
   private Boolean isCompleted;
 
   public Long getMovieId () {

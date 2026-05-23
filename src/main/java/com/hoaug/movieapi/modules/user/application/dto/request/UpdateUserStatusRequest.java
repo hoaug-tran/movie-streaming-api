@@ -5,7 +5,7 @@ import com.hoaug.movieapi.modules.user.domain.model.AccountStatus;
 import jakarta.validation.constraints.NotNull;
 
 public class UpdateUserStatusRequest {
-  @NotNull(message = "Account status is required")
+  @NotNull(message = "Vui lòng chọn trạng thái tài khoản.")
   private AccountStatus accountStatus;
 
   public AccountStatus getAccountStatus () {

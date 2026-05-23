@@ -10,6 +10,10 @@ public interface TagRepository {
 
   Optional<Tag> findById (Long id);
 
+  boolean existsByNameIgnoreCase (String name);
+
+  boolean existsBySlug (String slug);
+
   Tag save (Tag tag);
 
   void deleteById (Long id);

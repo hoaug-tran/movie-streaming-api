@@ -6,7 +6,7 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 
 public class CreatePersonRequest {
-  @NotBlank(message = "Full name is required")
+  @NotBlank(message = "Vui lòng nhập họ tên.")
   @Size(min = 1, max = 255, message = "Full name must be between 1 and 255 characters")
   @ValidSafeString(minLength = 1, maxLength = 255)
   private String fullName;
@@ -27,7 +27,7 @@ public class CreatePersonRequest {
   @ValidSafeString(minLength = 0, maxLength = 100)
   private String nationality;
 
-  @Size(max = 500, message = "Avatar URL must be at most 500 characters")
+  @Size(max = 500, message = "Đường dẫn ảnh đại diện tối đa 500 ký tự.")
   @ValidSafeString(minLength = 0, maxLength = 500)
   private String avatarUrl;
 

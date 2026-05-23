@@ -46,6 +46,16 @@ public class CategoryRepositoryAdapter implements CategoryRepository {
   }
 
   @Override
+  public boolean existsByNameIgnoreCase (String name) {
+    return jpaCategoryRepository.existsByNameIgnoreCase(name);
+  }
+
+  @Override
+  public boolean existsBySlug (String slug) {
+    return jpaCategoryRepository.existsBySlug(slug);
+  }
+
+  @Override
   public Category save (Category category) {
     CategoryEntity entity = new CategoryEntity();
     entity.setId(category.getId());

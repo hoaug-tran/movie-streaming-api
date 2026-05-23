@@ -14,13 +14,13 @@ public class RegisterRequest {
   private String username;
 
   @NotBlank
-  @Email(message = "Invalid email format")
+  @Email(message = "Email không đúng định dạng.")
   @Size(max = 100)
   private String email;
 
   @NotBlank
   @Size(min = 8, max = 255)
-  @Pattern(regexp = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]+$", message = "Password must contain uppercase, lowercase, number and special character")
+  @Pattern(regexp = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]+$", message = "Mật khẩu phải có chữ hoa, chữ thường, số và ký tự đặc biệt.")
   private String password;
 
   @NotBlank

@@ -158,7 +158,7 @@ public class MovieController {
 
   @GetMapping("/{id:[0-9]+}")
   public ResponseEntity<MovieDetailResponse> getMovieById (
-      @PathVariable @Positive(message = "Movie ID must be positive") Long id) {
+      @PathVariable @Positive(message = "ID phim phải là số dương.") Long id) {
     return ResponseUtil.ok(getMovieByIdUseCase.execute(id));
   }
 
@@ -175,31 +175,31 @@ public class MovieController {
 
   @GetMapping("/{id:[0-9]+}/episodes")
   public ResponseEntity<List<EpisodeResponse>> getEpisodes (
-      @PathVariable @Positive(message = "Movie ID must be positive") Long id) {
+      @PathVariable @Positive(message = "ID phim phải là số dương.") Long id) {
     return ResponseUtil.ok(getEpisodesByMovieUseCase.execute(id));
   }
 
   @GetMapping("/{id:[0-9]+}/categories")
   public ResponseEntity<List<CategoryResponse>> getMovieCategories (
-      @PathVariable @Positive(message = "Movie ID must be positive") Long id) {
+      @PathVariable @Positive(message = "ID phim phải là số dương.") Long id) {
     return ResponseUtil.ok(getMovieCategoriesUseCase.execute(id));
   }
 
   @GetMapping("/{id:[0-9]+}/tags")
   public ResponseEntity<List<TagResponse>> getMovieTags (
-      @PathVariable @Positive(message = "Movie ID must be positive") Long id) {
+      @PathVariable @Positive(message = "ID phim phải là số dương.") Long id) {
     return ResponseUtil.ok(getMovieTagsUseCase.execute(id));
   }
 
   @GetMapping("/{id:[0-9]+}/persons")
   public ResponseEntity<List<MoviePersonResponse>> getMoviePersons (
-      @PathVariable @Positive(message = "Movie ID must be positive") Long id) {
+      @PathVariable @Positive(message = "ID phim phải là số dương.") Long id) {
     return ResponseUtil.ok(getMoviePersonsUseCase.execute(id));
   }
 
   @GetMapping("/{id:[0-9]+}/studios")
   public ResponseEntity<List<MovieStudioResponse>> getMovieStudios (
-      @PathVariable @Positive(message = "Movie ID must be positive") Long id) {
+      @PathVariable @Positive(message = "ID phim phải là số dương.") Long id) {
     return ResponseUtil.ok(getMovieStudiosUseCase.execute(id));
   }
 
@@ -227,7 +227,7 @@ public class MovieController {
 
   @PostMapping("/{id:[0-9]+}/view")
   public ResponseEntity<Void> incrementView (
-      @PathVariable @Positive(message = "Movie ID must be positive") Long id) {
+      @PathVariable @Positive(message = "ID phim phải là số dương.") Long id) {
     movieRepository.incrementViewCount(id);
     return ResponseEntity.noContent().build();
   }

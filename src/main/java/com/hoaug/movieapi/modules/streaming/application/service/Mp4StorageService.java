@@ -4,7 +4,9 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
+import java.util.Comparator;
 import java.util.Locale;
+import java.util.Optional;
 import java.util.Set;
 
 import org.springframework.stereotype.Component;
@@ -63,6 +65,41 @@ public class Mp4StorageService {
 
   public Path storeAdvertisementSource (Long advertisementId, MultipartFile file) {
     return store(file, Path.of(properties.getAdsDataDirectory()), "advertisements", advertisementId);
+  }
+
+  public Optional<Path> findEpisodeSource (Long episodeId) {
+    return findExistingSource(Path.of(properties.getSeriesDataDirectory()), "episodes", episodeId);
+  }
+
+  public Optional<Path> findMovieSource (Long movieId) {
+    return findExistingSource(Path.of(properties.getMoviesDataDirectory()), null, movieId);
+  }
+
+  public Optional<Path> findExistingSource (Path rootDirectory, String typeDirectory, Long id) {
+    Path root = rootDirectory.toAbsolutePath().normalize();
+    Path sourceDirectory = typeDirectory != null
+        ? root.resolve(typeDirectory).resolve(String.valueOf(id)).normalize()
+        : root.resolve(String.valueOf(id)).normalize();
+
+    if (!sourceDirectory.startsWith(root) || !Files.isDirectory(sourceDirectory)) {
+      return Optional.empty();
+    }
+
+    Path mp4Source = sourceDirectory.resolve("source.mp4").normalize();
+    if (Files.isRegularFile(mp4Source)) {
+      return Optional.of(mp4Source);
+    }
+
+    try (var stream = Files.list(sourceDirectory)) {
+      return stream
+          .filter(Files::isRegularFile)
+          .filter(path -> path.getFileName().toString().startsWith("source."))
+          .filter(path -> ALLOWED_EXTENSIONS.contains(extensionOf(path.getFileName().toString())))
+          .sorted(Comparator.comparing(path -> path.getFileName().toString()))
+          .findFirst();
+    } catch (IOException exception) {
+      return Optional.empty();
+    }
   }
 
   public Path resolveEpisodeDestination (Long episodeId, String originalFileName) {

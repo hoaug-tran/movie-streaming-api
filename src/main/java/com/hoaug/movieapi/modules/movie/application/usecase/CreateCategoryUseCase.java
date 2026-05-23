@@ -3,6 +3,8 @@ package com.hoaug.movieapi.modules.movie.application.usecase;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.stereotype.Component;
 
+import com.hoaug.movieapi.common.enums.ErrorCode;
+import com.hoaug.movieapi.common.exception.AppException;
 import com.hoaug.movieapi.modules.movie.application.dto.request.CreateCategoryRequest;
 import com.hoaug.movieapi.modules.movie.application.dto.response.CategoryResponse;
 import com.hoaug.movieapi.modules.movie.application.mapper.CategoryMapper;
@@ -23,6 +25,11 @@ public class CreateCategoryUseCase {
 
   @CacheEvict(cacheNames = "categories", allEntries = true)
   public CategoryResponse execute (CreateCategoryRequest request) {
+    if (categoryRepository.existsByNameIgnoreCase(request.getName())
+        || categoryRepository.existsBySlug(request.getSlug())) {
+      throw new AppException(ErrorCode.CATEGORY_EXISTED);
+    }
+
     Category category = new Category();
     category.setName(request.getName());
     category.setSlug(request.getSlug());

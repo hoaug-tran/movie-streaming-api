@@ -10,6 +10,10 @@ public interface CategoryRepository {
 
   Optional<Category> findById (Long id);
 
+  boolean existsByNameIgnoreCase (String name);
+
+  boolean existsBySlug (String slug);
+
   Category save (Category category);
 
   void deleteById (Long id);

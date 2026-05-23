@@ -114,6 +114,20 @@ public class EmailService {
     return true;
   }
 
+  public boolean sendOtpVerificationEmail (String to, String fullName, String otp,
+      String purposeLabel, long ttlMinutes)
+      throws MessagingException, UnsupportedEncodingException {
+    Map<String, String> variables = new HashMap<>();
+    variables.put("fullName", fullName);
+    variables.put("otp", otp);
+    variables.put("purposeLabel", purposeLabel);
+    variables.put("ttlMinutes", String.valueOf(ttlMinutes));
+
+    String htmlContent = emailTemplateProvider.getTemplate(EmailType.OTP_VERIFICATION, variables);
+    sendHtmlEmail(to, "Mã xác thực Gió Phim: " + otp, htmlContent);
+    return true;
+  }
+
   public boolean sendCustomEmail (EmailRequest emailRequest)
       throws MessagingException, UnsupportedEncodingException {
     String htmlContent = emailTemplateProvider.getTemplate(emailRequest.getEmailType(),

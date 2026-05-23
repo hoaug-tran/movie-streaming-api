@@ -6,6 +6,7 @@ import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
@@ -55,6 +56,22 @@ public class GlobalExceptionHandler {
     return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
   }
 
+  @ExceptionHandler(DataIntegrityViolationException.class)
+  public ResponseEntity<ApiErrorResponse> handlingDataIntegrityViolationException (
+      DataIntegrityViolationException exception) {
+    String errorId = UUID.randomUUID().toString();
+    String rootMessage = exception.getMostSpecificCause() != null
+        ? exception.getMostSpecificCause().getMessage()
+        : exception.getMessage();
+    logger.warn("Data integrity violation [errorId={}]: {}", errorId, rootMessage);
+
+    ApiErrorResponse errorResponse = ApiErrorResponse.builder().code("DUPLICATE_RESOURCE")
+        .message(resolveDataIntegrityMessage(rootMessage)).timestamp(System.currentTimeMillis())
+        .errorId(errorId).build();
+
+    return ResponseEntity.status(HttpStatus.CONFLICT).body(errorResponse);
+  }
+
   @ExceptionHandler(AccessDeniedException.class)
   public ResponseEntity<ApiErrorResponse> handlingAccessDeniedException (
       AccessDeniedException exception) {
@@ -101,5 +118,32 @@ public class GlobalExceptionHandler {
         .errorId(UUID.randomUUID().toString()).build();
 
     return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponse);
+  }
+
+  private String resolveDataIntegrityMessage (String rootMessage) {
+    if (rootMessage == null || rootMessage.isBlank()) {
+      return "Dữ liệu bị trùng hoặc vi phạm ràng buộc. Vui lòng kiểm tra lại.";
+    }
+
+    String lower = rootMessage.toLowerCase();
+    if (lower.contains("tag") || lower.contains("tags")) {
+      return "Tag đã tồn tại. Vui lòng chọn tên khác.";
+    }
+    if (lower.contains("category")) {
+      return "Thể loại đã tồn tại. Vui lòng chọn tên khác.";
+    }
+    if (lower.contains("studio")) {
+      return "Studio/Nhà sản xuất đã tồn tại. Vui lòng chọn tên khác.";
+    }
+    if (lower.contains("person")) {
+      return "Diễn viên/Đạo diễn đã tồn tại. Vui lòng chọn tên khác.";
+    }
+    if (lower.contains("movie") || lower.contains("slug")) {
+      return "Phim hoặc slug đã tồn tại. Vui lòng đổi thông tin và thử lại.";
+    }
+    if (lower.contains("episode")) {
+      return "Tập phim đã tồn tại hoặc bị trùng số tập.";
+    }
+    return "Dữ liệu bị trùng hoặc vi phạm ràng buộc. Vui lòng kiểm tra lại.";
   }
 }

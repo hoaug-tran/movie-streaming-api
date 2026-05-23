@@ -6,7 +6,6 @@ import org.springframework.stereotype.Component;
 
 import com.hoaug.movieapi.common.enums.ErrorCode;
 import com.hoaug.movieapi.common.exception.AppException;
-import com.hoaug.movieapi.modules.auth.application.dto.request.RefreshTokenRequest;
 import com.hoaug.movieapi.modules.auth.application.dto.response.RefreshTokenResponse;
 import com.hoaug.movieapi.modules.auth.domain.model.RefreshToken;
 import com.hoaug.movieapi.modules.auth.domain.repository.AuthUserRepository;
@@ -28,8 +27,12 @@ public class RefreshTokenUseCase {
     this.tokenService = tokenService;
   }
 
-  public RefreshTokenResponse execute (RefreshTokenRequest request) {
-    RefreshToken refreshToken = refreshTokenRepository.findByToken(request.getRefreshToken())
+  public RefreshTokenResponse execute (String refreshTokenValue) {
+    if (refreshTokenValue == null || refreshTokenValue.isBlank()) {
+      throw new AppException(ErrorCode.INVALID_REFRESH_TOKEN);
+    }
+
+    RefreshToken refreshToken = refreshTokenRepository.findByToken(refreshTokenValue)
         .orElseThrow( () -> new AppException(ErrorCode.INVALID_REFRESH_TOKEN));
 
     if (refreshToken.getRevokedAt() != null
@@ -53,7 +56,7 @@ public class RefreshTokenUseCase {
     refreshTokenRepository.save(newRefreshToken);
 
     RefreshTokenResponse response = new RefreshTokenResponse();
-    response.setAccessToken(tokenService.generateAccessToken(user.getUsername()));
+    response.setAccessToken(tokenService.generateAccessToken(user.getUsername(), user.getRole().name()));
     response.setRefreshToken(newRefreshTokenValue);
     response.setTokenType("Bearer");
 

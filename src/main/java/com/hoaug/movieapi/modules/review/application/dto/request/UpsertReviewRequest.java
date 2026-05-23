@@ -11,8 +11,8 @@ import jakarta.validation.constraints.Size;
 
 public class UpsertReviewRequest {
 
-  @NotNull(message = "Movie ID is required")
-  @Positive(message = "Movie ID must be positive")
+  @NotNull(message = "Vui lòng chọn phim.")
+  @Positive(message = "ID phim phải là số dương.")
   private Long movieId;
 
   @NotNull(message = "Rating is required")

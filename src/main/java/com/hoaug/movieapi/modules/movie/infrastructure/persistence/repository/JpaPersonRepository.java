@@ -8,4 +8,6 @@ import com.hoaug.movieapi.modules.movie.infrastructure.persistence.entity.Person
 
 public interface JpaPersonRepository extends JpaRepository<PersonEntity, Long> {
   List<PersonEntity> findByFullNameContainingIgnoreCase (String fullName);
+
+  boolean existsByFullNameIgnoreCase (String fullName);
 }

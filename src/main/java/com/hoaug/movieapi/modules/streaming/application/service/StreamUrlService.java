@@ -1,5 +1,6 @@
 package com.hoaug.movieapi.modules.streaming.application.service;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import com.hoaug.movieapi.modules.streaming.application.config.MediaStorageProperties;
@@ -7,9 +8,12 @@ import com.hoaug.movieapi.modules.streaming.application.config.MediaStoragePrope
 @Component
 public class StreamUrlService {
   private final MediaStorageProperties properties;
+  private final String apiPrefix;
 
-  public StreamUrlService(MediaStorageProperties properties) {
+  public StreamUrlService(MediaStorageProperties properties,
+      @Value("${api.prefix:/api/v1}") String apiPrefix) {
     this.properties = properties;
+    this.apiPrefix = normalizePrefix(apiPrefix);
   }
 
   public String episodePlaylistUrl (Long episodeId, String quality) {
@@ -40,8 +44,13 @@ public class StreamUrlService {
     return joinApiUrl("/stream/keys/series/episodes/" + episodeId + "/" + quality);
   }
 
+  public String offlineEpisodeKeyUrl (Long episodeId, String quality) {
+    return joinApiUrl("/stream/offline/key/" + episodeId + "/" + quality);
+  }
+
   public String episodeSegmentUrl (Long episodeId, String quality, String segmentFilename) {
-    return joinBaseUrl("/stream/series/episodes/" + episodeId + "/" + quality + "/" + segmentFilename);
+    return joinBaseUrl(
+        "/stream/series/episodes/" + episodeId + "/" + quality + "/" + segmentFilename);
   }
 
   public String advertisementKeyUrl (Long advertisementId) {
@@ -49,18 +58,36 @@ public class StreamUrlService {
   }
 
   private String joinBaseUrl (String path) {
-    String baseUrl = properties.getPublicBaseUrl();
-    if (baseUrl.endsWith("/")) {
-      return baseUrl.substring(0, baseUrl.length() - 1) + path;
-    }
-    return baseUrl + path;
+    return trimTrailingSlash(properties.getPublicBaseUrl()) + path;
   }
 
   private String joinApiUrl (String path) {
-    String baseUrl = properties.getPublicBaseUrl();
-    if (baseUrl.endsWith("/")) {
-      return baseUrl.substring(0, baseUrl.length() - 1) + "/api/v1" + path;
+    return trimTrailingSlash(properties.getPublicBaseUrl()) + apiPrefix + path;
+  }
+
+  private String trimTrailingSlash (String value) {
+    if (value == null || value.isBlank()) {
+      return "";
     }
-    return baseUrl + "/api/v1" + path;
+
+    if (value.endsWith("/")) {
+      return value.substring(0, value.length() - 1);
+    }
+
+    return value;
+  }
+
+  private String normalizePrefix (String value) {
+    if (value == null || value.isBlank()) {
+      return "";
+    }
+
+    String prefix = value.startsWith("/") ? value : "/" + value;
+
+    if (prefix.endsWith("/")) {
+      return prefix.substring(0, prefix.length() - 1);
+    }
+
+    return prefix;
   }
 }

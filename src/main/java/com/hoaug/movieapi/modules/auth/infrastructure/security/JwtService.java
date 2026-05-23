@@ -21,6 +21,8 @@ import io.jsonwebtoken.security.Keys;
 @Service
 public class JwtService implements TokenService {
 
+  private static final String ROLE_CLAIM = "role";
+
   private final JwtProperties jwtProperties;
   private static SecretKey SHARED_KEY;
   private final SecureRandom secureRandom = new SecureRandom();
@@ -46,12 +48,17 @@ public class JwtService implements TokenService {
   }
 
   @Override
-  public String generateAccessToken (String username) {
+  public String generateAccessToken (String username, String role) {
     Date now = new Date();
     Date expiredAt = new Date(now.getTime() + jwtProperties.getAccessTokenExpiration());
 
-    return Jwts.builder().subject(username).issuedAt(now).expiration(expiredAt)
-        .signWith(getSigningKey()).compact();
+    return Jwts.builder()
+        .subject(username)
+        .claim(ROLE_CLAIM, role)
+        .issuedAt(now)
+        .expiration(expiredAt)
+        .signWith(getSigningKey())
+        .compact();
   }
 
   @Override
@@ -64,6 +71,12 @@ public class JwtService implements TokenService {
   @Override
   public String extractUsername (String token) {
     return extractAllClaims(token).getSubject();
+  }
+
+  @Override
+  public String extractRole (String token) {
+    Object value = extractAllClaims(token).get(ROLE_CLAIM);
+    return value == null ? null : value.toString();
   }
 
   @Override

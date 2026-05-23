@@ -1,5 +1,7 @@
 package com.hoaug.movieapi.modules.movie.application.usecase;
 
+import java.util.List;
+
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Component;
 
@@ -22,8 +24,12 @@ public class GetMoviesByRegionUseCase {
 
   @Cacheable(value = "movies", key = "'region:' + #country + ':' + #page + ':' + #size")
   public MovieListResponse execute (String country, int page, int size) {
+    List<com.hoaug.movieapi.modules.movie.domain.model.Movie> movies = "OTHER".equalsIgnoreCase(country)
+        ? movieRepository.findRandomOtherCountries(
+            List.of("south korea", "china", "united states", "vietnam"), size)
+        : movieRepository.findByCountry(country, page, size);
     return MovieListResponse.builder()
-        .movies(movieRepository.findByCountry(country, page, size).stream()
+        .movies(movies.stream()
             .map(movie -> movieMapper.toSummaryResponse(movie, getMovieCategoriesUseCase.execute(movie.getId()))).toList())
         .build();
   }

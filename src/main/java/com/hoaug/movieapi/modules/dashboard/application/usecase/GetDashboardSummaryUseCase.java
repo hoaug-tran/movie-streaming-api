@@ -133,6 +133,18 @@ public class GetDashboardSummaryUseCase {
                   compact(reviewCount) + " đánh giá • "
                       + movie.getAverageRating().setScale(1, RoundingMode.HALF_UP) + "★");
             }).toList()),
+        rankingCard("Thể loại xem nhiều nhất",
+            "Tổng lượt xem của các phim đã xuất bản trong từng thể loại", "rose",
+            movieRepository.findTopCategoriesByMovieViews(PageRequest.of(0, 10)).stream()
+                .map(this::categoryRankingItem).toList()),
+        rankingCard("Phim được yêu thích nhất",
+            "Xếp hạng theo tổng lượt tim/yêu thích của từng phim", "emerald",
+            movieRepository.findMostFavoritedMovies(PageRequest.of(0, 10)).stream()
+                .map(movie -> rankingItem(movie.getId(), movie.getSlug(), movie.getTitle(),
+                    compact(movie.getFavoriteCount()),
+                    compact(movie.getViewCount()) + " lượt xem",
+                    movie.getReleaseYear() + " • " + movie.getCountry()))
+                .toList()),
         rankingCard("Top gói doanh thu nhiều nhất",
             "Gói thuê bao xếp theo tổng thanh toán thành công", "amber",
             userSubscriptionRepository.findTopPlanRevenue(PageRequest.of(0, 10)).stream()
@@ -285,6 +297,25 @@ public class GetDashboardSummaryUseCase {
     String href = id == null ? null : "/admin/movies?id=" + id;
     return DashboardSummaryResponse.AdminRankingItem.builder().id(id).slug(slug).href(href)
         .title(title).value(value).detail(detail).meta(meta).build();
+  }
+
+  private DashboardSummaryResponse.AdminRankingItem categoryRankingItem(Object[] row) {
+    String name = row[1] == null ? "Không rõ thể loại" : row[1].toString();
+    String slug = row[2] == null ? null : row[2].toString();
+    long totalViews = numberAt(row, 3);
+    long movieCount = numberAt(row, 4);
+    return DashboardSummaryResponse.AdminRankingItem.builder().id(null).slug(slug)
+        .href(slug == null ? null : "/admin/movies?category=" + slug).title(name)
+        .value(compact(totalViews)).detail(movieCount + " phim")
+        .meta("Tổng lượt xem theo thể loại").build();
+  }
+
+  private long numberAt(Object[] row, int index) {
+    Object value = row[index];
+    if (value instanceof Number number) {
+      return number.longValue();
+    }
+    return value == null ? 0 : Long.parseLong(value.toString());
   }
 
   private DashboardSummaryResponse.AdminMetric metric (String label, long value, String delta,

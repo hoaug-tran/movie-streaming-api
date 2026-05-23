@@ -26,10 +26,9 @@ public class StreamKeyController {
   private final AuthUserRepository authUserRepository;
   private final SubscriptionAccessService subscriptionAccessService;
 
-  public StreamKeyController (GetEpisodeHlsKeyUseCase getEpisodeHlsKeyUseCase,
+  public StreamKeyController(GetEpisodeHlsKeyUseCase getEpisodeHlsKeyUseCase,
       GetAdvertisementHlsKeyUseCase getAdvertisementHlsKeyUseCase,
-      AuthUserRepository authUserRepository,
-      SubscriptionAccessService subscriptionAccessService) {
+      AuthUserRepository authUserRepository, SubscriptionAccessService subscriptionAccessService) {
     this.getEpisodeHlsKeyUseCase = getEpisodeHlsKeyUseCase;
     this.getAdvertisementHlsKeyUseCase = getAdvertisementHlsKeyUseCase;
     this.authUserRepository = authUserRepository;
@@ -39,18 +38,25 @@ public class StreamKeyController {
   @GetMapping("/series/episodes/{episodeId}/{quality}")
   public ResponseEntity<byte[]> getEpisodeKey (@PathVariable Long episodeId,
       @PathVariable String quality, Authentication authentication) {
-    if (!"720p".equals(quality)) {
-      if (authentication == null || !authentication.isAuthenticated()
-          || "anonymousUser".equals(authentication.getPrincipal())) {
-        throw new AppException(ErrorCode.FORBIDDEN);
-      }
-      User user = authUserRepository.findByUsername(authentication.getName())
-          .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
-      if (!subscriptionAccessService.canAccessQuality(user.getId(), quality)) {
-        throw new AppException(ErrorCode.FORBIDDEN);
-      }
+    String normalizedQuality = normalizeQuality(quality);
+
+    if ("720p".equals(normalizedQuality)) {
+      return keyResponse(getEpisodeHlsKeyUseCase.execute(episodeId, normalizedQuality));
     }
-    return keyResponse(getEpisodeHlsKeyUseCase.execute(episodeId, quality));
+
+    if (authentication == null || !authentication.isAuthenticated()
+        || "anonymousUser".equals(authentication.getPrincipal())) {
+      throw new AppException(ErrorCode.FORBIDDEN);
+    }
+
+    User user = authUserRepository.findByUsername(authentication.getName())
+        .orElseThrow( () -> new AppException(ErrorCode.USER_NOT_FOUND));
+
+    if (!subscriptionAccessService.canAccessQuality(user.getId(), normalizedQuality)) {
+      throw new AppException(ErrorCode.FORBIDDEN);
+    }
+
+    return keyResponse(getEpisodeHlsKeyUseCase.execute(episodeId, normalizedQuality));
   }
 
   @GetMapping("/ads/advertisements/{advertisementId}")
@@ -59,9 +65,25 @@ public class StreamKeyController {
   }
 
   private ResponseEntity<byte[]> keyResponse (byte[] key) {
-    return ResponseEntity.ok()
-        .contentType(MediaType.APPLICATION_OCTET_STREAM)
-        .cacheControl(CacheControl.noStore())
-        .body(key);
+    return ResponseEntity.ok().contentType(MediaType.APPLICATION_OCTET_STREAM)
+        .cacheControl(CacheControl.noStore()).body(key);
+  }
+
+  private String normalizeQuality (String quality) {
+    if (quality == null || quality.isBlank()) {
+      return "720p";
+    }
+
+    String q = quality.trim().toUpperCase();
+
+    if ("4K".equals(q) || "2160P".equals(q) || "UHD".equals(q)) {
+      return "4K";
+    }
+
+    if ("1080P".equals(q) || "FHD".equals(q) || "FULL_HD".equals(q)) {
+      return "1080p";
+    }
+
+    return "720p";
   }
 }

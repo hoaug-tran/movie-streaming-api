@@ -9,5 +9,7 @@ import com.hoaug.movieapi.modules.movie.infrastructure.persistence.entity.Studio
 public interface JpaStudioRepository extends JpaRepository<StudioEntity, Long> {
   Optional<StudioEntity> findBySlug (String slug);
 
+  boolean existsByNameIgnoreCase (String name);
+
   boolean existsBySlug (String slug);
 }

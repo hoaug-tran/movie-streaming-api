@@ -49,6 +49,10 @@ public interface JpaMovieRepository extends JpaRepository<MovieEntity, Long> {
   @Query("SELECT m FROM MovieEntity m WHERE m.movieStatus = 'PUBLISHED' ORDER BY m.viewCount DESC")
   List<MovieEntity> findTopTrending (Pageable pageable);
 
+  @Query(value = "SELECT m.* FROM movies m JOIN watch_histories w ON w.movie_id = m.id WHERE m.movie_status = 'PUBLISHED' AND w.last_watched_at >= :since GROUP BY m.id ORDER BY COUNT(w.id) DESC, MAX(w.last_watched_at) DESC", nativeQuery = true)
+  List<MovieEntity> findTopTrendingThisWeek (@Param("since") java.time.LocalDateTime since,
+      Pageable pageable);
+
   @Query(value = "SELECT m.* FROM movies m WHERE m.movie_status = 'PUBLISHED' AND COALESCE(m.published_at, m.created_at) >= DATE_SUB(NOW(), INTERVAL 7 DAY) ORDER BY COALESCE(m.published_at, m.created_at) DESC", nativeQuery = true)
   List<MovieEntity> findWeeklyNew (Pageable pageable);
 
@@ -61,8 +65,11 @@ public interface JpaMovieRepository extends JpaRepository<MovieEntity, Long> {
   @Query("SELECT m FROM MovieEntity m WHERE m.movieStatus = 'UPCOMING' OR (m.movieStatus = 'PUBLISHED' AND m.releaseYear > :currentYear) ORDER BY m.releaseYear ASC, m.createdAt DESC")
   List<MovieEntity> findUpcoming (@Param("currentYear") int currentYear, Pageable pageable);
 
-  @Query("SELECT m FROM MovieEntity m WHERE m.movieStatus = 'PUBLISHED' AND m.country = :country ORDER BY m.publishedAt DESC")
+  @Query("SELECT m FROM MovieEntity m WHERE m.movieStatus = 'PUBLISHED' AND LOWER(TRIM(m.country)) = LOWER(TRIM(:country)) ORDER BY m.publishedAt DESC")
   Page<MovieEntity> findByCountry (@Param("country") String country, Pageable pageable);
+
+  @Query("SELECT m FROM MovieEntity m WHERE m.movieStatus = 'PUBLISHED' AND LOWER(TRIM(m.country)) NOT IN :excludedCountries ORDER BY FUNCTION('RAND')")
+  List<MovieEntity> findRandomByCountryNotIn (@Param("excludedCountries") List<String> excludedCountries, Pageable pageable);
 
   @Query("SELECT m FROM MovieEntity m WHERE m.movieStatus = 'PUBLISHED' AND m.movieType = 'SERIES' AND m.country = :country ORDER BY m.viewCount DESC")
   List<MovieEntity> findTopSeriesByCountry (@Param("country") String country, Pageable pageable);
@@ -93,6 +100,12 @@ public interface JpaMovieRepository extends JpaRepository<MovieEntity, Long> {
 
   @Query(value = "SELECT m.* FROM movies m WHERE m.movie_status = 'PUBLISHED' ORDER BY (COALESCE(m.total_reviews, 0) + (SELECT COUNT(*) FROM comments c WHERE c.movie_id = m.id AND c.status = 'VISIBLE')) DESC, COALESCE(m.total_reviews, 0) DESC, (SELECT COUNT(*) FROM comments c WHERE c.movie_id = m.id AND c.status = 'VISIBLE') DESC", nativeQuery = true)
   List<MovieEntity> findMostInteractedMovies (Pageable pageable);
+
+  @Query("SELECT m FROM MovieEntity m WHERE m.movieStatus = 'PUBLISHED' ORDER BY m.favoriteCount DESC, m.viewCount DESC")
+  List<MovieEntity> findMostFavoritedMovies (Pageable pageable);
+
+  @Query(value = "SELECT c.id, c.name, c.slug, COALESCE(SUM(m.view_count), 0) AS total_views, COUNT(DISTINCT m.id) AS movie_count FROM categories c JOIN movie_categories mc ON mc.category_id = c.id JOIN movies m ON m.id = mc.movie_id WHERE m.movie_status = 'PUBLISHED' GROUP BY c.id, c.name, c.slug ORDER BY total_views DESC, movie_count DESC", nativeQuery = true)
+  List<Object[]> findTopCategoriesByMovieViews (Pageable pageable);
 
   @Query(value = "SELECT COUNT(*) FROM comments c WHERE c.movie_id = :movieId AND c.status = 'VISIBLE'", nativeQuery = true)
   long countVisibleCommentsByMovieId (@Param("movieId") Long movieId);

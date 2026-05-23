@@ -5,4 +5,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import com.hoaug.movieapi.modules.movie.infrastructure.persistence.entity.CategoryEntity;
 
 public interface JpaCategoryRepository extends JpaRepository<CategoryEntity, Long> {
+  boolean existsByNameIgnoreCase (String name);
+
+  boolean existsBySlug (String slug);
 }

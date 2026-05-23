@@ -7,9 +7,9 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 
 public class StartEmailChangeRequest {
-  @NotBlank(message = "New email is required")
-  @Email(message = "Invalid email format")
-  @Size(max = 100, message = "Email must be at most 100 characters")
+  @NotBlank(message = "Vui lòng nhập email mới.")
+  @Email(message = "Email không đúng định dạng.")
+  @Size(max = 100, message = "Email tối đa 100 ký tự.")
   @ValidSafeString(minLength = 3, maxLength = 100)
   private String newEmail;
 

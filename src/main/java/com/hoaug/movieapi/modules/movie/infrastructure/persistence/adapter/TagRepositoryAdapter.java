@@ -44,6 +44,16 @@ public class TagRepositoryAdapter implements TagRepository {
   }
 
   @Override
+  public boolean existsByNameIgnoreCase (String name) {
+    return jpaTagRepository.existsByNameIgnoreCase(name);
+  }
+
+  @Override
+  public boolean existsBySlug (String slug) {
+    return jpaTagRepository.existsBySlug(slug);
+  }
+
+  @Override
   public Tag save (Tag tag) {
     TagEntity entity = new TagEntity();
     entity.setId(tag.getId());

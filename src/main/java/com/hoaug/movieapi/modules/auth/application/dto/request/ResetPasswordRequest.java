@@ -12,9 +12,9 @@ public class ResetPasswordRequest {
   @ValidSafeString(minLength = 1, maxLength = 1024)
   private String token;
 
-  @NotBlank(message = "New password is required")
-  @Size(min = 6, max = 255, message = "Password must be between 6 and 255 characters")
-  @Pattern(regexp = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]+$", message = "Password must contain uppercase, lowercase, number and special character")
+  @NotBlank(message = "Vui lòng nhập mật khẩu mới.")
+  @Size(min = 6, max = 255, message = "Mật khẩu phải từ 6 đến 255 ký tự.")
+  @Pattern(regexp = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]+$", message = "Mật khẩu phải có chữ hoa, chữ thường, số và ký tự đặc biệt.")
   @ValidSafeString(minLength = 6, maxLength = 255)
   private String newPassword;
 

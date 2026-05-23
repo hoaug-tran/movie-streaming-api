@@ -16,6 +16,9 @@ import com.hoaug.movieapi.modules.subscription.domain.model.UserSubscription;
 import com.hoaug.movieapi.modules.subscription.domain.repository.SubscriptionPlanRepository;
 import com.hoaug.movieapi.modules.subscription.domain.repository.UserSubscriptionRepository;
 
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
 @Component
 public class NotificationScheduler {
 
@@ -42,6 +45,7 @@ public class NotificationScheduler {
     List<UserSubscription> expiringSoon = userSubscriptionRepository
         .findByStatusAndEndAtBetween(SubscriptionStatus.ACTIVE, in1Day, in2Days);
 
+    int created = 0;
     for (UserSubscription sub : expiringSoon) {
       boolean alreadyNotified = notificationRepository.existsByUserIdAndTypeAndCreatedAtAfter(
           sub.getUserId(), NotificationType.PREMIUM_EXPIRING.name(), now.minusHours(23));
@@ -62,7 +66,10 @@ public class NotificationScheduler {
       notification.setReferenceId(sub.getId());
       notification.setCreatedAt(LocalDateTime.now());
       notificationRepository.save(notification);
+      created++;
     }
+    log.info("[Scheduler] Premium expiring scan: scanned={}, created={}", expiringSoon.size(),
+        created);
   }
 
   @Scheduled(cron = "0 5 0 * * *")
@@ -72,6 +79,7 @@ public class NotificationScheduler {
     List<UserSubscription> expired = userSubscriptionRepository
         .findByStatusAndEndAtBefore(SubscriptionStatus.ACTIVE, now);
 
+    int created = 0;
     for (UserSubscription sub : expired) {
       boolean alreadyNotified = notificationRepository.existsByUserIdAndTypeAndCreatedAtAfter(
           sub.getUserId(), NotificationType.SUBSCRIPTION_EXPIRED.name(), now.minusHours(20));
@@ -92,14 +100,19 @@ public class NotificationScheduler {
       notification.setReferenceId(sub.getId());
       notification.setCreatedAt(LocalDateTime.now());
       notificationRepository.save(notification);
+      created++;
     }
+    log.info("[Scheduler] Subscription expired scan: scanned={}, created={}", expired.size(),
+        created);
   }
 
   @Scheduled(cron = "0 0 10 * * MON")
   public void sendHotMoviesWeeklyNotifications () {
     List<Movie> hotMovies = movieRepository.findTopTrending(3);
-    if (hotMovies.isEmpty())
+    if (hotMovies.isEmpty()) {
+      log.info("[Scheduler] Hot movies weekly scan: no trending movies, skipped");
       return;
+    }
 
     List<Long> userIds = notificationRepository.findAllActiveUserIds();
 
@@ -112,6 +125,7 @@ public class NotificationScheduler {
     content.append(". Xem ngay!");
 
     LocalDateTime now = LocalDateTime.now();
+    int created = 0;
     for (Long userId : userIds) {
       boolean alreadyNotified = notificationRepository.existsByUserIdAndTypeAndCreatedAtAfter(
           userId, NotificationType.HOT_MOVIES.name(), now.minusDays(6));
@@ -127,6 +141,8 @@ public class NotificationScheduler {
       notification.setActionUrl("/discovery");
       notification.setCreatedAt(now);
       notificationRepository.save(notification);
+      created++;
     }
+    log.info("[Scheduler] Hot movies weekly scan: users={}, created={}", userIds.size(), created);
   }
 }

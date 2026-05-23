@@ -7,17 +7,14 @@ import org.springframework.stereotype.Component;
 
 import com.hoaug.movieapi.common.enums.ErrorCode;
 import com.hoaug.movieapi.common.exception.AppException;
-import com.hoaug.movieapi.modules.review.domain.repository.ReviewRepository;
 
 @Component
 public class ReviewSpamValidator {
-  private final ReviewRepository reviewRepository;
   private final Map<String, ReviewRateLimit> rateLimitMap = new HashMap<>();
   private static final int MAX_REVIEWS_PER_HOUR = 5;
   private static final long HOUR_MILLIS = 3600000;
 
-  public ReviewSpamValidator(ReviewRepository reviewRepository) {
-    this.reviewRepository = reviewRepository;
+  public ReviewSpamValidator() {
   }
 
   public void validate (Long userId, Long movieId, String content, Integer rating) {
@@ -32,12 +29,6 @@ public class ReviewSpamValidator {
     if (hasRepeatingCharacters(content)) {
       throw new AppException(ErrorCode.REVIEW_CONTENT_SPAM);
     }
-
-    // KHÔNG còn block khi đã tồn tại review của user/movie:
-    // - Endpoint `POST /api/v1/reviews` là cơ chế UPSERT (insert or update),
-    //   user được phép sửa review của mình thoải mái. Trước đây check này đã
-    //   chặn vĩnh viễn user đã từng review một phim không thể chỉnh sửa nữa,
-    //   khiến frontend bị lỗi 400 VALIDATION_ERROR mà không hiểu nguyên nhân.
 
     checkRateLimit(userId);
   }
