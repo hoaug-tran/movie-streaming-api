@@ -134,11 +134,7 @@ public class NotificationEventListener {
     notificationRepository.save(notification);
   }
 
-  /**
-   * Builds a movie detail page URL with optional comment anchor.
-   * e.g. /movies/dune-part-two?comment=25
-   * Never sends user to the watch/player page for social interactions.
-   */
+  
   private String buildMovieCommentUrl(String movieSlug, Long commentId) {
     if (movieSlug == null) return null;
     StringBuilder url = new StringBuilder("/movies/").append(movieSlug);

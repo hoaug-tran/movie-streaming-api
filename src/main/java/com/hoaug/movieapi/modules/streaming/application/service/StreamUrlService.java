@@ -28,6 +28,14 @@ public class StreamUrlService {
     return joinBaseUrl("/data/movies/" + movieId + "/source.mp4");
   }
 
+  public String movieTrailerUrl (Long movieId, String filename) {
+    return joinBaseUrl("/data/movies/" + movieId + "/" + filename);
+  }
+
+  public String seriesTrailerUrl (Long episodeId, String filename) {
+    return joinBaseUrl("/data/series/episodes/" + episodeId + "/" + filename);
+  }
+
   public String imageUrl (String filename) {
     return joinBaseUrl("/images/" + filename);
   }

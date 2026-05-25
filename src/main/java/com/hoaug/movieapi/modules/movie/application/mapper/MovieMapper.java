@@ -70,8 +70,8 @@ public class MovieMapper {
     response.setCreatedAt(movie.getCreatedAt());
     response.setUpdatedAt(movie.getUpdatedAt());
     response.setPublishedAt(movie.getPublishedAt());
-    response.setCommentsLocked(Boolean.TRUE.equals(movie.getCommentsLocked()));
-    response.setReviewsLocked(Boolean.TRUE.equals(movie.getReviewsLocked()));
+    response.setCommentsLocked(movie.getCommentsLocked());
+    response.setReviewsLocked(movie.getReviewsLocked());
     response.setCategories(categories);
     return response;
   }
@@ -101,8 +101,8 @@ public class MovieMapper {
     response.setTotalRatings(movie.getTotalRatings());
     response.setTotalReviews(movie.getTotalReviews());
     response.setPublishedAt(movie.getPublishedAt());
-    response.setCommentsLocked(Boolean.TRUE.equals(movie.getCommentsLocked()));
-    response.setReviewsLocked(Boolean.TRUE.equals(movie.getReviewsLocked()));
+    response.setCommentsLocked(movie.getCommentsLocked());
+    response.setReviewsLocked(movie.getReviewsLocked());
     response.setEpisodes(episodes.stream().map(this::toEpisodeResponse).toList());
     response.setCategories(categories);
     response.setTags(tags);

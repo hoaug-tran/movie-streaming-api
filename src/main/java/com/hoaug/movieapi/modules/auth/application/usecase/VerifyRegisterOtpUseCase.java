@@ -1,6 +1,6 @@
 package com.hoaug.movieapi.modules.auth.application.usecase;
 
-import java.io.UnsupportedEncodingException;
+import java.io.IOException;
 import java.time.LocalDateTime;
 
 import org.springframework.stereotype.Component;
@@ -23,7 +23,7 @@ import com.hoaug.movieapi.modules.email.application.EmailService;
 import com.hoaug.movieapi.modules.user.domain.model.AccountStatus;
 import com.hoaug.movieapi.modules.user.domain.model.User;
 
-import jakarta.mail.MessagingException;
+
 
 @Component
 public class VerifyRegisterOtpUseCase {
@@ -59,7 +59,7 @@ public class VerifyRegisterOtpUseCase {
     try {
       emailService.sendAccountNotificationEmail(user.getEmail(), user.getFullName(),
           "Chào mừng bạn đến với Gió Phim! Tài khoản của bạn đã được kích hoạt thành công.");
-    } catch (MessagingException | UnsupportedEncodingException e) {
+    } catch (IOException e) {
       org.slf4j.LoggerFactory.getLogger(getClass()).warn("Welcome email failed", e);
     }
 

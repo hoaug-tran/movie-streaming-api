@@ -29,11 +29,7 @@ import com.hoaug.movieapi.modules.watchhistory.application.usecase.UpsertWatchHi
 
 import jakarta.validation.Valid;
 
-/**
- * HTTP Status Codes: - 200 OK: GET, PUT successful - 201 Created: POST creates new record - 204 No
- * Content: DELETE successful - 400 Bad Request: Invalid input - 401 Unauthorized: Not authenticated
- * - 404 Not Found: Resource not found - 500 Internal Error: Server error
- */
+
 @RestController
 @RequestMapping("${api.prefix:/api/v1}/watch-histories")
 public class WatchHistoryController {

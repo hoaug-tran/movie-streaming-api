@@ -40,7 +40,7 @@ public class UpdateEpisodeUseCase {
     Episode episode = episodeRepository.findById(episodeId)
         .orElseThrow(() -> new AppException(ErrorCode.EPISODE_NOT_FOUND));
 
-    // Reassign to a different parent movie if requested.
+    
     Long targetMovieId = request.getMovieId();
     if (targetMovieId != null && !targetMovieId.equals(episode.getMovieId())) {
       movieRepository.findById(targetMovieId)

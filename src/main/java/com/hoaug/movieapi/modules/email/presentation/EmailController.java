@@ -1,6 +1,6 @@
 package com.hoaug.movieapi.modules.email.presentation;
 
-import java.io.UnsupportedEncodingException;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.hoaug.movieapi.modules.email.application.EmailService;
 
-import jakarta.mail.MessagingException;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -25,9 +25,7 @@ public class EmailController {
 
   private final EmailService emailService;
 
-  /**
-   * Gửi email quên mật khẩu
-   */
+  
   @PostMapping("/send-forgot-password")
   public ResponseEntity<Map<String, Object>> sendForgotPasswordEmail (
       @RequestBody SendForgotPasswordEmailRequest request) {
@@ -40,7 +38,7 @@ public class EmailController {
       response.put("message", sent ? "Email gửi thành công" : "Lỗi gửi email");
 
       return ResponseEntity.ok(response);
-    } catch (MessagingException | UnsupportedEncodingException e) {
+    } catch (IOException e) {
       log.error("Error sending forgot password email", e);
       Map<String, Object> response = new HashMap<>();
       response.put("success", false);
@@ -60,7 +58,7 @@ public class EmailController {
       response.put("message", sent ? "Email gửi thành công" : "Lỗi gửi email");
 
       return ResponseEntity.ok(response);
-    } catch (MessagingException | UnsupportedEncodingException e) {
+    } catch (IOException e) {
       log.error("Error sending reset password success email", e);
       Map<String, Object> response = new HashMap<>();
       response.put("success", false);
@@ -81,7 +79,7 @@ public class EmailController {
       response.put("message", sent ? "Email gửi thành công" : "Lỗi gửi email");
 
       return ResponseEntity.ok(response);
-    } catch (MessagingException | UnsupportedEncodingException e) {
+    } catch (IOException e) {
       log.error("Error sending signup success email", e);
       Map<String, Object> response = new HashMap<>();
       response.put("success", false);
@@ -102,7 +100,7 @@ public class EmailController {
       response.put("message", sent ? "Email gửi thành công" : "Lỗi gửi email");
 
       return ResponseEntity.ok(response);
-    } catch (MessagingException | UnsupportedEncodingException e) {
+    } catch (IOException e) {
       log.error("Error sending email verification", e);
       Map<String, Object> response = new HashMap<>();
       response.put("success", false);
@@ -124,7 +122,7 @@ public class EmailController {
       response.put("message", sent ? "Email gửi thành công" : "Lỗi gửi email");
 
       return ResponseEntity.ok(response);
-    } catch (MessagingException | UnsupportedEncodingException e) {
+    } catch (IOException e) {
       log.error("Error sending account notification email", e);
       Map<String, Object> response = new HashMap<>();
       response.put("success", false);
@@ -146,7 +144,7 @@ public class EmailController {
       response.put("message", sent ? "Email gửi thành công" : "Lỗi gửi email");
 
       return ResponseEntity.ok(response);
-    } catch (MessagingException | UnsupportedEncodingException e) {
+    } catch (IOException e) {
       log.error("Error sending new movie release email", e);
       Map<String, Object> response = new HashMap<>();
       response.put("success", false);

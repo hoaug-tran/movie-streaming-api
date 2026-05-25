@@ -30,6 +30,8 @@ public interface JpaMovieRepository extends JpaRepository<MovieEntity, Long> {
 
   Optional<MovieEntity> findBySlugAndMovieStatus (String slug, MovieStatus movieStatus);
 
+  Optional<MovieEntity> findBySlug (String slug);
+
   boolean existsBySlug (String slug);
 
   Page<MovieEntity> findByMovieStatus (MovieStatus movieStatus, Pageable pageable);

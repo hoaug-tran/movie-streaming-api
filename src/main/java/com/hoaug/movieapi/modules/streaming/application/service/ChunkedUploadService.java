@@ -23,15 +23,12 @@ import com.hoaug.movieapi.common.enums.ErrorCode;
 import com.hoaug.movieapi.common.exception.AppException;
 import com.hoaug.movieapi.modules.streaming.application.config.MediaStorageProperties;
 
-/**
- * Quản lý upload theo chunk để bypass giới hạn body size 100MB của Cloudflare free tunnel.
- * Client chia file thành chunk ≤ 8MB và gửi tuần tự, server ghép lại khi đủ số chunk.
- */
+
 @Component
 public class ChunkedUploadService {
 
   private static final Logger log = LoggerFactory.getLogger(ChunkedUploadService.class);
-  private static final long SESSION_TTL_MILLIS = 6L * 60 * 60 * 1000; // 6 giờ
+  private static final long SESSION_TTL_MILLIS = 6L * 60 * 60 * 1000; 
 
   private final MediaStorageProperties properties;
   private final Path sessionsRoot;
@@ -99,10 +96,7 @@ public class ChunkedUploadService {
     }
   }
 
-  /**
-   * Ghép tất cả chunk thành 1 file ở đường dẫn destination, xóa session.
-   * Caller chịu trách nhiệm validate destination path trước.
-   */
+  
   public Path assemble(String uploadId, Path destination) {
     Session s = requireSession(uploadId);
     if (s.received.size() != s.totalChunks) {

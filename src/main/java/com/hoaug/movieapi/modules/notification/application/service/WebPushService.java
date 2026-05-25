@@ -9,12 +9,12 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-import tools.jackson.databind.ObjectMapper;
 import com.hoaug.movieapi.modules.notification.infrastructure.persistence.entity.PushSubscriptionEntity;
 import com.hoaug.movieapi.modules.notification.infrastructure.persistence.repository.JpaPushSubscriptionRepository;
 
 import nl.martijndwars.webpush.Notification;
 import nl.martijndwars.webpush.PushService;
+import tools.jackson.databind.ObjectMapper;
 
 @Service
 public class WebPushService {
@@ -58,8 +58,11 @@ public class WebPushService {
       return;
     }
 
+    java.util.Set<String> seenEndpoints = new java.util.HashSet<>();
     for (PushSubscriptionEntity sub : subscriptions) {
-      sendToSubscription(sub, payloadJson);
+      if (seenEndpoints.add(sub.getEndpoint())) {
+        sendToSubscription(sub, payloadJson);
+      }
     }
   }
 
@@ -83,8 +86,12 @@ public class WebPushService {
       return;
     }
 
+    
+    java.util.Set<String> seenEndpoints = new java.util.HashSet<>();
     for (PushSubscriptionEntity sub : subscriptions) {
-      sendToSubscription(sub, payloadJson);
+      if (seenEndpoints.add(sub.getEndpoint())) {
+        sendToSubscription(sub, payloadJson);
+      }
     }
   }
 

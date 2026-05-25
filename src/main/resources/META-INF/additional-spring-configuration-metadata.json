@@ -36,6 +36,16 @@
       "description": "Default sender display name for outbound mail."
     },
     {
+      "name": "mailtrap.api-token",
+      "type": "java.lang.String",
+      "description": "Mailtrap Transactional API token for sending emails."
+    },
+    {
+      "name": "mailtrap.api-url",
+      "type": "java.lang.String",
+      "description": "Mailtrap Transactional API endpoint URL."
+    },
+    {
       "name": "app.support.inbox.primary",
       "type": "java.lang.String",
       "description": "Primary support inbox address."

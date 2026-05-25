@@ -22,8 +22,7 @@ public class CookieUtil {
   private final String sameSite;
   private final String domain;
 
-  public CookieUtil(
-      @Value("${app.cookie.secure:false}") boolean secure,
+  public CookieUtil(@Value("${app.cookie.secure:false}") boolean secure,
       @Value("${app.cookie.same-site:Lax}") String sameSite,
       @Value("${app.cookie.domain:}") String domain) {
     this.secure = secure;
@@ -31,21 +30,23 @@ public class CookieUtil {
     this.domain = domain == null ? "" : domain.trim();
   }
 
-  public void setAuthCookies(HttpServletResponse response, AuthResponse authResponse) {
-    addCookie(response, buildCookie("accessToken", authResponse.getAccessToken(), ACCESS_TOKEN_MAX_AGE));
-    addCookie(response, buildCookie("refreshToken", authResponse.getRefreshToken(), REFRESH_TOKEN_MAX_AGE));
+  public void setAuthCookies (HttpServletResponse response, AuthResponse authResponse) {
+    addCookie(response,
+        buildCookie("accessToken", authResponse.getAccessToken(), ACCESS_TOKEN_MAX_AGE));
+    addCookie(response,
+        buildCookie("refreshToken", authResponse.getRefreshToken(), REFRESH_TOKEN_MAX_AGE));
   }
 
-  public void clearAuthCookies(HttpServletResponse response) {
+  public void clearAuthCookies (HttpServletResponse response) {
     addCookie(response, buildCookie("accessToken", "", Duration.ZERO));
     addCookie(response, buildCookie("refreshToken", "", Duration.ZERO));
   }
 
-  public static void addCookie(HttpServletResponse response, ResponseCookie cookie) {
+  public static void addCookie (HttpServletResponse response, ResponseCookie cookie) {
     response.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());
   }
 
-  public static String getCookieValue(HttpServletRequest request, String name) {
+  public static String getCookieValue (HttpServletRequest request, String name) {
     if (request.getCookies() == null) {
       return null;
     }
@@ -59,28 +60,25 @@ public class CookieUtil {
     return null;
   }
 
-  public ResponseCookie buildCookie(String name, String value, Duration maxAge) {
-    ResponseCookie.ResponseCookieBuilder builder = ResponseCookie.from(name, value == null ? "" : value)
-        .httpOnly(true)
-        .secure(secure)
-        .sameSite(sameSite)
-        .path("/")
-        .maxAge(maxAge);
+  public ResponseCookie buildCookie (String name, String value, Duration maxAge) {
+    ResponseCookie.ResponseCookieBuilder builder = ResponseCookie
+        .from(name, value == null ? "" : value).httpOnly(false).secure(secure).sameSite(sameSite)
+        .path("/").maxAge(maxAge);
     if (!domain.isEmpty()) {
       builder.domain(domain);
     }
     return builder.build();
   }
 
-  public boolean isSecure() {
+  public boolean isSecure () {
     return secure;
   }
 
-  public String getSameSite() {
+  public String getSameSite () {
     return sameSite;
   }
 
-  public String getDomain() {
+  public String getDomain () {
     return domain;
   }
 }

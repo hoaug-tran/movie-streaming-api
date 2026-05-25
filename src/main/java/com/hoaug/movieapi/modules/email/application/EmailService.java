@@ -1,30 +1,36 @@
 package com.hoaug.movieapi.modules.email.application;
 
-import java.io.UnsupportedEncodingException;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.mail.javamail.JavaMailSender;
-import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 
 import com.hoaug.movieapi.modules.email.domain.EmailRequest;
 import com.hoaug.movieapi.modules.email.domain.EmailType;
 import com.hoaug.movieapi.modules.email.infrastructure.EmailTemplateProvider;
 
-import jakarta.mail.MessagingException;
-import jakarta.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import okhttp3.MediaType;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
+import okhttp3.Response;
+import tools.jackson.databind.ObjectMapper;
 
 @Slf4j
 @Service
 @RequiredArgsConstructor
 public class EmailService {
 
-  private final JavaMailSender mailSender;
+  private static final MediaType JSON = MediaType.get("application/json; charset=utf-8");
+
   private final EmailTemplateProvider emailTemplateProvider;
+  private final ObjectMapper objectMapper;
+
+  private final OkHttpClient httpClient = new OkHttpClient();
 
   @Value("${mail.from.email:noreply@giophim.libsys.me}")
   private String fromEmail;
@@ -32,21 +38,43 @@ public class EmailService {
   @Value("${mail.from.name:Gio Phim}")
   private String fromName;
 
-  private void sendHtmlEmail (String to, String subject, String htmlContent)
-      throws MessagingException, UnsupportedEncodingException {
-    MimeMessage message = mailSender.createMimeMessage();
-    MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
+  @Value("${mailtrap.api-token:}")
+  private String mailtrapApiToken;
 
-    helper.setFrom(fromEmail, fromName);
-    helper.setTo(to);
-    helper.setSubject(subject);
-    helper.setText(htmlContent, true);
+  @Value("${mailtrap.api-url:https://send.api.mailtrap.io/api/send}")
+  private String mailtrapApiUrl;
 
-    mailSender.send(message);
+  private void sendHtmlEmail (String to, String subject, String htmlContent) throws IOException {
+    if (mailtrapApiToken == null || mailtrapApiToken.isBlank()) {
+      throw new IOException("MAILTRAP_API_TOKEN is not configured");
+    }
+
+    Map<String, Object> payload = Map.of(
+        "from", Map.of("email", fromEmail, "name", fromName),
+        "to", java.util.List.of(Map.of("email", to)),
+        "subject", subject,
+        "html", htmlContent,
+        "category", "Gio Phim Transactional"
+    );
+
+    Request request = new Request.Builder()
+        .url(mailtrapApiUrl)
+        .header("Authorization", "Bearer " + mailtrapApiToken)
+        .header("Content-Type", "application/json")
+        .post(RequestBody.create(objectMapper.writeValueAsString(payload), JSON))
+        .build();
+
+    try (Response response = httpClient.newCall(request).execute()) {
+      if (!response.isSuccessful()) {
+        String body = response.body() != null ? response.body().string() : "";
+        log.error("Mailtrap API returned {} - body: {}", response.code(), body);
+        throw new IOException("Mailtrap API returned status " + response.code());
+      }
+    }
   }
 
   public boolean sendForgotPasswordEmail (String to, String resetLink, String fullName)
-      throws MessagingException, UnsupportedEncodingException {
+      throws IOException {
     Map<String, String> variables = new HashMap<>();
     variables.put("fullName", fullName);
     variables.put("resetLink", resetLink);
@@ -57,7 +85,7 @@ public class EmailService {
   }
 
   public boolean sendResetPasswordSuccessEmail (String to, String fullName)
-      throws MessagingException, UnsupportedEncodingException {
+      throws IOException {
     Map<String, String> variables = new HashMap<>();
     variables.put("fullName", fullName);
 
@@ -67,7 +95,7 @@ public class EmailService {
   }
 
   public boolean sendSignupSuccessEmail (String to, String fullName, String verificationLink)
-      throws MessagingException, UnsupportedEncodingException {
+      throws IOException {
     Map<String, String> variables = new HashMap<>();
     variables.put("fullName", fullName);
     variables.put("verificationLink", verificationLink);
@@ -78,7 +106,7 @@ public class EmailService {
   }
 
   public boolean sendEmailVerificationEmail (String to, String fullName, String verificationLink)
-      throws MessagingException, UnsupportedEncodingException {
+      throws IOException {
     Map<String, String> variables = new HashMap<>();
     variables.put("fullName", fullName);
     variables.put("verificationLink", verificationLink);
@@ -89,7 +117,7 @@ public class EmailService {
   }
 
   public boolean sendAccountNotificationEmail (String to, String fullName,
-      String notificationMessage) throws MessagingException, UnsupportedEncodingException {
+      String notificationMessage) throws IOException {
     Map<String, String> variables = new HashMap<>();
     variables.put("fullName", fullName);
     variables.put("notificationMessage", notificationMessage);
@@ -102,7 +130,7 @@ public class EmailService {
 
   public boolean sendNewMovieReleaseEmail (String to, String fullName, String movieTitle,
       String moviePosterUrl, String movieLink)
-      throws MessagingException, UnsupportedEncodingException {
+      throws IOException {
     Map<String, String> variables = new HashMap<>();
     variables.put("fullName", fullName);
     variables.put("movieTitle", movieTitle);
@@ -116,7 +144,7 @@ public class EmailService {
 
   public boolean sendOtpVerificationEmail (String to, String fullName, String otp,
       String purposeLabel, long ttlMinutes)
-      throws MessagingException, UnsupportedEncodingException {
+      throws IOException {
     Map<String, String> variables = new HashMap<>();
     variables.put("fullName", fullName);
     variables.put("otp", otp);
@@ -129,7 +157,7 @@ public class EmailService {
   }
 
   public boolean sendCustomEmail (EmailRequest emailRequest)
-      throws MessagingException, UnsupportedEncodingException {
+      throws IOException {
     String htmlContent = emailTemplateProvider.getTemplate(emailRequest.getEmailType(),
         emailRequest.getTemplateVariables());
     sendHtmlEmail(emailRequest.getTo(), emailRequest.getSubject(), htmlContent);

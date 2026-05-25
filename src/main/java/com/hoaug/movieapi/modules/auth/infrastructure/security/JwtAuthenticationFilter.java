@@ -56,6 +56,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     }
 
     if (!StringUtils.hasText(token)) {
+      if (request.getRequestURI().contains("/stream/keys/")) {
+        logger.warn("No JWT token found in request for URI: {}", request.getRequestURI());
+      }
       filterChain.doFilter(request, response);
       return;
     }

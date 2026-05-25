@@ -59,7 +59,7 @@ public class AdminReviewController {
   public ResponseEntity<List<AdminReviewResponse>> getAllReviews () {
     List<Review> reviews = reviewRepository.findAll();
 
-    // Batch fetch users and movies to avoid N+1
+    
     Set<Long> userIds = reviews.stream()
         .filter(r -> r.getUserId() != null)
         .map(Review::getUserId)

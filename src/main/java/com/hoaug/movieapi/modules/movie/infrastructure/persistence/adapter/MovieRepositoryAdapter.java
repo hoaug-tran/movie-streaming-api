@@ -43,7 +43,8 @@ public class MovieRepositoryAdapter implements MovieRepository {
 
   @Override
   public Optional<Movie> findPublishedBySlug (String slug) {
-    return jpaMovieRepository.findBySlugAndMovieStatus(slug, MovieStatus.PUBLISHED)
+    return jpaMovieRepository.findBySlug(slug)
+        .filter(m -> m.getMovieStatus() == MovieStatus.PUBLISHED || m.getMovieStatus() == MovieStatus.UPCOMING)
         .map(this::toDomain);
   }
 

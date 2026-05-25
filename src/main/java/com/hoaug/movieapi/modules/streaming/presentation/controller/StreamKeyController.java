@@ -37,7 +37,13 @@ public class StreamKeyController {
 
   @GetMapping("/series/episodes/{episodeId}/{quality}")
   public ResponseEntity<byte[]> getEpisodeKey (@PathVariable Long episodeId,
-      @PathVariable String quality, Authentication authentication) {
+      @PathVariable String quality, Authentication authentication,
+      jakarta.servlet.http.HttpServletRequest request) {
+
+    org.slf4j.LoggerFactory.getLogger(StreamKeyController.class).warn("StreamKeyRequest: URI={}, Auth={}, Cookies={}", 
+        request.getRequestURI(), authentication != null ? authentication.getName() : "null", 
+        request.getCookies() != null ? java.util.Arrays.toString(request.getCookies()) : "null");
+
     String normalizedQuality = normalizeQuality(quality);
 
     if ("720p".equals(normalizedQuality)) {
@@ -52,7 +58,16 @@ public class StreamKeyController {
     User user = authUserRepository.findByUsername(authentication.getName())
         .orElseThrow( () -> new AppException(ErrorCode.USER_NOT_FOUND));
 
-    if (!subscriptionAccessService.canAccessQuality(user.getId(), normalizedQuality)) {
+    boolean isAdminOrMod = authentication.getAuthorities().stream()
+        .anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN") || a.getAuthority().equals("ROLE_MODERATOR"));
+
+    boolean canAccess = subscriptionAccessService.canAccessQuality(user.getId(), normalizedQuality);
+
+    if (!isAdminOrMod && !canAccess) {
+      org.slf4j.LoggerFactory.getLogger(StreamKeyController.class)
+          .warn("StreamKey access denied: userId={}, role={}, authorities={}, isAdminOrMod={}, quality={}, canAccess={}, planCode={}",
+              user.getId(), user.getRole(), authentication.getAuthorities(), isAdminOrMod, normalizedQuality, canAccess,
+              subscriptionAccessService.canAccessQuality(user.getId(), "4K") ? "PREMIUM_PLUS" : "UNKNOWN");
       throw new AppException(ErrorCode.FORBIDDEN);
     }
 

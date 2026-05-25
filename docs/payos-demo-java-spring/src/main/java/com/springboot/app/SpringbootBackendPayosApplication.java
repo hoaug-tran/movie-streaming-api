@@ -46,7 +46,7 @@ public class SpringbootBackendPayosApplication implements WebMvcConfigurer {
         .allowedHeaders("*")
         .exposedHeaders("*")
         .allowCredentials(false)
-        .maxAge(3600); // Max age of the CORS pre-flight request
+        .maxAge(3600); 
   }
 
   @Bean

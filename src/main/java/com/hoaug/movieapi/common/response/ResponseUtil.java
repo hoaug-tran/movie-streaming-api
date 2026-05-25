@@ -65,8 +65,8 @@ public class ResponseUtil {
     return ResponseEntity.status(HttpStatus.CONFLICT).body(error);
   }
 
-  // Hmm, 422 Unprocessable Entity deprecated,
-  // so i use HttpStatusCode.valueOf(422)
+  
+  
   public static ResponseEntity<ApiErrorResponse> unprocessable (String message) {
     ApiErrorResponse error = ApiErrorResponse.builder().code("UNPROCESSABLE_ENTITY")
         .message(message).timestamp(System.currentTimeMillis()).build();

@@ -6,10 +6,7 @@ import java.util.List;
 import com.hoaug.movieapi.modules.movie.domain.model.EpisodeStatus;
 import com.hoaug.movieapi.modules.movie.domain.model.MovieType;
 
-/**
- * Item dùng cho trang quản trị tập phim. Embed thông tin tóm tắt phim cha để
- * giảm round-trip và đủ dữ liệu cho cột bảng.
- */
+
 public class AdminEpisodeListItemResponse {
   private Long id;
   private String title;

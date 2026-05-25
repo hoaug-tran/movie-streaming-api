@@ -42,7 +42,7 @@ public class UploadMovieSourceUseCase {
         .orElseThrow(() -> new AppException(ErrorCode.MOVIE_NOT_FOUND));
     EpisodeEntity episode = findOrCreateMovieEpisode(movie);
 
-    Path sourcePath = storageService.storeEpisodeSource(episode.getId(), file);
+    Path sourcePath = storageService.storeMovieSource(movieId, file);
     String mp4Url = streamUrlService.episodeMp4Url(episode.getId());
     episode.setVideoUrl(mp4Url);
     episode.setAvailableQualities("TRANSCODING");

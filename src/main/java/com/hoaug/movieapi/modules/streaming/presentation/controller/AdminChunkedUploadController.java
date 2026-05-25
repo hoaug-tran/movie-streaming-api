@@ -23,6 +23,7 @@ import com.hoaug.movieapi.modules.movie.infrastructure.persistence.entity.Episod
 import com.hoaug.movieapi.modules.movie.infrastructure.persistence.entity.MovieEntity;
 import com.hoaug.movieapi.modules.movie.infrastructure.persistence.repository.JpaEpisodeRepository;
 import com.hoaug.movieapi.modules.movie.infrastructure.persistence.repository.JpaMovieRepository;
+import com.hoaug.movieapi.modules.streaming.application.config.MediaStorageProperties;
 import com.hoaug.movieapi.modules.streaming.application.dto.response.MediaUploadResponse;
 import com.hoaug.movieapi.modules.streaming.application.service.AsyncTranscodeService;
 import com.hoaug.movieapi.modules.streaming.application.service.ChunkedUploadService;
@@ -40,17 +41,19 @@ public class AdminChunkedUploadController {
   private final AsyncTranscodeService asyncTranscodeService;
   private final JpaEpisodeRepository episodeRepository;
   private final JpaMovieRepository movieRepository;
+  private final MediaStorageProperties properties;
 
   public AdminChunkedUploadController(ChunkedUploadService chunkedUploadService,
       Mp4StorageService storageService, StreamUrlService streamUrlService,
       AsyncTranscodeService asyncTranscodeService, JpaEpisodeRepository episodeRepository,
-      JpaMovieRepository movieRepository) {
+      JpaMovieRepository movieRepository, MediaStorageProperties properties) {
     this.chunkedUploadService = chunkedUploadService;
     this.storageService = storageService;
     this.streamUrlService = streamUrlService;
     this.asyncTranscodeService = asyncTranscodeService;
     this.episodeRepository = episodeRepository;
     this.movieRepository = movieRepository;
+    this.properties = properties;
   }
 
   @PostMapping("/init")
@@ -110,6 +113,64 @@ public class AdminChunkedUploadController {
 
     asyncTranscodeService.transcodeEpisodeAsync(episode.getId(), saved);
     return new MediaUploadResponse(episode.getId(), mp4Url, "TRANSCODING");
+  }
+
+  @PostMapping("/{uploadId}/finalize/trailer/movie/{movieId}")
+  @ResponseStatus(HttpStatus.CREATED)
+  public MediaUploadResponse finalizeMovieTrailer (@PathVariable String uploadId,
+      @PathVariable Long movieId) {
+    MovieEntity movie = movieRepository.findById(movieId)
+        .orElseThrow( () -> new AppException(ErrorCode.MOVIE_NOT_FOUND));
+
+    String fileName = chunkedUploadService.getFileName(uploadId);
+    String ext = getFileExtension(fileName);
+    String trailerFileName = java.util.UUID.randomUUID().toString() + ext;
+    Path root = Path.of(properties.getMoviesDataDirectory(), movieId.toString()).toAbsolutePath().normalize();
+    Path destination = root.resolve(trailerFileName).normalize();
+
+    if (!destination.startsWith(root)) {
+      throw new AppException(ErrorCode.BAD_REQUEST);
+    }
+
+    chunkedUploadService.assemble(uploadId, destination);
+    String trailerUrl = streamUrlService.movieTrailerUrl(movieId, trailerFileName);
+    movie.setTrailerUrl(trailerUrl);
+    movieRepository.save(movie);
+
+    return new MediaUploadResponse(movieId, trailerUrl, "UPLOADED");
+  }
+
+  @PostMapping("/{uploadId}/finalize/trailer/episode/{episodeId}")
+  @ResponseStatus(HttpStatus.CREATED)
+  public MediaUploadResponse finalizeSeriesTrailer (@PathVariable String uploadId,
+      @PathVariable Long episodeId) {
+    EpisodeEntity episode = episodeRepository.findById(episodeId)
+        .orElseThrow( () -> new AppException(ErrorCode.EPISODE_NOT_FOUND));
+    MovieEntity movie = movieRepository.findById(episode.getMovieId())
+        .orElseThrow( () -> new AppException(ErrorCode.MOVIE_NOT_FOUND));
+
+    String fileName = chunkedUploadService.getFileName(uploadId);
+    String ext = getFileExtension(fileName);
+    String trailerFileName = java.util.UUID.randomUUID().toString() + ext;
+    Path root = Path.of(properties.getSeriesDataDirectory(), "episodes", episodeId.toString()).toAbsolutePath().normalize();
+    Path destination = root.resolve(trailerFileName).normalize();
+
+    if (!destination.startsWith(root)) {
+      throw new AppException(ErrorCode.BAD_REQUEST);
+    }
+
+    chunkedUploadService.assemble(uploadId, destination);
+    String trailerUrl = streamUrlService.seriesTrailerUrl(episodeId, trailerFileName);
+    movie.setTrailerUrl(trailerUrl);
+    movieRepository.save(movie);
+
+    return new MediaUploadResponse(movie.getId(), trailerUrl, "UPLOADED");
+  }
+
+  private String getFileExtension(String fileName) {
+    int dot = fileName.lastIndexOf('.');
+    if (dot < 0) return ".mp4";
+    return fileName.substring(dot).toLowerCase(java.util.Locale.ROOT);
   }
 
   private EpisodeEntity findOrCreateMovieEpisode (MovieEntity movie) {

@@ -2,8 +2,10 @@ package com.hoaug.movieapi.modules.user.infrastructure.persistence.adapter;
 
 import java.util.List;
 import java.util.Optional;
+import java.time.LocalDateTime;
 
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.hoaug.movieapi.modules.user.domain.model.User;
 import com.hoaug.movieapi.modules.user.domain.repository.UserRepository;
@@ -93,4 +95,14 @@ public class UserRepositoryAdapter implements UserRepository {
   public void deleteById (Long id) {
     jpaUserRepository.deleteById(id);
   }
+
+  @Override
+  @Transactional
+  public void updatePremiumExpiryDate (Long userId, LocalDateTime expiryDate) {
+    jpaUserRepository.updatePremiumExpiryDate(userId, expiryDate);
+  }
 }
+
+
+
+

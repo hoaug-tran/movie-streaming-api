@@ -28,4 +28,6 @@ public interface UserSubscriptionRepository {
 
   List<UserSubscription> findByStatusAndCreatedAtBefore (SubscriptionStatus status,
       LocalDateTime dateTime);
+
+  List<UserSubscription> findByUserIdAndStatus (Long userId, SubscriptionStatus status);
 }

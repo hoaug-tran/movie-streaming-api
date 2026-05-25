@@ -7,10 +7,7 @@ import jakarta.validation.constraints.NotNull;
 
 public class UpdateEpisodeRequest {
 
-  /**
-   * Optional movie id to reassign this episode to a different parent movie.
-   * If null or unchanged, the episode stays under the current movie.
-   */
+  
   private Long movieId;
 
   @NotBlank

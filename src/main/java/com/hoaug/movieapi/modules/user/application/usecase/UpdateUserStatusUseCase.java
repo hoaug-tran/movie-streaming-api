@@ -1,6 +1,6 @@
 package com.hoaug.movieapi.modules.user.application.usecase;
 
-import java.io.UnsupportedEncodingException;
+import java.io.IOException;
 
 import org.springframework.stereotype.Component;
 
@@ -13,7 +13,7 @@ import com.hoaug.movieapi.modules.user.application.mapper.UserMapper;
 import com.hoaug.movieapi.modules.user.domain.model.User;
 import com.hoaug.movieapi.modules.user.domain.repository.UserRepository;
 
-import jakarta.mail.MessagingException;
+
 
 @Component
 public class UpdateUserStatusUseCase {
@@ -41,7 +41,7 @@ public class UpdateUserStatusUseCase {
           + request.getAccountStatus();
       emailService.sendAccountNotificationEmail(savedUser.getEmail(), savedUser.getFullName(),
           notification);
-    } catch (MessagingException | UnsupportedEncodingException e) {
+    } catch (IOException e) {
       org.slf4j.LoggerFactory.getLogger(this.getClass())
           .warn("Failed to send account status change notification", e);
     }

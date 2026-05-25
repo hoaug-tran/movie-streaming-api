@@ -129,7 +129,7 @@ public class OAuthCredentialRepositoryAdapter implements OAuthCredentialReposito
     entity.setId(credential.getId());
     entity.setUserId(credential.getUserId());
 
-    // Look up the provider - if not found, throw a clear error
+    
     if (credential.getProvider() != null) {
       OAuthProviderEntity provider = jpaOAuthProviderRepository.findByName(credential.getProvider())
           .orElseThrow( () -> new AppException(ErrorCode.VALIDATION_ERROR));

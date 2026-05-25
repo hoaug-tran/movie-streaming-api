@@ -1,6 +1,6 @@
 package com.hoaug.movieapi.modules.auth.application.usecase;
 
-import java.io.UnsupportedEncodingException;
+import java.io.IOException;
 import java.time.LocalDateTime;
 
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -17,7 +17,7 @@ import com.hoaug.movieapi.modules.auth.domain.repository.RefreshTokenRepository;
 import com.hoaug.movieapi.modules.email.application.EmailService;
 import com.hoaug.movieapi.modules.user.domain.model.User;
 
-import jakarta.mail.MessagingException;
+
 
 @Component
 public class ResetPasswordUseCase {
@@ -55,7 +55,7 @@ public class ResetPasswordUseCase {
 
     try {
       emailService.sendResetPasswordSuccessEmail(user.getEmail(), user.getFullName());
-    } catch (MessagingException | UnsupportedEncodingException e) {
+    } catch (IOException e) {
       org.slf4j.LoggerFactory.getLogger(getClass()).warn("Reset success email failed", e);
     }
   }

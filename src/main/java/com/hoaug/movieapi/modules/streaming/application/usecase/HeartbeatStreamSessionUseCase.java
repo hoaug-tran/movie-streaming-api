@@ -26,7 +26,7 @@ public class HeartbeatStreamSessionUseCase {
     DeviceSessionEntity session = deviceSessionRepository.findById(sessionId)
         .orElseThrow(() -> new AppException(ErrorCode.FORBIDDEN));
 
-    // Allow guest sessions (userId = null) or authenticated user owning session
+    
     boolean isGuestSession = session.getUserId() == null;
     boolean isUserOwner = userId != null && session.getUserId().equals(userId);
     

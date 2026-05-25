@@ -25,6 +25,8 @@ import com.hoaug.movieapi.modules.streaming.application.usecase.UploadAdvertisem
 import com.hoaug.movieapi.modules.streaming.application.usecase.UploadEpisodeSourceUseCase;
 import com.hoaug.movieapi.modules.streaming.application.usecase.UploadImageUseCase;
 import com.hoaug.movieapi.modules.streaming.application.usecase.UploadMovieSourceUseCase;
+import com.hoaug.movieapi.modules.streaming.application.usecase.UploadMovieTrailerUseCase;
+import com.hoaug.movieapi.modules.streaming.application.usecase.UploadSeriesTrailerUseCase;
 import com.hoaug.movieapi.modules.streaming.application.usecase.UploadVideoUseCase;
 
 @RestController
@@ -35,6 +37,8 @@ public class AdminMediaController {
   private final UploadEpisodeSourceUseCase uploadEpisodeSourceUseCase;
   private final UploadAdvertisementSourceUseCase uploadAdvertisementSourceUseCase;
   private final UploadMovieSourceUseCase uploadMovieSourceUseCase;
+  private final UploadMovieTrailerUseCase uploadMovieTrailerUseCase;
+  private final UploadSeriesTrailerUseCase uploadSeriesTrailerUseCase;
   private final UploadImageUseCase uploadImageUseCase;
   private final UploadVideoUseCase uploadVideoUseCase;
   private final RetranscodeEpisodeUseCase retranscodeEpisodeUseCase;
@@ -44,6 +48,8 @@ public class AdminMediaController {
   public AdminMediaController (UploadEpisodeSourceUseCase uploadEpisodeSourceUseCase,
       UploadAdvertisementSourceUseCase uploadAdvertisementSourceUseCase,
       UploadMovieSourceUseCase uploadMovieSourceUseCase,
+      UploadMovieTrailerUseCase uploadMovieTrailerUseCase,
+      UploadSeriesTrailerUseCase uploadSeriesTrailerUseCase,
       UploadImageUseCase uploadImageUseCase,
       UploadVideoUseCase uploadVideoUseCase,
       RetranscodeEpisodeUseCase retranscodeEpisodeUseCase,
@@ -52,6 +58,8 @@ public class AdminMediaController {
     this.uploadEpisodeSourceUseCase = uploadEpisodeSourceUseCase;
     this.uploadAdvertisementSourceUseCase = uploadAdvertisementSourceUseCase;
     this.uploadMovieSourceUseCase = uploadMovieSourceUseCase;
+    this.uploadMovieTrailerUseCase = uploadMovieTrailerUseCase;
+    this.uploadSeriesTrailerUseCase = uploadSeriesTrailerUseCase;
     this.uploadImageUseCase = uploadImageUseCase;
     this.uploadVideoUseCase = uploadVideoUseCase;
     this.retranscodeEpisodeUseCase = retranscodeEpisodeUseCase;
@@ -72,6 +80,13 @@ public class AdminMediaController {
     return retranscodeEpisodeUseCase.execute(episodeId);
   }
 
+  @PostMapping("/episodes/{episodeId}/trailer")
+  @ResponseStatus(HttpStatus.CREATED)
+  public MediaUploadResponse uploadSeriesTrailer (@PathVariable Long episodeId,
+      @RequestPart("file") MultipartFile file) {
+    return uploadSeriesTrailerUseCase.execute(episodeId, file);
+  }
+
   @PostMapping("/movies/{movieId}/source")
   @ResponseStatus(HttpStatus.ACCEPTED)
   public MediaUploadResponse uploadMovieSource (@PathVariable Long movieId,
@@ -79,7 +94,20 @@ public class AdminMediaController {
     return uploadMovieSourceUseCase.execute(movieId, file);
   }
 
-  @PostMapping("/movies/{movieId}/retranscode")
+  @PostMapping("/movies/{movieId}/trailer")
+  @ResponseStatus(HttpStatus.CREATED)
+  public MediaUploadResponse uploadMovieTrailer (@PathVariable Long movieId,
+      @RequestPart("file") MultipartFile file) {
+    return uploadMovieTrailerUseCase.execute(movieId, file);
+  }
+   @PostMapping("/movies/trailer")
+   @ResponseStatus(HttpStatus.CREATED)
+   public MediaUploadResponse uploadMovieTrailerTemp (
+       @RequestPart("file") MultipartFile file) {
+     return uploadMovieTrailerUseCase.executeTemp(file);
+   }
+
+   @PostMapping("/movies/{movieId}/retranscode")
   @ResponseStatus(HttpStatus.ACCEPTED)
   public List<MediaUploadResponse> retranscodeMovie (@PathVariable Long movieId) {
     return retranscodeMovieUseCase.execute(movieId);
@@ -153,3 +181,7 @@ public class AdminMediaController {
     return uploadVideoUseCase.execute(file);
   }
 }
+
+
+
+

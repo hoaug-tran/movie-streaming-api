@@ -55,4 +55,6 @@ public interface JpaUserSubscriptionRepository extends JpaRepository<UserSubscri
       ORDER BY revenue DESC, subscriptions DESC, sp.id DESC
       """, nativeQuery = true)
   List<PlanRevenueProjection> findTopPlanRevenue(org.springframework.data.domain.Pageable pageable);
+
+  List<UserSubscriptionEntity> findByUserIdAndStatus (Long userId, SubscriptionStatus status);
 }

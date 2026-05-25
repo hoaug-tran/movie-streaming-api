@@ -26,9 +26,13 @@ public class GetEpisodeHlsKeyUseCase {
     episodeRepository.findById(episodeId)
         .orElseThrow(() -> new AppException(ErrorCode.EPISODE_NOT_FOUND));
     try {
-      return Files.readAllBytes(hlsPathService.episodeKeyPath(episodeId, quality));
+      java.nio.file.Path path = hlsPathService.episodeKeyPath(episodeId, quality);
+      return Files.readAllBytes(path);
     } catch (IOException exception) {
-      throw new AppException(ErrorCode.FORBIDDEN);
+      java.nio.file.Path path = hlsPathService.episodeKeyPath(episodeId, quality);
+      org.slf4j.LoggerFactory.getLogger(GetEpisodeHlsKeyUseCase.class)
+          .error("Failed to read HLS key for episode {} quality {}. Path: {}. Error: {}", episodeId, quality, path, exception.getMessage());
+      throw new AppException(ErrorCode.EPISODE_NOT_FOUND);
     }
   }
 }

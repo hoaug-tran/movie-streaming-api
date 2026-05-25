@@ -71,6 +71,12 @@ public class UserSubscriptionRepositoryAdapter implements UserSubscriptionReposi
         .map(this::toDomain).toList();
   }
 
+  @Override
+  public List<UserSubscription> findByUserIdAndStatus (Long userId, SubscriptionStatus status) {
+    return jpaUserSubscriptionRepository.findByUserIdAndStatus(userId, status).stream()
+        .map(this::toDomain).toList();
+  }
+
   private UserSubscription toDomain (UserSubscriptionEntity entity) {
     UserSubscription subscription = new UserSubscription();
     subscription.setId(entity.getId());

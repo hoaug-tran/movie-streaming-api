@@ -32,7 +32,7 @@ public class AsyncTranscodeService {
   private final MediaStorageProperties storageProperties;
   private final TranscodeProgressTracker progressTracker;
 
-  public AsyncTranscodeService (HlsTranscodeService hlsTranscodeService,
+  public AsyncTranscodeService(HlsTranscodeService hlsTranscodeService,
       HlsPathService hlsPathService, StreamUrlService streamUrlService,
       JpaEpisodeRepository episodeRepository, MediaStorageProperties storageProperties,
       TranscodeProgressTracker progressTracker) {
@@ -44,7 +44,7 @@ public class AsyncTranscodeService {
     this.progressTracker = progressTracker;
   }
 
-  public void markQueued(Long episodeId) {
+  public void markQueued (Long episodeId) {
     progressTracker.start(episodeId, QUALITIES);
   }
 
@@ -55,8 +55,6 @@ public class AsyncTranscodeService {
     StringBuilder completedQualities = new StringBuilder();
     boolean videoUrlSet = false;
 
-    // Bump the version on every run so segment filenames change and bypass any HTTP cache
-    // (Cloudflare, nginx proxy_cache, browser disk cache).
     String version = "v" + Long.toString(System.currentTimeMillis(), 36)
         + Integer.toString(ThreadLocalRandom.current().nextInt(0x10000), 36);
 
@@ -88,7 +86,8 @@ public class AsyncTranscodeService {
           }
           episodeRepository.save(ep);
         });
-        if (isFirstReady) videoUrlSet = true;
+        if (isFirstReady)
+          videoUrlSet = true;
 
         progressTracker.completed(episodeId, quality);
         log.info("[Transcode] Episode {} → {} DONE", episodeId, quality);
@@ -119,9 +118,11 @@ public class AsyncTranscodeService {
       if (ep.getThumbnailUrl() == null || ep.getThumbnailUrl().isBlank()) {
         try {
           String thumbUrl = extractThumbnail(sourcePath, episodeId);
-          if (thumbUrl != null) ep.setThumbnailUrl(thumbUrl);
+          if (thumbUrl != null)
+            ep.setThumbnailUrl(thumbUrl);
         } catch (Exception ex) {
-          log.warn("[Transcode] Episode {} thumbnail extraction failed: {}", episodeId, ex.getMessage());
+          log.warn("[Transcode] Episode {} thumbnail extraction failed: {}", episodeId,
+              ex.getMessage());
         }
       }
       episodeRepository.save(ep);
@@ -131,32 +132,31 @@ public class AsyncTranscodeService {
     progressTracker.finish(episodeId);
   }
 
-  private String extractThumbnail (Path sourcePath, Long episodeId) throws IOException, InterruptedException {
-    Path ffmpegBin = Path.of(storageProperties.getFfmpegPath()).toAbsolutePath().normalize().getParent();
+  private String extractThumbnail (Path sourcePath, Long episodeId)
+      throws IOException, InterruptedException {
+    Path ffmpegBin = Path.of(storageProperties.getFfmpegPath()).toAbsolutePath().normalize()
+        .getParent();
     Path ffmpegPath = ffmpegBin != null ? ffmpegBin.resolve("ffmpeg.exe") : Path.of("ffmpeg");
-    if (!Files.isRegularFile(ffmpegPath)) ffmpegPath = Path.of("ffmpeg");
+    if (!Files.isRegularFile(ffmpegPath))
+      ffmpegPath = Path.of("ffmpeg");
 
-    String filename = "ep-" + episodeId + "-" + UUID.randomUUID().toString().substring(0, 8) + ".jpg";
+    String filename = "ep-" + episodeId + "-" + UUID.randomUUID().toString().substring(0, 8)
+        + ".jpg";
     Path imagesDir = Path.of(storageProperties.getImagesDirectory()).toAbsolutePath().normalize();
     Files.createDirectories(imagesDir);
     Path outputPath = imagesDir.resolve(filename);
 
-    List<String> cmd = List.of(
-        ffmpegPath.toString(), "-y",
-        "-ss", "5",
-        "-i", sourcePath.toAbsolutePath().normalize().toString(),
-        "-frames:v", "1",
-        "-q:v", "3",
-        "-vf", "scale=1280:-2",
-        outputPath.toString()
-    );
+    List<String> cmd = List.of(ffmpegPath.toString(), "-y", "-ss", "5", "-i",
+        sourcePath.toAbsolutePath().normalize().toString(), "-frames:v", "1", "-q:v", "3", "-vf",
+        "scale=1280:-2", outputPath.toString());
 
     log.info("[Thumbnail] Extracting thumbnail for episode {} → {}", episodeId, filename);
     Process process = new ProcessBuilder(cmd).redirectErrorStream(true).start();
     byte[] out = process.getInputStream().readAllBytes();
     int exit = process.waitFor();
     if (exit != 0) {
-      log.warn("[Thumbnail] ffmpeg exit={} output={}", exit, new String(out, StandardCharsets.UTF_8));
+      log.warn("[Thumbnail] ffmpeg exit={} output={}", exit,
+          new String(out, StandardCharsets.UTF_8));
       return null;
     }
     String url = streamUrlService.imageUrl(filename);

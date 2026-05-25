@@ -1,6 +1,6 @@
 package com.hoaug.movieapi.modules.user.application.usecase;
 
-import java.io.UnsupportedEncodingException;
+import java.io.IOException;
 
 import org.springframework.stereotype.Component;
 
@@ -10,7 +10,7 @@ import com.hoaug.movieapi.modules.email.application.EmailService;
 import com.hoaug.movieapi.modules.user.domain.model.User;
 import com.hoaug.movieapi.modules.user.domain.repository.UserRepository;
 
-import jakarta.mail.MessagingException;
+
 
 @Component
 public class DeleteUserUseCase {
@@ -30,7 +30,7 @@ public class DeleteUserUseCase {
     try {
       emailService.sendAccountNotificationEmail(user.getEmail(), user.getFullName(),
           "Tài khoản của bạn đã được xóa. Nếu bạn muốn khôi phục, vui lòng liên hệ với chúng tôi trong vòng 30 ngày.");
-    } catch (MessagingException | UnsupportedEncodingException e) {
+    } catch (IOException e) {
       org.slf4j.LoggerFactory.getLogger(this.getClass())
           .warn("Failed to send account deletion notification", e);
     }

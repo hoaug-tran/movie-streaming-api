@@ -30,9 +30,11 @@ import com.hoaug.movieapi.modules.subscription.application.dto.response.InvoiceR
 import com.hoaug.movieapi.modules.subscription.application.dto.response.PaymentTransactionResponse;
 import com.hoaug.movieapi.modules.subscription.application.dto.response.SubscriptionPlanResponse;
 import com.hoaug.movieapi.modules.subscription.application.dto.response.UserSubscriptionResponse;
+import com.hoaug.movieapi.modules.subscription.application.usecase.CancelUserSubscriptionUseCase;
 import com.hoaug.movieapi.modules.subscription.application.usecase.CreateInvoiceUseCase;
 import com.hoaug.movieapi.modules.subscription.application.usecase.CreatePaymentTransactionUseCase;
 import com.hoaug.movieapi.modules.subscription.application.usecase.CreateSubscriptionPlanUseCase;
+import com.hoaug.movieapi.modules.subscription.application.usecase.DeleteSubscriptionPlanUseCase;
 import com.hoaug.movieapi.modules.subscription.application.usecase.GetActiveSubscriptionPlansUseCase;
 import com.hoaug.movieapi.modules.subscription.application.usecase.GetAllSubscriptionPlansUseCase;
 import com.hoaug.movieapi.modules.subscription.application.usecase.GetMyCurrentSubscriptionUseCase;
@@ -43,7 +45,6 @@ import com.hoaug.movieapi.modules.subscription.application.usecase.MarkPaymentSu
 import com.hoaug.movieapi.modules.subscription.application.usecase.SubscribePlanUseCase;
 import com.hoaug.movieapi.modules.subscription.application.usecase.UpdateMyAutoRenewUseCase;
 import com.hoaug.movieapi.modules.subscription.application.usecase.UpdateSubscriptionPlanUseCase;
-import com.hoaug.movieapi.modules.subscription.application.usecase.DeleteSubscriptionPlanUseCase;
 import com.hoaug.movieapi.modules.user.domain.model.User;
 
 import jakarta.validation.Valid;
@@ -60,6 +61,7 @@ public class SubscriptionController {
   private final SubscribePlanUseCase subscribePlanUseCase;
   private final GetMySubscriptionsUseCase getMySubscriptionsUseCase;
   private final GetMyCurrentSubscriptionUseCase getMyCurrentSubscriptionUseCase;
+  private final CancelUserSubscriptionUseCase cancelUserSubscriptionUseCase;
   private final UpdateMyAutoRenewUseCase updateMyAutoRenewUseCase;
   private final CreatePaymentTransactionUseCase createPaymentTransactionUseCase;
   private final MarkPaymentSuccessUseCase markPaymentSuccessUseCase;
@@ -76,6 +78,7 @@ public class SubscriptionController {
       SubscribePlanUseCase subscribePlanUseCase,
       GetMySubscriptionsUseCase getMySubscriptionsUseCase,
       GetMyCurrentSubscriptionUseCase getMyCurrentSubscriptionUseCase,
+      CancelUserSubscriptionUseCase cancelUserSubscriptionUseCase,
       UpdateMyAutoRenewUseCase updateMyAutoRenewUseCase,
       CreatePaymentTransactionUseCase createPaymentTransactionUseCase,
       MarkPaymentSuccessUseCase markPaymentSuccessUseCase,
@@ -90,6 +93,7 @@ public class SubscriptionController {
     this.subscribePlanUseCase = subscribePlanUseCase;
     this.getMySubscriptionsUseCase = getMySubscriptionsUseCase;
     this.getMyCurrentSubscriptionUseCase = getMyCurrentSubscriptionUseCase;
+    this.cancelUserSubscriptionUseCase = cancelUserSubscriptionUseCase;
     this.updateMyAutoRenewUseCase = updateMyAutoRenewUseCase;
     this.createPaymentTransactionUseCase = createPaymentTransactionUseCase;
     this.markPaymentSuccessUseCase = markPaymentSuccessUseCase;
@@ -133,10 +137,16 @@ public class SubscriptionController {
 
   @PreAuthorize("hasRole('ADMIN')")
   @PostMapping("/admin/assign/{userId}")
-  public ResponseEntity<UserSubscriptionResponse> adminAssignSubscription(
-      @PathVariable Long userId,
-      @Valid @RequestBody SubscribePlanRequest request) {
+  public ResponseEntity<UserSubscriptionResponse> adminAssignSubscription (
+      @PathVariable Long userId, @Valid @RequestBody SubscribePlanRequest request) {
     return ResponseEntity.ok(subscribePlanUseCase.executeForUser(userId, request));
+  }
+
+  @PreAuthorize("hasRole('ADMIN')")
+  @PatchMapping("/admin/cancel/{userId}")
+  public ResponseEntity<Void> adminCancelSubscription (@PathVariable Long userId) {
+    cancelUserSubscriptionUseCase.execute(userId);
+    return ResponseEntity.noContent().build();
   }
 
   @PostMapping("/subscribe")
@@ -149,7 +159,8 @@ public class SubscriptionController {
   @GetMapping("/me")
   public ResponseEntity<List<UserSubscriptionResponse>> getMySubscriptions (
       Authentication authentication) {
-    return ResponseUtil.ok(getMySubscriptionsUseCase.execute(getCurrentUserId(authentication)).getItems());
+    return ResponseUtil
+        .ok(getMySubscriptionsUseCase.execute(getCurrentUserId(authentication)).getItems());
   }
 
   @GetMapping("/me/current")
@@ -162,7 +173,8 @@ public class SubscriptionController {
   @GetMapping("/me/history")
   public ResponseEntity<List<UserSubscriptionResponse>> getMySubscriptionHistory (
       Authentication authentication) {
-    return ResponseUtil.ok(getMySubscriptionsUseCase.execute(getCurrentUserId(authentication)).getItems());
+    return ResponseUtil
+        .ok(getMySubscriptionsUseCase.execute(getCurrentUserId(authentication)).getItems());
   }
 
   @PatchMapping("/me/current/auto-renew")

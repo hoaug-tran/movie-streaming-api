@@ -32,7 +32,7 @@ public class Mp4StorageService {
       "video/3gpp", "video/3gpp2",
       "video/ogg",
       "video/x-ms-asf",
-      "application/octet-stream" // some browsers send this for mkv/avi
+      "application/octet-stream" 
   );
 
   private static final Set<String> ALLOWED_EXTENSIONS = Set.of(

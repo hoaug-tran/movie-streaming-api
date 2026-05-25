@@ -2,6 +2,7 @@ package com.hoaug.movieapi.modules.user.domain.repository;
 
 import java.util.List;
 import java.util.Optional;
+import java.time.LocalDateTime;
 
 import com.hoaug.movieapi.modules.user.domain.model.User;
 
@@ -21,4 +22,7 @@ public interface UserRepository {
   User save (User user);
 
   void deleteById (Long id);
+
+  void updatePremiumExpiryDate (Long userId, LocalDateTime expiryDate);
 }
+

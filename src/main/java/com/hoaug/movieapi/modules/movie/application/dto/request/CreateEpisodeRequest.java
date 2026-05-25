@@ -13,7 +13,7 @@ public class CreateEpisodeRequest {
   @NotNull
   private Integer episodeNumber;
 
-  // Optional - set by upload flow; defaults to "pending" if omitted
+  
   private String videoUrl;
 
   private String thumbnailUrl;

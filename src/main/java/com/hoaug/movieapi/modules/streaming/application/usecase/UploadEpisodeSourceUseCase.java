@@ -35,16 +35,16 @@ public class UploadEpisodeSourceUseCase {
     EpisodeEntity episode = episodeRepository.findById(episodeId)
         .orElseThrow(() -> new AppException(ErrorCode.EPISODE_NOT_FOUND));
 
-    // 1. Store raw source file
+    
     Path sourcePath = storageService.storeEpisodeSource(episodeId, file);
 
-    // 2. Set videoUrl to raw MP4 immediately (available while transcoding)
+    
     String mp4Url = streamUrlService.episodeMp4Url(episodeId);
     episode.setVideoUrl(mp4Url);
     episode.setAvailableQualities("TRANSCODING");
     episodeRepository.save(episode);
 
-    // 3. Kick off async HLS transcode (720p, 1080p, 4K)
+    
     asyncTranscodeService.transcodeEpisodeAsync(episodeId, sourcePath);
 
     return new MediaUploadResponse(episodeId, mp4Url, "TRANSCODING");

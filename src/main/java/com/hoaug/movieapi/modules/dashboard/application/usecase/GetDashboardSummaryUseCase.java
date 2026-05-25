@@ -2,6 +2,7 @@ package com.hoaug.movieapi.modules.dashboard.application.usecase;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -275,8 +276,7 @@ public class GetDashboardSummaryUseCase {
             series(totalMovies, publishedMovies, draftMovies, newMovies30d),
             series(totalComments, visibleComments, newComments24h, replyComments),
             series(totalReports, pendingReports, resolvedReports, newReports24h)))
-        .mainTrend(series(totalViews, totalFavorites, totalComments, totalReports, totalUsers,
-            totalMovies))
+        .mainTrend(getDailyRevenueTrend(monthStart, now))
         .rankingCards(rankingCards).build();
   }
 
@@ -478,8 +478,33 @@ public class GetDashboardSummaryUseCase {
     return 0;
   }
 
+
   private List<Integer> generatePerformanceSeries (int currentVal) {
     int safeValue = Math.max(0, Math.min(100, currentVal));
     return java.util.Collections.nCopies(12, safeValue);
   }
+
+  private List<Integer> getDailyRevenueTrend (LocalDateTime startDate, LocalDateTime endDate) {
+    List<Object[]> dailyData = paymentTransactionRepository.getDailyRevenueRange(startDate, endDate);
+    java.util.Map<java.time.LocalDate, BigDecimal> revenueByDate = new java.util.HashMap<>();
+    
+    for (Object[] row : dailyData) {
+      java.time.LocalDate date = (java.time.LocalDate) row[0];
+      BigDecimal revenue = (BigDecimal) row[1];
+      revenueByDate.put(date, revenue);
+    }
+    
+    List<Long> dailyValues = new java.util.ArrayList<>();
+    LocalDate current = startDate.toLocalDate();
+    LocalDate end = endDate.toLocalDate();
+    
+    while (!current.isAfter(end)) {
+      BigDecimal revenue = revenueByDate.getOrDefault(current, BigDecimal.ZERO);
+      dailyValues.add(revenue.longValue());
+      current = current.plusDays(1);
+    }
+    
+    return series(dailyValues.stream().mapToLong(Long::longValue).toArray());
+  }
+
 }

@@ -67,7 +67,7 @@ public class SecurityConfig {
             .permitAll()
 
             .requestMatchers("/api/v1/admin/comments/**", "/api/v1/admin/reviews/**",
-                "/api/v1/admin/reports/**")
+                "/api/v1/admin/reports/**", "/api/v1/admin/dashboard/**")
             .hasAnyRole("ADMIN", "MODERATOR").requestMatchers("/api/v1/admin/**").hasRole("ADMIN")
 
             .requestMatchers("/api/v1/users/**").authenticated()

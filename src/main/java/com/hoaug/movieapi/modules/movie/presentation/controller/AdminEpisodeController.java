@@ -10,10 +10,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.hoaug.movieapi.modules.movie.application.dto.response.AdminEpisodeListItemResponse;
 import com.hoaug.movieapi.modules.movie.application.usecase.GetAdminEpisodesUseCase;
 
-/**
- * Endpoint chuyên cho trang quản trị tập phim. Tách khỏi AdminMovieController để
- * URL `/admin/episodes` thể hiện đúng resource và tránh phình to controller phim.
- */
+
 @RestController
 @RequestMapping("${api.prefix:/api/v1}/admin/episodes")
 @PreAuthorize("hasRole('ADMIN')")

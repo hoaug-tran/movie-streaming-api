@@ -1,6 +1,6 @@
 package com.hoaug.movieapi.modules.auth.application.service;
 
-import java.io.UnsupportedEncodingException;
+import java.io.IOException;
 import java.security.SecureRandom;
 import java.time.Duration;
 import java.time.LocalDateTime;
@@ -21,7 +21,7 @@ import com.hoaug.movieapi.modules.auth.domain.model.AuthOtpPurpose;
 import com.hoaug.movieapi.modules.auth.domain.repository.AuthOtpChallengeRepository;
 import com.hoaug.movieapi.modules.email.application.EmailService;
 
-import jakarta.mail.MessagingException;
+
 
 @Service
 public class AuthOtpService {
@@ -125,7 +125,7 @@ public class AuthOtpService {
     String purposeLabel = resolvePurposeLabel(purpose);
     try {
       emailService.sendOtpVerificationEmail(email, displayName, otp, purposeLabel, ttl);
-    } catch (MessagingException | UnsupportedEncodingException e) {
+    } catch (IOException e) {
       LoggerFactory.getLogger(getClass()).warn("Failed to send OTP email", e);
       throw new AppException(ErrorCode.UNCATEGORIZED_EXCEPTION);
     }
